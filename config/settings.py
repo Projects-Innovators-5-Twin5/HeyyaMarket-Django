@@ -68,8 +68,8 @@ INSTALLED_APPS = [
     "apps.forms",
     "apps.form_layouts",
     "apps.tables",
-    "apps.front_office",
-    "apps.back_office",
+    "front_office.landing",
+    "back_office.adminPage",
 
 
 ]

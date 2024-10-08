@@ -1,12 +1,12 @@
 from django.urls import path
-from .views import FrontView
+from .views import LandingView
 
 
 
 urlpatterns = [
     path(
         "",
-      FrontView.as_view(template_name="landing.html"),
+      LandingView.as_view(template_name="landing.html"),
         name="landing",
     )
 ]

@@ -22,8 +22,8 @@ from web_project.views import SystemView
 urlpatterns = [
     path("admin/", admin.site.urls),
     
-    path("", include("apps.front_office.urls")),
-    path("back/", include("apps.back_office.urls")),
+    path("", include("front_office.landing.urls")),
+    path("back/", include("back_office.adminPage.urls")),
 
     # Dashboard urls
     path("", include("apps.dashboards.urls")),
@@ -58,8 +58,8 @@ urlpatterns = [
     # Tables urls
     path("", include("apps.tables.urls")),
     ## user app pages
-    path("", include("apps.front_office.urls")),
-    path("", include("apps.back_office.urls")),
+    path("", include("front_office.landing.urls")),
+    path("", include("back_office.adminPage.urls")),
 
 ]
 

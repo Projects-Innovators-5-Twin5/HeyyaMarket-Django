@@ -1,12 +1,12 @@
 from django.urls import path
-from .views import BackView
+from .views import AdminView
 
 
 
 urlpatterns = [
     path(
         "",
-      BackView.as_view(template_name="analytics.html"),
+      AdminView.as_view(template_name="analytics.html"),
         name="analytics",
     )
 ]

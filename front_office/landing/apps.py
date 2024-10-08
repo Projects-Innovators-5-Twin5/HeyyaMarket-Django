@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class FrontOfficeConfig(AppConfig):
+class LandingConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
-    name = 'apps.front_office'
+    name = 'front_office.landing'
