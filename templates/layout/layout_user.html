@@ -1,0 +1,54 @@
+{% extends 'layout/master.html' %}
+
+
+{% block layout %}
+<!-- Layout wrapper: Start -->
+
+<div class="layout-wrapper layout-content-navbar ,layout-without-menu">
+  <div class="layout-container">
+
+    <!-- Layout page: Start -->
+    <div class="user-layout-page">
+
+
+      {% if is_navbar %}
+      <!-- Navbar: Start -->
+      {% include "../layout/partials/navbar/userNavbar.html" %}
+      <!-- Navbar: End -->
+      {% endif %}
+
+
+      <!-- Content wrapper: Start -->
+      <div class="content-wrapper {% if request.path != '/' %}user-content{% endif %}">
+
+        <!-- Content: Start -->
+        {% if is_flex %}
+        <div class="{% if request.path != '/' %}{{container_class}} {% endif %} d-flex align-items-stretch flex-grow-1 p-0">
+          {% else %}
+          <div class="{% if request.path != '/' %}{{container_class}} {% endif %} flex-grow-1 container-p-y">
+            {% endif %}
+            {% block content %}
+            {% endblock content %}
+
+          </div>
+          <!-- / Content: End -->
+
+          {% if is_footer %}
+          <!-- Footer: Start -->
+          {% include "../layout/partials/footer/footerUser.html" %}
+          <!-- Footer: End -->
+          {% endif %}
+
+          <div class="content-backdrop fade"></div>
+        </div>
+        <!--/ Content wrapper: End -->
+      </div>
+      <!-- / Layout page: End -->
+    </div>
+
+   
+    <!-- Drag Target Area To SlideIn Menu On Small Screens -->
+    <div class="drag-target"></div>
+  </div>
+  <!-- Layout wrapper: End -->
+  {% endblock layout %}

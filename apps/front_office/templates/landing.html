@@ -1,0 +1,184 @@
+{% extends layout_path %}
+
+{% load static %}
+{% load i18n %}
+
+{% block title %}Landing{% endblock %}
+
+
+{% block vendor_js %}
+{{ block.super }}
+<script src="{% static 'vendor/libs/masonry/masonry.js' %}"></script>
+{% endblock vendor_js %}
+
+{% block content %}
+<!-- hero -->
+<div class="bg-hero pb-4">
+  <div class="row mb-12 g-6 user-content">
+      <div class="col-md-3 col-lg-3">
+          <div class="card mb-6" style="height: 70% !important;"> <!-- Added h-100 for equal height -->
+              <h6 class="mt-2 text-dark" style="margin: 5rem 0rem 0rem 1.3rem !important;">
+                  <i class="ri-list-check ri-24px"></i> Nos catégories
+              </h6>
+
+        
+              <div class="flex-fill d-flex align-items-center"> <!-- Flex container for vertical centering -->
+                  <ul class="list-group list-group-flush w-100"> <!-- Full width for ul -->
+                      <li class="list-group-item d-flex justify-content-between align-items-center">
+                          Bijoux faits main <i class="ri-arrow-right-s-line ri-24px"></i>
+                      </li>
+                      <li class="list-group-item d-flex justify-content-between align-items-center">
+                          Décorations d'intérieur <i class="ri-arrow-right-s-line ri-24px"></i>
+                      </li>
+                      <li class="list-group-item d-flex justify-content-between align-items-center">
+                          Vêtements artisanaux <i class="ri-arrow-right-s-line ri-24px"></i>
+                      </li>
+                      <li class="list-group-item d-flex justify-content-between align-items-center">
+                          Accessoires en cuir <i class="ri-arrow-right-s-line ri-24px"></i>
+                      </li>
+                      <li class="list-group-item d-flex justify-content-between align-items-center">
+                          Produits cosmétiques naturels <i class="ri-arrow-right-s-line ri-24px"></i>
+                      </li>
+                  </ul>
+              </div>
+          </div>
+      </div>
+
+      <div class="card-group mb-6 col-md-9 col-lg-9" style="padding:0;">
+          <div class="card h-100"> <!-- Added h-100 for equal height -->
+              <img class="card-img-top" src="{% static 'img/elements/5.jpg' %}" alt="Card image cap" />
+              <div class="card-body">
+                  <h5 class="card-title">Card title</h5>
+                  <p class="card-text">This card has supporting text below as a natural lead-in to additional content.</p>
+              </div>
+              <div class="card-footer">
+                  <small class="text-muted">Last updated 3 mins ago</small>
+              </div>
+          </div>
+          <div class="card h-100"> <!-- Added h-100 for equal height -->
+              <img class="card-img-top" src="{% static 'img/elements/1.jpg' %}" alt="Card image cap" />
+              <div class="card-body">
+                  <h5 class="card-title">Card title</h5>
+                  <p class="card-text">
+                      This is a wider card with supporting text below as a natural lead-in to additional content. This card has even
+                      longer content than the first to show that equal height action.
+                  </p>
+              </div>
+              <div class="card-footer">
+                  <small class="text-muted">Last updated 3 mins ago</small>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+<!-- Horizontal -->
+<div style="margin-top:-8rem;" class="user-content">
+  <!--<h5 class="pb-1 mb-6">Top vente</h5>-->
+  <div class="row mb-12 g-6">
+    <div class="col-md">
+      <div class="card">
+        <div class="row g-0">
+          <div class="col-md-4">
+            <img class="card-img card-img-left" src="{% static 'img/elements/12.jpg' %}" alt="Card image" />
+          </div>
+          <div class="col-md-8">
+            <div class="card-body">
+              <h5 class="card-title">Card title</h5>
+              <p class="card-text">
+                This is a wider card with supporting text below as a natural lead-in to additional content. This content
+                is a
+                little bit longer.
+              </p>
+              <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md">
+      <div class="card">
+        <div class="row g-0">
+          <div class="col-md-8">
+            <div class="card-body">
+              <h5 class="card-title">Card title</h5>
+              <p class="card-text">
+                This is a wider card with supporting text below as a natural lead-in to additional content. This content
+                is a
+                little bit longer.
+              </p>
+              <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <img class="card-img card-img-right" src="{% static 'img/elements/17.jpg' %}" alt="Card image" />
+          </div>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+</div>
+<!-- Grid Card -->
+<div class="user-content">
+  <h6 class="pb-1 mb-4 text-muted ">Grid Card</h6>
+  <div class="row row-cols-1 row-cols-md-3 g-6 mb-6">
+    <div class="col">
+      <div class="card h-100">
+        <img class="card-img-top" src="{% static 'img/elements/2.jpg' %}" alt="Card image cap" />
+        <div class="card-body">
+          <h5 class="card-title">Card title</h5>
+          <p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card h-100">
+        <img class="card-img-top" src="{% static 'img/elements/13.jpg' %}" alt="Card image cap" />
+        <div class="card-body">
+          <h5 class="card-title">Card title</h5>
+          <p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card h-100">
+        <img class="card-img-top" src="{% static 'img/elements/4.jpg' %}" alt="Card image cap" />
+        <div class="card-body">
+          <h5 class="card-title">Card title</h5>
+          <p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card h-100">
+        <img class="card-img-top" src="{% static 'img/elements/18.jpg' %}" alt="Card image cap" />
+        <div class="card-body">
+          <h5 class="card-title">Card title</h5>
+          <p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card h-100">
+        <img class="card-img-top" src="{% static 'img/elements/19.jpg' %}" alt="Card image cap" />
+        <div class="card-body">
+          <h5 class="card-title">Card title</h5>
+          <p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card h-100">
+        <img class="card-img-top" src="{% static 'img/elements/20.jpg' %}" alt="Card image cap" />
+        <div class="card-body">
+          <h5 class="card-title">Card title</h5>
+          <p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!--/ Card layout -->
+{% endblock %}
