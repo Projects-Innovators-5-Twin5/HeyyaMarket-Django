@@ -1,14 +1,21 @@
 from web_project.template_helpers.theme import TemplateHelper
 
 class TemplateLayout:
-    # Initialize the bootstrap files and page layout
-      def init(self, context):
-        # Init the Template Context using TEMPLATE_CONFIG
+    def init(self, context):
+        user = context.get('user')  
+        layout = "user"  
 
-        # Set a default layout globally using settings.py. Can be set in the page level view file as well.
-        layout = "vertical"
-
-        # Set the selected layout
+        if user is not None:
+            if user.is_superuser:
+                layout = "vertical"  
+            elif user.is_authenticated:
+                
+                if user.role == 'VENDEUR':
+                    layout = "vertical"  
+                elif user.role == 'CLIENT':
+                    layout = "user"  
+                else:
+                    layout = "user"  
         context.update(
             {
                 "layout_path": TemplateHelper.set_layout(
@@ -17,7 +24,6 @@ class TemplateLayout:
             }
         )
 
-        # Map context variables
         TemplateHelper.map_context(context)
 
         return context
