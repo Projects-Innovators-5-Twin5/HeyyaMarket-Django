@@ -1,0 +1,30 @@
+ {% extends "layout_path" %}
+
+{% load static %}
+{% load i18n %}
+
+{% block title %}Landing{% endblock %}
+
+
+{% block vendor_js %}
+{{ block.super }}
+<script src="{% static 'vendor/libs/masonry/masonry.js' %}"></script>
+{% endblock vendor_js %}
+
+{% block content %}
+   <h1>Catégories</h1>
+    <a href="{% url 'categorie_add' %}" class="btn btn-primary mb-3">Ajouter une Catégorie</a>
+    <ul class="list-group">
+        {% for categorie in categories %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <a href="{{ categorie.get_absolute_url }}">{{ categorie.nom }}</a>
+                <span>
+                    <a href="{% url 'categorie_edit' categorie.id %}" class="btn btn-sm btn-secondary">Modifier</a>
+                    <a href="{% url 'categorie_delete' categorie.id %}" class="btn btn-sm btn-danger">Supprimer</a>
+                </span>
+            </li>
+        {% empty %}
+            <li class="list-group-item">Aucune catégorie disponible.</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

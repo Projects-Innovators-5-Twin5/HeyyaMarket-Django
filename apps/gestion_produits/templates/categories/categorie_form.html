@@ -1,0 +1,23 @@
+ {% extends layout_path %}
+
+{% load static %}
+{% load i18n %}
+
+{% block title %}Landing{% endblock %}
+
+
+{% block vendor_js %}
+{{ block.super }}
+<script src="{% static 'vendor/libs/masonry/masonry.js' %}"></script>
+{% endblock vendor_js %}
+
+{% block content %}
+    <div class="card p-4">
+    <div class="card-header"><h3>{% if form.instance.pk %}Modifier Catégorie{% else %}Ajouter Catégorie{% endif %}</h3></div>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-success">Enregistrer</button>
+    </form>
+    </div>
+{% endblock %}
