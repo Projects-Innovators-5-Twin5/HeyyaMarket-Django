@@ -18,10 +18,13 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 from web_project.views import SystemView
+from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    
+
+    path('reviews/', include('apps.reviews.urls')),  # Inclure les routes de l'application reviews
+
     path("", include("apps.landing.urls")),
 
     # Dashboard urls
