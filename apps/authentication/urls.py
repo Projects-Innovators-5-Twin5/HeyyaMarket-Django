@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import AuthView
+from .views import AuthView , LogoutView , RegisterView
 
 
 urlpatterns = [
@@ -9,8 +9,13 @@ urlpatterns = [
         name="auth-login-basic",
     ),
     path(
+        "auth/logout/",
+        LogoutView.as_view(),
+        name="auth-logout",
+    ),
+    path(
         "auth/register/",
-        AuthView.as_view(template_name="auth_register_basic.html"),
+        RegisterView.as_view(template_name="auth_register_basic.html"),
         name="auth-register-basic",
     ),
     path(

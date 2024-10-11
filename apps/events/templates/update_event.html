@@ -1,0 +1,122 @@
+{% extends layout_path %}
+
+{% load static %}
+{% load i18n %}
+
+{% block title %}Update Event{% endblock %}
+
+{% block vendor_js %}
+{{ block.super }}
+<script src="{% static 'vendor/libs/masonry/masonry.js' %}"></script>
+{% endblock vendor_js %}
+
+{% block content %}
+<div class="col-xxl">
+    <div class="card mb-6">
+        <div class="card-header d-flex align-items-center justify-content-between">
+            <h5 class="mb-0">Update Event</h5>
+            <small class="text-muted float-end">Edit the event details</small>
+        </div>
+        <div class="card-body">
+<form method="POST" enctype="multipart/form-data">  
+                {% csrf_token %}
+                
+                <!-- Event Title -->
+                <div class="row mb-4">
+                    <label class="col-sm-2 col-form-label" for="event-title">Event Title</label>
+                    <div class="col-sm-10">
+                        <div class="input-group input-group-merge">
+                            <span class="input-group-text"><i class="ri-calendar-event-line ri-20px"></i></span>
+                            <input type="text" class="form-control" id="event-title" name="title" value="{{ form.title.value }}" placeholder="Event Title" aria-label="Event Title" required />
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Event Description -->
+                <div class="row mb-4">
+                    <label class="col-sm-2 col-form-label" for="event-description">Description</label>
+                    <div class="col-sm-10">
+                        <div class="input-group input-group-merge">
+                            <span class="input-group-text"><i class="ri-file-text-line ri-20px"></i></span>
+                            <textarea id="event-description" class="form-control" name="description" placeholder="Event Description" aria-label="Event Description" required>{{ form.description.value }}</textarea>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Event Start Date & Time -->
+                <div class="row mb-4">
+                    <label class="col-sm-2 col-form-label" for="event-start-date">Start Date & Time</label>
+                    <div class="col-sm-10">
+                        <div class="input-group input-group-merge">
+                            <span class="input-group-text"><i class="ri-time-line ri-20px"></i></span>
+                            <input type="datetime-local" id="event-start-date" class="form-control" name="start_datetime" value="{{ form.start_datetime.value|date:'Y-m-d H:i' }}" required />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Event End Date & Time -->
+                <div class="row mb-4">
+                    <label class="col-sm-2 col-form-label" for="event-end-date">End Date & Time</label>
+                    <div class="col-sm-10">
+                        <div class="input-group input-group-merge">
+                            <span class="input-group-text"><i class="ri-time-line ri-20px"></i></span>
+                            <input type="datetime-local" id="event-end-date" class="form-control" name="end_datetime" value="{{ form.end_datetime.value|date:'Y-m-d H:i' }}" required />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Event Location -->
+                <div class="row mb-4">
+                    <label class="col-sm-2 col-form-label" for="event-location">Location</label>
+                    <div class="col-sm-10">
+                        <div class="input-group input-group-merge">
+                            <span class="input-group-text"><i class="ri-map-pin-line ri-20px"></i></span>
+                            <input type="text" id="event-location" class="form-control" name="location" value="{{ form.location.value }}" placeholder="Event Location" aria-label="Event Location" required />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Available Slots -->
+                <div class="row mb-4">
+                    <label class="col-sm-2 col-form-label" for="available-slots">Available Slots</label>
+                    <div class="col-sm-10">
+                        <div class="input-group input-group-merge">
+                            <span class="input-group-text"><i class="ri-group-line ri-20px"></i></span>
+                            <input type="number" id="available-slots" class="form-control" name="available_slots" value="{{ form.available_slots.value }}" placeholder="Number of available slots" aria-label="Number of available slots" required />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Status Field -->
+                <div class="row mb-4">
+                    <label class="col-sm-2 col-form-label" for="event-status">Status</label>
+                    <div class="col-sm-10">
+                        <select id="event-status" class="form-select" name="status" required>
+                            <option value="" disabled>Select Status</option>
+                            <option value="scheduled" {% if form.status.value == 'scheduled' %}selected{% endif %}>Scheduled</option>
+                            <option value="finished" {% if form.status.value == 'finished' %}selected{% endif %}>Finished</option>
+                            <option value="cancelled" {% if form.status.value == 'cancelled' %}selected{% endif %}>Cancelled</option>
+                        </select>
+                    </div>
+                </div>
+                    <div class="row mb-4">
+        <label class="col-sm-2 col-form-label" for="event-image">Event Image</label>
+        <div class="col-sm-10">
+            <input type="file" id="event-image" class="form-control" name="image" accept="image/*" /> <!-- File input for image -->
+            {% if form.instance.image %}  <!-- Display the current image if it exists -->
+                <img src="{{ form.instance.image.url }}" alt="Current Event Image" style="max-width: 200px; margin-top: 10px;" />
+            {% endif %}
+        </div>
+    </div>
+
+
+                <div class="row justify-content-end">
+                    <div class="col-sm-10">
+                        <button type="submit" class="btn btn-primary">Update Event</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

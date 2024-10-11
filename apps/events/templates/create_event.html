@@ -1,0 +1,101 @@
+{% extends layout_path %}
+
+{% load static %}
+{% load i18n %}
+
+{% block title %}Add Event{% endblock %}
+
+{% block vendor_js %}
+{{ block.super }}
+<script src="{% static 'vendor/libs/masonry/masonry.js' %}"></script>
+{% endblock vendor_js %}
+
+{% block content %}
+<div class="col-xxl">
+    <div class="card mb-6">
+        <div class="card-header d-flex align-items-center justify-content-between">
+            <h5 class="mb-0">Create Event</h5>
+            <small class="text-muted float-end">Fill in the event details</small>
+        </div>
+        <div class="card-body">
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    
+    <!-- Event Title -->
+    <div class="row mb-4">
+        <label class="col-sm-2 col-form-label" for="event-title">Event Title</label>
+        <div class="col-sm-10">
+            <input type="text" class="form-control" id="event-title" name="title" placeholder="Event Title"  required />
+        </div>
+    </div>
+    
+    <!-- Event Description -->
+    <div class="row mb-4">
+        <label class="col-sm-2 col-form-label" for="event-description">Description</label>
+        <div class="col-sm-10">
+            <textarea id="event-description" class="form-control" name="description" placeholder="Event Description" required></textarea>
+        </div>
+    </div>
+
+    <!-- Event Start Date & Time -->
+    <div class="row mb-4">
+        <label class="col-sm-2 col-form-label" for="event-start-datetime">Start Date & Time</label>
+        <div class="col-sm-10">
+            <input type="datetime-local" id="event-start-datetime" class="form-control" name="start_datetime" required />
+        </div>
+    </div>
+
+    <!-- Event End Date & Time -->
+    <div class="row mb-4">
+        <label class="col-sm-2 col-form-label" for="event-end-datetime">End Date & Time</label>
+        <div class="col-sm-10">
+            <input type="datetime-local" id="event-end-datetime" class="form-control" name="end_datetime" required />
+        </div>
+    </div>
+
+    <!-- Event Location -->
+    <div class="row mb-4">
+        <label class="col-sm-2 col-form-label" for="event-location">Location</label>
+        <div class="col-sm-10">
+            <input type="text" id="event-location" class="form-control" name="location" placeholder="Event Location"  required />
+        </div>
+    </div>
+
+    <!-- Available Slots -->
+    <div class="row mb-4">
+        <label class="col-sm-2 col-form-label" for="available-slots">Available Slots</label>
+        <div class="col-sm-10">
+            <input type="number" id="available-slots" class="form-control" name="available_slots"  placeholder="Number of available slots" required />
+        </div>
+    </div>
+
+    <!-- Status Field -->
+    <div class="row mb-4">
+        <label class="col-sm-2 col-form-label" for="event-status">Status</label>
+        <div class="col-sm-10">
+            <select id="event-status" class="form-select" name="status" required>
+                <option value="scheduled" selected>Scheduled</option>
+                <option value="finished">Finished</option>
+                <option value="cancelled">Cancelled</option>
+            </select>
+        </div>
+    </div>
+
+
+        <div class="row mb-4">
+        <label class="col-sm-2 col-form-label" for="event-image">Event Image</label>
+        <div class="col-sm-10">
+            <input type="file" id="event-image" class="form-control" name="image" accept="image/*" /> <!-- File input for image -->
+        </div>
+    </div>
+
+
+    <div class="row justify-content-end">
+        <div class="col-sm-10">
+            <button type="submit" class="btn btn-primary">Create Event</button>
+        </div>
+    </div>
+</form>
+    </div>
+</div>
+{% endblock %}

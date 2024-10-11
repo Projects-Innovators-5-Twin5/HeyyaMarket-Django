@@ -69,6 +69,8 @@ INSTALLED_APPS = [
     "apps.form_layouts",
     "apps.tables",
     "apps.landing",
+    "apps.events",
+
 
 
 ]
@@ -190,3 +192,8 @@ AUTH_USER_MODEL = 'authentication.User'
 
 # Your stuff...
 # ------------------------------------------------------------------------------
+
+# settings.py
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'  # Make sure this directory exists

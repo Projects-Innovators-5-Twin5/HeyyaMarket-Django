@@ -1,0 +1,100 @@
+{% extends layout_path %}
+
+{% load static %}
+{% load i18n %}
+
+{% block title %}Event Details{% endblock %}
+
+{% block content %}
+<div class="col-xxl">
+    <div class="card mb-6">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <div>
+                <h5 class="mb-0">{{ event.title }}</h5>
+                <small class="text-muted">Location: {{ event.location }}</small>
+            </div>
+            <div>
+ {% if user_is_vendeur and not has_requested and event.available_slots > 0 and event.status != 'finished' and event.status != 'cancelled' %}
+                    <form method="POST" action="{% url 'request_participation' event.id %}" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary">Participate</button>
+                    </form>
+                {% elif has_requested and participation_status == 'pending' %}
+                    <p class="text-muted">Participation request already sent. Waiting for confirmation.</p>
+                {% elif has_requested and participation_status == 'cancelled' %}
+                    <form method="POST" action="{% url 'request_participation' event.id %}" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary">Request to Participate Again</button>
+                    </form>
+                {% endif %}
+                            </div>
+        </div>
+        <img class="card-img-top" src="{{ event.image.url }}" alt="{{ event.title }}" style="height: 300px; object-fit: cover;">  <!-- Display event image -->
+        <div class="card-body">
+            <p class="card-text">{{ event.description }}</p>  <!-- Event description -->
+            <p class="card-text"><strong>Start Date & Time:</strong> {{ event.start_datetime }}</p>
+            <p class="card-text"><strong>End Date & Time:</strong> {{ event.end_datetime }}</p>
+            <p class="card-text"><strong>Available Slots:</strong> {{ event.available_slots }}</p>
+            <p class="card-text">
+                {% if event.status == 'scheduled' %}
+                    <span class="badge rounded-pill bg-label-info me-1">Scheduled</span>
+                {% elif event.status == 'finished' %}
+                    <span class="badge rounded-pill bg-label-success me-1">Finished</span>
+                {% elif event.status == 'cancelled' %}
+                    <span class="badge rounded-pill bg-label-warning me-1">Cancelled</span>
+                {% else %}
+                    <span class="badge rounded-pill bg-label-secondary me-1">Pending</span>
+                {% endif %}
+            </p>
+            
+            <p>User is authenticated: {{ request.user.is_authenticated }}</p>
+
+            <div>
+                <a href="{% url 'event_listfront' %}" class="btn btn-primary">Back to Events</a>  <!-- Button to go back to the event list -->
+            </div>
+        </div>
+
+        <h5 class="mt-4">Participants</h5>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>User</th>
+                    <th>Status</th>
+                    <th>Action</th> <!-- New column for actions -->
+                </tr>
+            </thead>
+            <tbody>
+                {% for participant in participants %}
+                    <tr>
+                        <td>{{ participant.user.username }}</td>
+                        <td>
+                            {% if participant.status == 'confirmed' %}
+                                <span class="badge rounded-pill bg-label-success">Confirmed</span>
+                            {% elif participant.status == 'rejected' %}
+                                <span class="badge rounded-pill bg-label-danger">Rejected</span>
+                            {% elif participant.status == 'pending' %}
+                                <span class="badge rounded-pill bg-label-warning">Pending</span>
+                            {% elif participant.status == 'cancelled' %}
+                                <span class="badge rounded-pill bg-label-warning">Cancelled</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if participant.user == request.user and participant.status == 'confirmed' %}
+                                <form method="POST" action="{% url 'cancel_participation' participant.id %}" style="display:inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger btn-sm">Cancel</button>
+                                </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="3" class="text-center">No participants yet.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+</div>
+{% endblock %}

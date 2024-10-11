@@ -1,0 +1,45 @@
+{% extends layout_path %}
+
+{% load static %}
+{% load i18n %}
+
+{% block title %}Event List{% endblock %}
+
+{% block content %}
+<div class="row mb-12 g-6">  <!-- Adjusted the main container to use Bootstrap grid -->
+    {% for event in events %}
+    <div class="col-md-6 col-lg-4">  <!-- Adjust the column sizes as needed -->
+        <div class="card h-100">  <!-- Card for each event -->
+            {% if event.image %}
+                <img class="card-img-top" src="{{ event.image.url }}" alt="{{ event.title }}" style="height: 200px; object-fit: cover;" />  <!-- Image for the event -->
+            {% else %}
+                <img class="card-img-top" src="{% static 'img/default-image.jpg' %}" alt="No Image Available" style="height: 200px; object-fit: cover;" />  <!-- Fallback image if none exists -->
+            {% endif %}
+            <div class="card-body">
+                <h5 class="card-title">{{ event.title }}</h5>
+                <p class="card-text">{{ event.description|truncatewords:20 }}</p>  <!-- Truncate description for better display -->
+                <p class="card-text"><small class="text-muted">Location: {{ event.location }}</small></p>  <!-- Location -->
+                <p class="card-text"><small class="text-muted">Start: {{ event.start_datetime }}</small></p>  <!-- Start Date & Time -->
+                <p class="card-text"><small class="text-muted">End: {{ event.end_datetime }}</small></p>  <!-- End Date & Time -->
+                <p class="card-text">
+                    {% if event.status == 'scheduled' %}
+                        <span class="badge rounded-pill bg-label-info me-1">Scheduled</span>
+                    {% elif event.status == 'finished' %}
+                        <span class="badge rounded-pill bg-label-success me-1">Finished</span>
+                    {% elif event.status == 'cancelled' %}
+                        <span class="badge rounded-pill bg-label-warning me-1">Cancelled</span>
+                    {% else %}
+                        <span class="badge rounded-pill bg-label-secondary me-1">Pending</span>
+                    {% endif %}
+                </p>
+                <a href="{% url 'event_detail' event.id %}" class="btn btn-outline-primary">View Details</a>  <!-- Link to view event details -->
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12 text-center">  <!-- Center message for no events -->
+        <p>No events found.</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
