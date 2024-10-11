@@ -69,8 +69,7 @@ INSTALLED_APPS = [
     "apps.form_layouts",
     "apps.tables",
     "apps.landing",
-
-
+    "apps.paiement"
 ]
 
 MIDDLEWARE = [
@@ -173,6 +172,10 @@ STATICFILES_DIRS = [
 
 # Default URL on which Django application runs for specific environment
 BASE_URL = os.environ.get("BASE_URL", default="http://127.0.0.1:8000")
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # stocker les sessions en base de données
+SESSION_COOKIE_AGE = 1209600
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 
 
 # Default primary key field type

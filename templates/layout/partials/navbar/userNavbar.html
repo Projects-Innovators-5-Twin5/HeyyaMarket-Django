@@ -1,35 +1,48 @@
-{% load i18n %}
-{% load static %}
+{% load i18n %} {% load static %}
 
 <!-- Premier nav: Logo en haut -->
 <nav class="layout-navbar navbar navbar-expand-xl align-items-center bg-violet p-2" id="layout-navbar-logo">
   <div class="container-fluid d-flex justify-content-between align-items-center">
     <!-- Logo Section -->
     <div class="d-flex align-items-center">
-      <img src="/static/img/logos/logo_6.png" alt="Logo" class="logo-img" style="max-width: 72px; height: auto;">
-      <span class="logo-title text-uppercase ms-2" style="font-family: cursive; margin:0; color: #eb907c; font-size: 21px; font-weight: 600; white-space: nowrap;">Heyya </span>
-      <span class="logo-title text-uppercase ms-2" style="font-family: cursive; margin:0; color: white; font-size: 21px; font-weight: 600; white-space: nowrap;">Market</span>
+      <img src="/static/img/logos/logo_6.png" alt="Logo" class="logo-img" style="max-width: 72px; height: auto" />
+      <span
+        class="logo-title text-uppercase ms-2"
+        style="font-family: cursive; margin: 0; color: #eb907c; font-size: 21px; font-weight: 600; white-space: nowrap"
+        >Heyya
+      </span>
+      <span
+        class="logo-title text-uppercase ms-2"
+        style="font-family: cursive; margin: 0; color: white; font-size: 21px; font-weight: 600; white-space: nowrap"
+        >Market</span
+      >
     </div>
 
     <!-- Cart and Favorite Icons -->
     <div class="d-flex align-items-center">
       <a href="#" class="text-white me-3"><i class="ri-heart-3-line ri-24px"></i></a>
-      <a href="#" class="text-white position-relative">
+      <a href="{% url 'panier' %}" class="text-white position-relative">
         <i class="ri-shopping-cart-line ri-24px"></i>
-        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">3<span class="visually-hidden">items in cart</span></span>
+        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+          >3<span class="visually-hidden">items in cart</span></span
+        >
       </a>
     </div>
   </div>
 </nav>
 
 <!-- Deuxième nav: Menu en dessous (sticky) -->
-<nav class="layout-navbar  navbar navbar-expand-xl navbar-detached align-items-center bg-white p-2 mt-0" id="layout-navbar-menu" style="position: sticky; top: 0; z-index: 1000; width: 100%;">
+<nav
+  class="layout-navbar navbar navbar-expand-xl navbar-detached align-items-center bg-white p-2 mt-0"
+  id="layout-navbar-menu"
+  style="position: sticky; top: 0; z-index: 1000; width: 100%"
+>
   <div class="container-fluid">
     <!-- Centralized Navigation Links -->
     <div class="d-flex w-100 justify-content-center">
       <div class="navbar-nav align-items-center">
         <div class="nav-item">
-          <a class="nav-link text-dark" href="#" id="nav-link">Acceuil</a>
+          <a class="nav-link text-dark" href="{% url 'landing' %}" id="nav-link">Accueil</a>
         </div>
         <div class="nav-item">
           <a class="nav-link text-dark" href="#" id="nav-link">Produits</a>
@@ -39,6 +52,8 @@
         </div>
       </div>
     </div>
+
+    {% if user.is_authenticated %}
 
     <!-- Right-side Profile and GitHub link -->
     <ul class="navbar-nav flex-row align-items-center ms-auto">
@@ -54,20 +69,68 @@
             <a class="dropdown-item" href="javascript:void(0);">
               <div class="d-flex align-items-center">
                 <div class="flex-grow-1">
-                  <h6 class="mb-0 small">John Doe</h6>
-                  <small class="text-muted">Customer</small>
+                  <h6 class="mb-0 small">{{request.user|capfirst}}</h6>
+                  <small class="text-muted">{{request.user.role}}</small>
                 </div>
               </div>
             </a>
           </li>
           <li><div class="dropdown-divider"></div></li>
-          <li><a class="dropdown-item" href="javascript:void(0);"><i class="ri-user-3-line ri-22px me-2"></i><span class="align-middle">My Profile</span></a></li>
-          <li><a class="dropdown-item" href="javascript:void(0);"><i class="ri-settings-4-line ri-22px me-2"></i><span class="align-middle">Settings</span></a></li>
-          <li><a class="dropdown-item" href="javascript:void(0);"><span class="d-flex align-items-center align-middle"><i class="flex-shrink-0 ri-file-text-line ri-22px me-2"></i><span class="flex-grow-1 align-middle ms-1">Orders</span><span class="flex-shrink-0 badge badge-center rounded-pill bg-danger h-px-20 d-flex align-items-center justify-content-center">4</span></span></a></li>
+          <li>
+            <a class="dropdown-item" href="javascript:void(0);"
+              ><i class="ri-user-3-line ri-22px me-2"></i><span class="align-middle">My Profile</span></a
+            >
+          </li>
+          <li>
+            <a class="dropdown-item" href="javascript:void(0);"
+              ><i class="ri-settings-4-line ri-22px me-2"></i><span class="align-middle">Settings</span></a
+            >
+          </li>
+          <li>
+            <a class="dropdown-item" href="javascript:void(0);"
+              ><span class="d-flex align-items-center align-middle"
+                ><i class="flex-shrink-0 ri-file-text-line ri-22px me-2"></i
+                ><span class="flex-grow-1 align-middle ms-1">Orders</span
+                ><span
+                  class="flex-shrink-0 badge badge-center rounded-pill bg-danger h-px-20 d-flex align-items-center justify-content-center"
+                  >4</span
+                ></span
+              ></a
+            >
+          </li>
           <li><div class="dropdown-divider"></div></li>
-          <li><div class="d-grid px-4 pt-2 pb-1"><a class="btn btn-danger d-flex" href="javascript:void(0);"><small class="align-middle">Logout</small><i class="ri-logout-box-r-line ms-2 ri-16px"></i></a></div></li>
+          <li>
+            <div class="d-grid px-4 pt-2 pb-1">
+              <a class="btn btn-danger d-flex" href="{% url 'auth-logout'%}"
+                ><small class="align-middle">Logout</small><i class="ri-logout-box-r-line ms-2 ri-16px"></i
+              ></a>
+            </div>
+          </li>
         </ul>
       </li>
     </ul>
+
+    {% else %}
+    <ul class="navbar-nav flex-row align-items-center ms-auto">
+      <!-- User Profile Dropdown -->
+      <li class="nav-item navbar-dropdown dropdown-user dropdown">
+        <a class="nav-link dropdown-toggle hide-arrow p-0" href="javascript:void(0);" data-bs-toggle="dropdown">
+          <div class="avatar mt-4">
+            <i class="ri-user-line ri-24px"></i>
+          </div>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end mt-3 py-2">
+          <li>
+            <a class="dropdown-item" href="{%url 'auth-login-basic' %}">
+              <div class="d-flex flex-column align-items-center">
+                <span>Vous avez déjà un compte?</span>
+                <button class="btn btn-primary w-100 mt-4">Se connecter</button>
+              </div>
+            </a>
+          </li>
+        </ul>
+      </li>
+    </ul>
+    {% endif %}
   </div>
 </nav>

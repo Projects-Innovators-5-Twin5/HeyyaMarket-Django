@@ -59,6 +59,8 @@ urlpatterns = [
     ## user app pages
     path("", include("apps.landing.urls")),
 
+    path("", include("apps.paiement.urls")),
+
 ]
 
 handler404 = SystemView.as_view(template_name="pages_misc_error.html", status=404)

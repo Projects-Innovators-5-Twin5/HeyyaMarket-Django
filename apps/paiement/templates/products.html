@@ -1,0 +1,21 @@
+{% extends layout_path %} {% load static %} {% load i18n %} {% block title %}Account settings - Pages{% endblock %}
+{%block content %}
+
+<form method="POST" action="{% url 'panier' %}">
+  {% csrf_token %}
+  <input type="hidden" name="product_id" value="1" />
+  <button type="submit">Ajouter au Panier</button>
+</form>
+
+<form method="POST" action="{% url 'panier' %}">
+  {% csrf_token %}
+  <input type="hidden" name="product_id" value="2" />
+  <button type="submit">Ajouter au Panier</button>
+</form>
+
+<form method="POST" action="{% url 'panier' %}">
+  {% csrf_token %}
+  <input type="hidden" name="product_id" value="3" />
+  <button type="submit">Ajouter au Panier</button>
+</form>
+{% endblock %}

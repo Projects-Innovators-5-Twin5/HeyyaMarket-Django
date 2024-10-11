@@ -1,0 +1,26 @@
+{% extends layout_path %} {% load static %} {% load i18n %} {% block title %}Account settings - Pages{% endblock %}
+{%block content %}
+<div class="d-flex gap-8">
+  <div class="card mb-6 col-md-8">
+    <div class="card-body">
+      <h4>Details du paiement</h4>
+      <hr />
+    </div>
+  </div>
+
+  <div class="card card-total mb-6 col-md-4">
+    <div class="card-body">
+      <h5>Résumé du Panier</h5>
+      <hr />
+      <div class="d-flex">
+        <span class="d-none d-sm-block total">Total</span>
+        <span class="d-none d-sm-block ms-auto total" id="total">{{ total }} TND </span>
+      </div>
+      <span class="d-none d-sm-block ms-auto mt-4">Frais de livraison non inclus</span>
+      <hr />
+      <button class="btn btn-primary w-100" type="submit">Commander</button>
+    </div>
+  </div>
+</div>
+
+{%endblock%}
