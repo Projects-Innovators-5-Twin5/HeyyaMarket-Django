@@ -1,13 +1,14 @@
-# apps/reviews/views.py
-
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Avis, Commentaire
 from .forms import AvisForm, CommentaireForm
 from apps.authentication.models import User
 from django.db.models import Avg, Count
+from web_project.template_helpers.theme import TemplateHelper
+from web_project import TemplateLayout
 
 def avis_list(request):
-    avis = Avis.objects.filter(product_id=1)  # Récupérer les avis pour le produit avec ID statique 1
+    # Récupérer les avis pour le produit avec ID statique 1
+    avis = Avis.objects.filter(product_id=1)
 
     # Calculer les étoiles restantes pour chaque avis
     for a in avis:
@@ -30,7 +31,7 @@ def avis_list(request):
         elif 'commentaire_submit' in request.POST:
             # Soumission du formulaire de commentaire
             avis_id = request.POST.get('avis_id')
-            avis_instance = Avis.objects.get(id=avis_id)
+            avis_instance = get_object_or_404(Avis, id=avis_id)
             commentaire_form = CommentaireForm(request.POST)
             if commentaire_form.is_valid():
                 new_commentaire = commentaire_form.save(commit=False)
@@ -48,11 +49,19 @@ def avis_list(request):
                 avis_form.save()
                 return redirect('avis_list')
 
-    return render(request, 'avis_list.html', {
+    # Contexte pour le rendu
+    context = {
         'avis': avis,
         'avis_form': avis_form,
         'commentaire_form': commentaire_form,
+    }
+
+    # Ajouter le chemin de mise en page
+    context.update({
+        "layout_path": TemplateHelper.set_layout("layout_user.html", context),
     })
+
+    return render(request, 'avis_list.html', context)
 
 
 def stats_avis(request):

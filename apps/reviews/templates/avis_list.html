@@ -1,7 +1,7 @@
+{% extends layout_path %}
 {% load extra_filters %}
-<!DOCTYPE html>
-<html lang="fr">
-<head>
+
+{% block content %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -26,17 +26,18 @@
             color: #f5c518;
         }
     </style>
-</head>
-<body>
+
     <div class="container my-5">
         <h1 class="text-center mb-4">Avis sur le produit</h1>
 
-        <!-- Affichage du produit -->
-        <div class="card mb-4">
-            <div class="card-body text-center">
-                <i class="fas fa-plus-circle" id="add-review-btn" data-bs-toggle="modal" data-bs-target="#addReviewModal" style="font-size: 2rem; cursor: pointer;"></i>
-            </div>
-        </div>
+       <!-- Affichage du produit -->
+<div class="card mb-4">
+  <div class="card-body text-center">
+      <button type="button" class="btn btn-primary" id="add-review-btn" data-bs-toggle="modal" data-bs-target="#addReviewModal">
+          <i class="fas fa-plus-circle"></i> Ajouter un Avis
+      </button>
+  </div>
+</div>
 
         <!-- Modal pour ajouter un avis -->
         <div class="modal fade" id="addReviewModal" tabindex="-1" aria-labelledby="addReviewModalLabel" aria-hidden="true">
@@ -68,7 +69,9 @@
                                     <label for="1-star" class="fa fa-star"></label>
                                 </div>
                             </div>
-                            <button type="submit" name="avis_submit" class="btn btn-success"><i class="fas fa-paper-plane"></i> Soumettre l'avis</button>
+                            <button type="submit" name="avis_submit" class="btn btn-success">
+                                <i class="fas fa-paper-plane"></i> Soumettre l'avis
+                            </button>
                         </form>
                     </div>
                 </div>
@@ -84,11 +87,9 @@
                 </h5>
                 <!-- Affichage des étoiles -->
                 <div class="star-rating" style="font-size: 1.2rem;">
-                    <!-- Étoiles jaunes -->
                     {% for i in avis.rating|range_filter %}
                         <span class="fa fa-star" style="color: #f5c518;"></span>
                     {% endfor %}
-                    <!-- Étoiles grises -->
                     {% for i in avis.remaining_stars|range_filter %}
                         <span class="fa fa-star" style="color: #ddd;"></span>
                     {% endfor %}
@@ -105,90 +106,63 @@
                             <label for="id_commentaire" class="form-label">Votre commentaire :</label>
                             <textarea id="id_commentaire" name="text" class="form-control" required></textarea>
                         </div>
-                        <button type="submit" name="commentaire_submit" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> Ajouter un commentaire</button>
+                        <button type="submit" name="commentaire_submit" class="btn btn-primary btn-sm">
+                            <i class="fas fa-plus"></i> Ajouter un commentaire
+                        </button>
                     </form>
                 </div>
 
-                <hr>
-                <h6>Commentaires :</h6>
-                {% if avis.commentaires.all %}
-                    <ul class="list-unstyled">
-                        {% for commentaire in avis.commentaires.all %}
-                        <li class="mb-2">
-                            <strong>{{ commentaire.user.username }}:</strong> {{ commentaire.text }}
-                            <i class="fas fa-edit" data-bs-toggle="modal" data-bs-target="#editCommentModal{{ commentaire.id }}" style="cursor: pointer;"></i>
-                        </li>
-
-                        <!-- Modal pour modifier le commentaire -->
-                        <div class="modal fade" id="editCommentModal{{ commentaire.id }}" tabindex="-1" aria-labelledby="editCommentModalLabel{{ commentaire.id }}" aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="editCommentModalLabel{{ commentaire.id }}">Modifier le Commentaire</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <!-- Modal pour éditer l'avis -->
+                <div class="modal fade" id="editReviewModal{{ avis.id }}" tabindex="-1" aria-labelledby="editReviewModalLabel{{ avis.id }}" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="editReviewModalLabel{{ avis.id }}">Modifier l'Avis</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form method="POST">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="avis_id" value="{{ avis.id }}">
+                                    <div class="mb-3">
+                                        <label for="id_text_edit" class="form-label">Votre avis :</label>
+                                        <textarea id="id_text_edit" name="text" class="form-control" required>{{ avis.text }}</textarea>
                                     </div>
-                                    <div class="modal-body">
-                                        <form method="POST">
-                                            {% csrf_token %}
-                                            <input type="hidden" name="commentaire_id" value="{{ commentaire.id }}">
-                                            <div class="mb-3">
-                                                <label for="id_commentaire_text" class="form-label">Votre commentaire :</label>
-                                                <textarea id="id_commentaire_text" name="text" class="form-control" required>{{ commentaire.text }}</textarea>
-                                            </div>
-                                            <button type="submit" name="commentaire_edit" class="btn btn-warning"><i class="fas fa-save"></i> Enregistrer les modifications</button>
-                                        </form>
+                                    <div class="mb-3">
+                                        <label for="id_rating_edit" class="form-label">Note :</label>
+                                        <div class="star-rating">
+                                            <input type="radio" id="5-stars-edit{{ avis.id }}" name="rating" value="5" {% if avis.rating == 5 %}checked{% endif %} />
+                                            <label for="5-stars-edit{{ avis.id }}" class="fa fa-star"></label>
+                                            <input type="radio" id="4-stars-edit{{ avis.id }}" name="rating" value="4" {% if avis.rating == 4 %}checked{% endif %} />
+                                            <label for="4-stars-edit{{ avis.id }}" class="fa fa-star"></label>
+                                            <input type="radio" id="3-stars-edit{{ avis.id }}" name="rating" value="3" {% if avis.rating == 3 %}checked{% endif %} />
+                                            <label for="3-stars-edit{{ avis.id }}" class="fa fa-star"></label>
+                                            <input type="radio" id="2-stars-edit{{ avis.id }}" name="rating" value="2" {% if avis.rating == 2 %}checked{% endif %} />
+                                            <label for="2-stars-edit{{ avis.id }}" class="fa fa-star"></label>
+                                            <input type="radio" id="1-star-edit{{ avis.id }}" name="rating" value="1" {% if avis.rating == 1 %}checked{% endif %} />
+                                            <label for="1-star-edit{{ avis.id }}" class="fa fa-star"></label>
+                                        </div>
                                     </div>
-                                </div>
+                                    <button type="submit" name="avis_edit" class="btn btn-warning">
+                                        <i class="fas fa-edit"></i> Modifier l'avis
+                                    </button>
+                                </form>
                             </div>
                         </div>
-                        {% endfor %}
-                    </ul>
-                {% else %}
-                    <p class="text-muted">Pas encore de commentaires.</p>
-                {% endif %}
-            </div>
-        </div>
-
-        <!-- Modal pour modifier l'avis -->
-        <div class="modal fade" id="editReviewModal{{ avis.id }}" tabindex="-1" aria-labelledby="editReviewModalLabel{{ avis.id }}" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="editReviewModalLabel{{ avis.id }}">Modifier l'Avis</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form method="POST">
-                            {% csrf_token %}
-                            <div class="mb-3">
-                                <label for="id_text" class="form-label">Votre avis :</label>
-                                <textarea id="id_text" name="text" class="form-control" required>{{ avis.text }}</textarea>
-                            </div>
-                            <div class="mb-3">
-                                <label for="id_rating" class="form-label">Note :</label>
-                                <div class="star-rating">
-                                    <input type="radio" id="5-stars-edit{{ avis.id }}" name="rating" value="5" {% if avis.rating == 5 %}checked{% endif %} />
-                                    <label for="5-stars-edit{{ avis.id }}" class="fa fa-star"></label>
-                                    <input type="radio" id="4-stars-edit{{ avis.id }}" name="rating" value="4" {% if avis.rating == 4 %}checked{% endif %} />
-                                    <label for="4-stars-edit{{ avis.id }}" class="fa fa-star"></label>
-                                    <input type="radio" id="3-stars-edit{{ avis.id }}" name="rating" value="3" {% if avis.rating == 3 %}checked{% endif %} />
-                                    <label for="3-stars-edit{{ avis.id }}" class="fa fa-star"></label>
-                                    <input type="radio" id="2-stars-edit{{ avis.id }}" name="rating" value="2" {% if avis.rating == 2 %}checked{% endif %} />
-                                    <label for="2-stars-edit{{ avis.id }}" class="fa fa-star"></label>
-                                    <input type="radio" id="1-star-edit{{ avis.id }}" name="rating" value="1" {% if avis.rating == 1 %}checked{% endif %} />
-                                    <label for="1-star-edit{{ avis.id }}" class="fa fa-star"></label>
-                                </div>
-                            </div>
-                            <button type="submit" name="avis_edit" class="btn btn-warning"><i class="fas fa-save"></i> Enregistrer les modifications</button>
-                        </form>
                     </div>
                 </div>
+
+                <!-- Commentaires -->
+                <h6 class="mt-3">Commentaires:</h6>
+                {% for commentaire in avis.commentaire_set.all %}
+                <div class="border-top pt-2 mt-2">
+                    <strong>{{ commentaire.user.username }}</strong>: {{ commentaire.text }}
+                </div>
+                {% endfor %}
             </div>
         </div>
         {% endfor %}
-
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+{% endblock %}
