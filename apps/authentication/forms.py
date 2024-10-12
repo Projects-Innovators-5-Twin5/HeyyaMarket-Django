@@ -3,6 +3,7 @@ from django import forms
 from django.contrib.auth import get_user_model
 
 from django.contrib.auth.forms import UserCreationForm
+from .models import User
 
 class LoginForm(forms.Form):
     username = forms.CharField(
@@ -27,3 +28,8 @@ class RegisterForm(UserCreationForm):
             field.widget.attrs['class'] = 'form-control'  
             field.widget.attrs['placeholder'] = f'Entrez votre {field.label.lower()}'
   
+
+class ProfileUpdateForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['bio', 'addresse', 'email', 'tel', 'profile_photo', 'first_name', 'last_name']

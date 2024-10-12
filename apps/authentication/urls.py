@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import AuthView , LogoutView , RegisterView
+from .views import AuthView , LogoutView , RegisterView , ProfileView
 
 
 urlpatterns = [
@@ -23,4 +23,8 @@ urlpatterns = [
         AuthView.as_view(template_name="auth_forgot_password_basic.html"),
         name="auth-forgot-password-basic",
     ),
+
+
+        path("account/settings/", ProfileView.as_view(), name="account-settings"),  # New path for account settings
+
 ]

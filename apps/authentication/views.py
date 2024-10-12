@@ -5,11 +5,36 @@ from django.shortcuts import redirect
 from web_project import TemplateLayout
 from web_project.template_helpers.theme import TemplateHelper
 from .forms import LoginForm , RegisterForm;
+from django.contrib.auth.mixins import LoginRequiredMixin
+from .forms import ProfileUpdateForm
+
+
 """
 This file is a view controller for multiple pages as a module.
 Here you can override the page view layout.
 Refer to auth/urls.py file for more pages.
 """
+
+
+class ProfileView(LoginRequiredMixin, TemplateView):
+    template_name = "account_settings.html"
+
+    def get_context_data(self, **kwargs):
+        context = TemplateLayout.init(self, super().get_context_data(**kwargs))
+        context['user'] = self.request.user  # Pass the authenticated user to the template
+        context['form'] = ProfileUpdateForm(instance=self.request.user)  # Include the profile form
+        context['layout_path'] = TemplateHelper.set_layout("layout_user.html", context)
+        return context
+
+    def post(self, request, *args, **kwargs):
+        form = ProfileUpdateForm(request.POST, request.FILES, instance=request.user)
+        if form.is_valid():
+            form.save()
+            # You can also add a success message here
+            return redirect('account-settings')  # Redirect to the profile page after successful update
+        context = self.get_context_data(**kwargs)
+        context['form'] = form  # Include the form with errors if the update fails
+        return self.render_to_response(context)
 
 
 class AuthView(TemplateView):
