@@ -8,6 +8,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import Group
+from django.db.models import Q
 
 def event_list(request):
     events = Event.objects.all()  # Fetch all events
@@ -70,7 +71,24 @@ def delete_event(request, event_id):
 
 
 def event_listfront(request):
-    events = Event.objects.all()  # Fetch all events
+    # Start with all events
+    events = Event.objects.all()
+
+    # Get the search query and status from the request
+    query = request.GET.get('q', '')
+    status = request.GET.get('status', '')
+
+    # Filter events based on the query
+    if query:
+        events = events.filter(title__icontains=query)  # Adjust filtering as needed
+
+    # Filter events based on the status
+    if status:
+        events = events.filter(status=status)
+
+    # Check if the request is AJAX
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return render(request, 'event_listfront_partial.html', {'events': events})
 
     # Initialize the layout context
     layout_context = TemplateLayout.init(request, {})  
