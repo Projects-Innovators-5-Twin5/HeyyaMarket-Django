@@ -197,3 +197,5 @@ AUTH_USER_MODEL = 'authentication.User'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'  # Make sure this directory exists
+TIME_ZONE = 'UTC'  # or your desired timezone
+USE_TZ = True  # Make sure this is set to True

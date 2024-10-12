@@ -38,12 +38,13 @@
     </div>
 
     <!-- Event Start Date & Time -->
-    <div class="row mb-4">
-        <label class="col-sm-2 col-form-label" for="event-start-datetime">Start Date & Time</label>
-        <div class="col-sm-10">
-            <input type="datetime-local" id="event-start-datetime" class="form-control" name="start_datetime" required />
-        </div>
+<div class="row mb-4">
+    <label class="col-sm-2 col-form-label" for="event-start-datetime">Start Date & Time</label>
+    <div class="col-sm-10">
+        <input type="datetime-local" id="event-start-datetime" class="form-control" name="start_datetime"
+               value="{{ form.start_datetime.value|default:'' }}" required />
     </div>
+</div>
 
     <!-- Event End Date & Time -->
     <div class="row mb-4">

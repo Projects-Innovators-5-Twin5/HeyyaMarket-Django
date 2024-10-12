@@ -9,9 +9,15 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import Group
 from django.db.models import Q
+from django.http import JsonResponse
+import json
+from datetime import datetime, time, date , timedelta 
+from django.utils import timezone
+from django.utils.dateparse import parse_datetime
+from django.utils import timezone  
 
 def event_list(request):
-    events = Event.objects.all()  # Fetch all events
+    events = Event.objects.all()  
 
     # Initialize the layout context
     layout_context = TemplateLayout.init(request, {})  
@@ -22,17 +28,72 @@ def event_list(request):
 
     return render(request, 'event_list.html', layout_context)  # Render with layout context
 
+def calendar_view(request):
+    events = Event.objects.all()  # Fetch all events
 
+    layout_context = TemplateLayout.init(request, {})
+    
+    # Check if the user is authenticated and has the admin role
+    if request.user.is_authenticated:
+        if request.user.role == 'ADMIN':
+            layout_context['layout_path'] = TemplateHelper.set_layout("layout_vertical.html", layout_context)
+        else:
+            layout_context['layout_path'] = TemplateHelper.set_layout("layout_user.html", layout_context)
+    else:
+        layout_context['layout_path'] = TemplateHelper.set_layout("layout_user.html", layout_context)
+
+    layout_context['events'] = events
+
+    return render(request, 'calendar_view.html', layout_context)
+
+
+def calendar_update_event(request, event_id):
+    if request.method == 'POST':
+        event = get_object_or_404(Event, id=event_id)
+        data = json.loads(request.body)
+
+        # Keep the original times and update only the dates
+        start_time = event.start_datetime.time()  # Get the current time of the start datetime
+        end_time = event.end_datetime.time()      # Get the current time of the end datetime
+
+        # Use the full datetime from the request to avoid issues
+        start_datetime = timezone.datetime.fromisoformat(data.get('start'))
+        end_datetime = timezone.datetime.fromisoformat(data.get('end'))
+
+        # Update the start and end datetime while keeping the original time
+        event.start_datetime = timezone.make_aware(datetime.combine(start_datetime.date(), start_time))
+        event.end_datetime = timezone.make_aware(datetime.combine(end_datetime.date(), end_time))
+
+        # Ensure end_datetime is not before start_datetime
+        if event.end_datetime <= event.start_datetime:
+            event.end_datetime = event.start_datetime + timedelta(days=1)  # Adjust if necessary
+
+        event.save()
+
+        return JsonResponse({'success': True, 'event_id': event.id})
+
+    return JsonResponse({'success': False}, status=400)
 
 def create_event(request):
+    start_date = request.GET.get('start_date')  # Get the start_date from the URL query parameters
+    initial_data = {}
+
+    # If start_date is provided, parse it and set it as initial data
+    if start_date:
+        # Parse the date
+        parsed_start_date = parse_datetime(start_date)  
+        if parsed_start_date:  # Check if parsing was successful
+            # Format the date to 'YYYY-MM-DDTHH:MM'
+            initial_data['start_datetime'] = parsed_start_date.strftime('%Y-%m-%dT%H:%M')
+
     if request.method == 'POST':
-        form = EventForm(request.POST, request.FILES)  # Include request.FILES here
+        form = EventForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
             messages.success(request, "Event created successfully.")
             return redirect('event_list')
     else:
-        form = EventForm()
+        form = EventForm(initial=initial_data)  # Pass initial data to the form
     
     layout_context = TemplateLayout.init(request, {})
     layout_context['layout_path'] = TemplateHelper.set_layout("layout_vertical.html", layout_context)

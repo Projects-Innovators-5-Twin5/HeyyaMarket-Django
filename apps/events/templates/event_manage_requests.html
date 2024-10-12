@@ -12,10 +12,10 @@
             <h5 class="mb-0">Manage Participation Requests for "{{ event.title }}"</h5>
         </div>
         <div class="card-body">
-            <div class="col-md-3">
+            <div class="col-md-3 mb-3">
                 <h6>Filter by Status</h6>
                 <form method="GET" action="{% url 'event_manage_requests' event.id %}">
-                    <select name="status" onchange="this.form.submit()" id="selectTypeOpt" class="form-select form-select-sm color-dropdown">
+                    <select name="status" onchange="this.form.submit()" id="selectTypeOpt" class="form-select form-select-sm">
                         <option value="all" {% if request.GET.status == 'all' %}selected{% endif %}>All</option>
                         <option value="pending" {% if request.GET.status == 'pending' %}selected{% endif %}>Pending</option>
                         <option value="confirmed" {% if request.GET.status == 'confirmed' %}selected{% endif %}>Confirmed</option>
@@ -49,9 +49,9 @@
                                 <span class="badge rounded-pill bg-label-secondary">Cancelled</span>
                             {% endif %}
                         </td>
-                        <td>
+                        <td class="d-flex align-items-center">
                             {% if participation.status == 'pending' %}
-                            <form method="POST" style="display:inline;">
+                            <form method="POST" class="me-2">
                                 {% csrf_token %}
                                 <input type="hidden" name="participation_id" value="{{ participation.id }}">
                                 <button type="submit" name="action" value="approve" class="btn btn-success btn-sm">Approve</button>
@@ -60,30 +60,35 @@
                             {% endif %}
                             <!-- Dropdown for changing status -->
                             <div class="dropdown">
-                                <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                                <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown" aria-expanded="false">
                                     <i class="ri-more-2-line"></i>
                                 </button>
-                                <div class="dropdown-menu">
-
-                                    <form method="POST" class="dropdown-item" style="display:inline;">
-                                        {% csrf_token %}
-                                        <input type="hidden" name="participation_id" value="{{ participation.id }}">
-                                        <input type="hidden" name="action" value="approve">
-                                        <button type="submit" class="btn btn-link">Confirm</button>
-                                    </form>
-                                    <form method="POST" class="dropdown-item" style="display:inline;">
-                                        {% csrf_token %}
-                                        <input type="hidden" name="participation_id" value="{{ participation.id }}">
-                                        <input type="hidden" name="action" value="reject">
-                                        <button type="submit" class="btn btn-link text-danger">Reject</button>
-                                    </form>
-                                    <form method="POST" class="dropdown-item" style="display:inline;">
-                                        {% csrf_token %}
-                                        <input type="hidden" name="participation_id" value="{{ participation.id }}">
-                                        <input type="hidden" name="action" value="cancel">
-                                        <button type="submit" class="btn btn-link">Cancel</button>
-                                    </form>
-                                </div>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <form method="POST" class="dropdown-item">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="participation_id" value="{{ participation.id }}">
+                                            <input type="hidden" name="action" value="approve">
+                                            <button type="submit" class="btn btn-link">Confirm</button>
+                                        </form>
+                                    </li>
+                                    <li>
+                                        <form method="POST" class="dropdown-item">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="participation_id" value="{{ participation.id }}">
+                                            <input type="hidden" name="action" value="reject">
+                                            <button type="submit" class="btn btn-link text-danger">Reject</button>
+                                        </form>
+                                    </li>
+                                    <li>
+                                        <form method="POST" class="dropdown-item">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="participation_id" value="{{ participation.id }}">
+                                            <input type="hidden" name="action" value="cancel">
+                                            <button type="submit" class="btn btn-link">Cancel</button>
+                                        </form>
+                                    </li>
+                                </ul>
                             </div>
                         </td>
                     </tr>
