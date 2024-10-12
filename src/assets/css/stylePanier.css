@@ -12,3 +12,37 @@
 .card-total{
     max-height: 230px;
 }
+
+.title-step{
+    font-size: 13px;
+    margin-top: 8px;
+}
+
+.step.active{
+    color:#8C57FF;
+}
+
+.step{
+    cursor: pointer;
+}
+.step2 , .step3 {
+    cursor: pointer;
+}
+
+.step2.active{
+    color:#8C57FF;
+}
+
+.step3.active{
+    color:#8C57FF;
+}
+
+.form-check-paiement{
+    background-color: rgb(240, 239, 239);
+    padding: 3%;
+}
+
+.mode-paiement{
+    font-size: 13px;
+    font-weight: 600;
+}

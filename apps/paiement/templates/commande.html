@@ -3,22 +3,141 @@
 <div class="d-flex gap-8">
   <div class="card mb-6 col-md-8">
     <div class="card-body">
-      <h4>Details du paiement</h4>
+      <div class="d-flex justify-content-around">
+        <div class="d-flex flex-column align-items-center">
+          <i class="fas fa-user step active" style="font-size: 20px"></i>
+          <span class="title-step step active">Profil</span>
+        </div>
+        <i class="ri-arrow-right-s-line mt-2"></i>
+        <div class="d-flex flex-column align-items-center">
+          <i class="fas fa-map-marker-alt step2" style="font-size: 20px"></i>
+          <span class="title-step step2">Contact</span>
+        </div>
+        <i class="ri-arrow-right-s-line mt-2"></i>
+        <div class="d-flex flex-column align-items-center">
+          <i class="fas fa-credit-card step3" style="font-size: 20px"></i>
+          <span class="title-step step3">Paiement</span>
+        </div>
+      </div>
       <hr />
+      <div class="alert alert-danger d-none" role="alert" id="alert-paiement">
+        <span id="text-errorp"></span>
+      </div>
+
+      <div id="infop">
+        <h5>Informations Personnelles</h5>
+        <form class="col-md-12 mx-auto mt-6" action="{% url 'add-commande' %}" method="post">
+         {% csrf_token %}
+          <div class="form-floating form-floating-outline mb-5">
+            <input
+              type="text"
+              class="form-control"
+              id="first_namep"
+              name="first_name"
+              placeholder="First name"
+              value="{{request.user.first_name}}"
+              {% if request.user.first_name %} readonly {% endif %}
+            />
+            <label for="first_namep">First name</label>
+          </div>
+
+          <div class="form-floating form-floating-outline mb-5">
+            <input
+              type="text"
+              class="form-control"
+              id="last_namep"
+              name="last_name"
+              placeholder="Last name"
+              value="{{request.user.last_name}}"
+              {% if request.user.last_name %} readonly {% endif %}
+            />
+            <label for="last_namep">Last name</label>
+          </div>
+
+          <div class="form-floating form-floating-outline mb-6">
+            <input
+              type="email"
+              class="form-control"
+              id="emailp"
+              name="email"
+              placeholder="name@example.com"
+              value="{{request.user.email}}"
+              {% if request.user.email %} readonly {% endif %}
+            />
+            <label for="emailp">Email address</label>
+          </div>
+      </div>
+
+      <div id="adressep" class="d-none">
+        <h5>Contact</h5>
+          <div class="form-floating form-floating-outline mb-5">
+            <input
+              type="text"
+              class="form-control"
+              id="adresse_inputp"
+              name="adresse"
+              placeholder="Entrer votre adresse"
+              value="{{request.user.addresse}}"
+               {% if request.user.adresse %} readonly {% endif %}
+            />
+            <label for="adresse_inputp">Adresse</label>
+          </div>
+          <div class="form-floating form-floating-outline mb-5">
+            <input
+              type="number"
+              class="form-control"
+              id="telp"
+              name="tel"
+              placeholder="Entrer votre téléphone"
+              value="{{request.user.tel}}"
+              {% if request.user.tel %} readonly {% endif %}
+            />
+            <label for="telp">téléphone</label>
+          </div>
+      </div>
+
+      <div id="paiementp" class="d-none">
+        <h5>Mode de paiement</h5>
+          <div class="form-check-paiement">
+            <input name="default-radio-1" class="form-check-input" type="radio" value="livraison" id="defaultRadio1" />
+            <label class="form-check-label" for="defaultRadio1">
+              <span class="mode-paiement">Paiement à la livraison </span>
+            </label>
+          </div>
+          <div class="form-check-paiement mt-4 mb-5">
+            <input name="default-radio-1" class="form-check-input" type="radio" value="carte" id="defaultRadio1" />
+            <label class="form-check-label" for="defaultRadio1">
+              <span class="mode-paiement"> Paiement par carte bancaire</span>
+            </label>
+          </div>
+          <div class="d-flex justify-content-end">
+            <button class="btn btn-primary" type="submit">Commander</button>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
 
   <div class="card card-total mb-6 col-md-4">
     <div class="card-body">
-      <h5>Résumé du Panier</h5>
+      <h6 class="mb-5">{{ cart_items|length }} articles</h6>
+
+      <div class="d-flex mt-2">
+        <span class="d-none d-sm-block" style="font-size: 14px">Sous-Total</span>
+        <span class="d-none d-sm-block ms-auto" id="total" style="font-size: 14px">{{ total }} TND </span>
+      </div>
+      <div class="d-flex mt-2">
+        <span class="d-none d-sm-block" style="font-size: 14px">Livraison</span>
+        <span class="d-none d-sm-block ms-auto" id="livraison" style="font-size: 14px"> {{ livraison }} TND </span>
+      </div>
+      <a href="#" class="d-none mb-8 d-sm-block ms-auto mt-4" style="color: blue; font-size: 14px"
+        >Vous avez un code promo?</a
+      >
       <hr />
       <div class="d-flex">
         <span class="d-none d-sm-block total">Total</span>
         <span class="d-none d-sm-block ms-auto total" id="total">{{ total }} TND </span>
       </div>
-      <span class="d-none d-sm-block ms-auto mt-4">Frais de livraison non inclus</span>
-      <hr />
-      <button class="btn btn-primary w-100" type="submit">Commander</button>
     </div>
   </div>
 </div>

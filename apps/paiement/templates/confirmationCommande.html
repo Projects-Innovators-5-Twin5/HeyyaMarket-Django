@@ -1,0 +1,81 @@
+{% extends layout_path %} {% load static %} {% load i18n %} {% block title %}Account settings - Pages{% endblock %}
+{%block content %}
+<div class="d-flex gap-8">
+  <div class="card mb-6 col-md-12">
+    <div class="card-body text-center">
+      <h4>Confirmation commande</h4>
+      <hr />
+
+      <p>Merci beaucoup ! 😇</p>
+      <p>Votre commande a été passée !</p>
+      <p>
+        Nous avons envoyé un email à <span style="color: blue; font-weight: bold"> {{request.user.email}} </span> avec
+        votre confirmation de commande et votre reçu.
+      </p>
+      <p>
+        Si l'email n'est pas arrivé dans les deux minutes, veuillez vérifier votre dossier de spam pour voir si l'email
+        y a été dirigé.
+      </p>
+      <p>Heure de la commande: {{order.created_at}}</p>
+
+        {% if order_items %} {% for item in order_items %}
+        <hr />
+        <div class="d-flex align-items-start align-items-sm-center gap-5">
+          <img
+            src="{% static 'img/avatars/1.png' %}"
+            alt="user-avatar"
+            class="d-block w-px-100 h-px-100 rounded"
+            id="uploadedAvatar"
+          />
+          <div class="d-flex flex-column">
+            <span class="d-none d-sm-block">{{ item.product.name }} </span>
+            <span class="d-none d-sm-block mt-2">Categorie du produit</span>
+            <span class="d-none d-sm-block mt-4 price">{{ item.product.price }} TND </span>
+          </div>
+
+          <div class="mb-4 d-flex ms-auto">
+            <input
+              id="defaultInput"
+              class="form-control me-8 p-2 mt-2"
+              style="width: 60px"
+              type="number"
+              value="{{ item.quantity }}"
+              readonly
+            />
+            <span class="d-none d-sm-block mt-4 price price-product me-4" id="totalPrice-{{ item.product.id }}"
+              >{{ item.total_price }} TND
+            </span>
+          </div>
+        </div>
+        {% endfor %} {% endif %}
+
+   <hr/>
+        <div class="border card-total mb-6 col-md-4 mt-4 ms-auto">
+          <div class="card-body">
+            <h6>Détails du paiement</h6>
+            <hr />
+            <div class="d-flex">
+              <h6 class="mb-5">{{ order_items|length }} articles</h6>
+            </div>
+            <div class="d-flex justify-content-between">
+              <span>Mode de paiement</span>
+              {% if order.payment_method == 'livraison'%}
+              <span> Sur place </span>
+              {% else %}
+              <span>Par carte</span>
+              {% endif %}
+            </div>
+            <hr />
+            <div class="d-flex">
+              <span class="d-none d-sm-block total">Total</span>
+              <span class="d-none d-sm-block ms-auto total" id="total">{{ order.total_amount }} TND </span>
+            </div>
+          </div>
+        </div>
+
+
+    </div>
+  </div>
+</div>
+
+{%endblock%}

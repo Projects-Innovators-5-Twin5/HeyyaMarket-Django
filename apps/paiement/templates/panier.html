@@ -64,13 +64,19 @@
       <span class="d-none d-sm-block ms-auto mt-4">Frais de livraison non inclus</span>
       <hr />
       {% if user.is_authenticated %}
-      <button class="btn btn-primary w-100" type="submit">
-        <a href="{% url 'commande' %}" style="color: white">Commander</a>
-      </button>
-      {%else %}
-      <button class="btn btn-primary w-100" type="submit">
-        <a href="{% url 'auth-login-basic' %}" style="color: white">Commander</a>
-      </button>
+          {% if cart_items %}
+            <button class="btn btn-primary w-100" type="submit">
+                <a href="{% url 'commande' %}" style="color: white">Commander</a>
+            </button>
+          {% else %}
+              <button class="btn btn-primary w-100" disabled>
+                  Commander
+              </button>
+          {% endif %}
+      {% else %}
+          <button class="btn btn-primary w-100" type="submit">
+            <a href="{% url 'auth-login-basic' %}" style="color: white">Commander</a>
+          </button>
       {%endif%}
     </div>
   </div>

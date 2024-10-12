@@ -19,13 +19,11 @@ class AuthView(TemplateView):
         # A function to init the global layout. It is defined in web_project/__init__.py file
         context = TemplateLayout.init(self, super().get_context_data(**kwargs))
         login_form = LoginForm()
-        register_form = RegisterForm()
         # Update the context
         context.update(
             {
                 "layout_path": TemplateHelper.set_layout("layout_blank.html", context),
                 "login_form": login_form,
-                'register_form':register_form
             }
         )
 
@@ -101,13 +99,8 @@ class RegisterView(TemplateView):
         register_form = RegisterForm(request.POST) 
         if register_form.is_valid():
             user = register_form.save()
-            login(request, user)  
-            if user.role == 'ADMIN':
-                return redirect('index')
-            else:
-                return redirect('landing') 
+            return redirect('auth-login-basic') 
         else:
-            print(register_form.errors)
             context = self.get_context_data(**kwargs)
             context['register_form'] = register_form 
             return self.render_to_response(context)

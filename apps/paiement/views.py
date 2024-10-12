@@ -8,7 +8,9 @@ from django.views import View
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
-from .models import Cart , CartItem
+from .models import Cart , CartItem , Order ,OrderItem
+from decimal import Decimal
+
 
 """
 This file is a view controller for multiple pages as a module.
@@ -74,7 +76,17 @@ class PanierView(TemplateView):
 
         return redirect('panier') 
     
+
     
+def add_to_cart_db(user, product_id,quantity):
+    cart, created = Cart.objects.get_or_create(user=user)
+
+    cart_item, created = CartItem.objects.get_or_create(cart=cart, product_id=product_id)
+    if not created:
+        cart_item.quantity += quantity
+    cart_item.save()
+
+        
 class RemoveFromCartView(View):
     def post(self, request, *args, **kwargs):
         product_id = request.POST.get('product_id')  
@@ -132,6 +144,7 @@ class PaymentView(TemplateView):
         
         cart_items = []
         total = 0
+        livraison = 7.00
 
         user_cart, created = Cart.objects.get_or_create(user=self.request.user)
         for cart_item in user_cart.items.all():  
@@ -143,21 +156,77 @@ class PaymentView(TemplateView):
             total += cart_item.product.price * cart_item.quantity   
 
         context['cart_items'] = cart_items
-        context['total'] = total
+        context['total'] = Decimal(total) + Decimal(livraison)
+        context['livraison'] = livraison
 
         # Update the context
         context.update({
             "layout_path": TemplateHelper.set_layout("layout_user.html", context),
         })
 
-        return context    
+        return context   
+     
+    
+    def post(self, request, *args, **kwargs):
+        user = self.request.user
+        payment_method = request.POST.get('default-radio-1') 
+        user_cart = Cart.objects.get(user=user)
+
+        firstname = request.POST.get('first_name')
+        lastname = request.POST.get('last_name')
+        email = request.POST.get('email')
+        adresse = request.POST.get('adresse')
+        tel = request.POST.get('tel')
+
+        if not user.first_name or not user.last_name or not user.email or not user.addresse or not user.tel:
+            user.first_name = firstname if firstname else user.first_name
+            user.last_name = lastname if lastname else user.last_name
+            user.email = email if email else user.email
+            user.addresse = adresse if adresse else user.addresse
+            user.tel = tel if tel else user.tel
+            user.save()        
+
+        order = Order.objects.create(
+            user=self.request.user,
+            total_amount=self.get_context_data()['total'],
+            payment_method=payment_method,
+            is_paid=(payment_method == "carte") 
+        )
+
+        for cart_item in user_cart.items.all():
+            OrderItem.objects.create(
+                order=order,
+                product=cart_item.product,
+                quantity=cart_item.quantity
+            )
+
+        for cart_item in user_cart.items.all():
+            cart_item.delete()
+
+        return redirect('confirmation-commande', order_id=order.id)
 
 
 
-def add_to_cart_db(user, product_id,quantity):
-    cart, created = Cart.objects.get_or_create(user=user)
+class ConfirmationCommandeView(TemplateView):
 
-    cart_item, created = CartItem.objects.get_or_create(cart=cart, product_id=product_id)
-    if not created:
-        cart_item.quantity += quantity
-    cart_item.save()
+    def get_context_data(self, **kwargs):
+        context = TemplateLayout.init(self, super().get_context_data(**kwargs))
+        order_id = self.kwargs.get('order_id') 
+
+        order_items = []
+        order = Order.objects.get(id=order_id)
+        for order_item in order.items.all():  
+            order_items.append({
+                    'product': order_item.product,
+                    'quantity': order_item.quantity,
+                    'total_price': order_item.product.price * order_item.quantity
+                })
+        context['order_items'] = order_items
+        context['order'] = order
+
+        # Update the context
+        context.update({
+            "layout_path": TemplateHelper.set_layout("layout_user.html", context),
+        })
+
+        return context   
