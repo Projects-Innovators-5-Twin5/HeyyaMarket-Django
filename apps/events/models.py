@@ -10,7 +10,7 @@ class Event(models.Model):
     ]
     
     title = models.CharField(max_length=255)
-    description = models.TextField()
+    description = models.TextField(blank=True)  
     start_datetime = models.DateTimeField()
     end_datetime = models.DateTimeField()
     location = models.CharField(max_length=255)

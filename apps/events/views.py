@@ -15,6 +15,8 @@ from datetime import datetime, time, date , timedelta
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime
 from django.utils import timezone  
+from .nlp_utils import generate_event_description  
+from .nlp_utils1 import generate_event_descriptioncohere  
 
 def event_list(request):
     events = Event.objects.all()  
@@ -89,7 +91,15 @@ def create_event(request):
     if request.method == 'POST':
         form = EventForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save()
+
+            event = form.save(commit=False)
+            
+            # Generate description if none provided
+            if not event.description:
+                event.description = generate_event_descriptioncohere(
+                    event.title, event.start_datetime, event.end_datetime , event.location , event.available_slots   
+                )
+            event.save()
             messages.success(request, "Event created successfully.")
             return redirect('event_list')
     else:
