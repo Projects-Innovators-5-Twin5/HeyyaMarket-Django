@@ -1,0 +1,28 @@
+{% load form_tags %}
+
+<form method="post" enctype="multipart/form-data" action="{% url 'categorie_edit' form.instance.pk %}">  <!-- Important: inclure enctype pour le téléchargement de fichiers -->
+    {% csrf_token %}
+    <div class="row">
+        {% for field in form %}
+            <div class="mb-3 col-md-6">
+                <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                {% if field.name == 'description' %}
+                    <textarea class="form-control" id="{{ field.id_for_label }}" name="{{ field.name }}" rows="1">{{ field.value }}</textarea>
+                {% else %}
+                    {{ field|add_class:"form-control" }}
+                {% endif %}
+                
+                {% if field.help_text %}
+                    <small class="form-text text-muted">{{ field.help_text }}</small>
+                {% endif %}
+                
+                {% for error in field.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+        <div class="d-flex justify-content-end col-md-6" style="align-items:end;">
+            <button type="submit" class="btn btn-primary" style="height:55px;">Enregistrer</button>
+        </div>
+    </div>
+</form>

@@ -1,20 +1,23 @@
-# produits/urls.py
+
 
 from django.urls import path
 from . import views
-
+from django.conf import settings
+from django.conf.urls.static import static
 urlpatterns = [
-    # URLs des Catégories
-    path('categories/', views.CategoryListView.as_view(), name='categorie_list'),
+    path('categories/', views.CategoryView.as_view(), name='categorie_list'),
     path('categorie/<int:pk>/', views.CategoryDetailView.as_view(), name='categorie_detail'),
     path('categorie/ajouter/', views.CategoryCreateView.as_view(), name='categorie_add'),
-    path('categorie/<int:pk>/modifier/', views.CategoryUpdateView.as_view(), name='categorie_edit'),
+    path('categories/<int:pk>/modifier/', views.CategoryUpdateView.as_view(), name='categorie_edit'),
     path('categorie/<int:pk>/supprimer/', views.CategoryDeleteView.as_view(), name='categorie_delete'),
 
-    # URLs des Produits
-    path('produits/', views.ProductListView.as_view(), name='product_list'),
+    path('produits/', views.ProductView.as_view(), name='product_list'),
+    path('front/produits/', views.ProductFrontView.as_view(), name='product_front'),
+
     path('produit/<int:pk>/', views.ProductDetailView.as_view(), name='product_detail'),
     path('produit/ajouter/', views.ProductCreateView.as_view(), name='product_add'),
     path('produit/<int:pk>/modifier/', views.ProductUpdateView.as_view(), name='product_edit'),
     path('produit/<int:pk>/supprimer/', views.ProductDeleteView.as_view(), name='product_delete'),
 ]
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

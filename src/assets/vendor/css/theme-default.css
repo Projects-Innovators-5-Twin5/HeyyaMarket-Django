@@ -55,9 +55,9 @@ a.bg-primary:hover, a.bg-primary:focus {
 .pagination-outline-primary.pagination li.active > a:not(.page-link),
 .pagination-outline-primary.pagination li.active > a:not(.page-link):hover,
 .pagination-outline-primary.pagination li.active > a:not(.page-link):focus {
-  border-color: #8c57ff !important;
-  color: #8c57ff !important;
-  background-color: #ede4ff !important;
+  border-color: #eb907c!important;
+  color: white !important;
+  background-color: #eb907c!important;
 }
 .pagination-outline-primary .page-item.active .page-link.waves-effect .waves-ripple,
 .pagination-outline-primary.pagination li.active > a:not(.page-link).waves-effect .waves-ripple {
@@ -604,7 +604,7 @@ a:hover {
   border-color: #fff !important;
 }
 .bg-menu-theme .menu-item.active > .menu-link:not(.menu-toggle) {
-  background: linear-gradient(270deg, #8c57ff 0%, #c3a8ff 100%);
+  background: linear-gradient(270deg, #eb907c 0%, #e7bdb3  100%);
 }
 .bg-menu-theme.menu-horizontal .menu-sub > .menu-item.active > .menu-link:not(.menu-toggle), .bg-menu-theme.menu-horizontal .menu-sub > .menu-item.active > .menu-link:not(.menu-toggle)::before {
   background: #ede4ff;

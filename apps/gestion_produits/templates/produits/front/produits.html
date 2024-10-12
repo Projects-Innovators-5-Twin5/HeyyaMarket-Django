@@ -1,0 +1,376 @@
+{% extends layout_path %}
+{% load static %}
+{% load i18n %}
+{% load form_tags %}
+
+{% block title %}Gestion des Catégories{% endblock %}
+
+{% block vendor_js %}
+{{ block.super }}
+<script src="{% static 'vendor/libs/masonry/masonry.js' %}"></script>
+<link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet">
+<style>
+  .hero-section {
+    margin-top: -2rem;
+    background: url("{% static 'img/backgrounds/page-title-1.webp' %}") no-repeat center center;
+    background-size: cover;
+    height: 60vh;
+    display: flex;
+    align-items: center;
+    color: white;
+  }
+  .hero-content {
+    text-align: left;
+    border-radius: 10px;
+  }
+  .user-content {
+    padding-left: 0rem !important;
+    padding-right: 0rem !important;
+  }
+
+  .product-card {
+    position: relative;
+    margin-bottom: 2rem;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    overflow: hidden;
+    cursor: pointer;
+  }
+  .product-card img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    border-radius: 0.5rem;
+  }
+  .product-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.2);
+  }
+  .product-card .hover-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+  }
+  .product-card:hover .hover-content {
+    opacity: 1;
+  }
+  .hover-content .icons {
+    display: flex;
+    gap: 1rem;
+  }
+  .hover-content .icon {
+    color: white;
+    font-size: 1.5rem;
+    transition: transform 0.3s ease-in-out;
+  }
+  .hover-content .icon:hover {
+    transform: scale(1.2);
+  }
+
+  .hover-content .product-name {
+    background-color: #eb907c; 
+    width: 100%;
+    margin-top: 50%;
+    color: black; 
+    font-size: 1.2rem; 
+    text-align: center; 
+    padding: 0.5rem 1rem; 
+    transition: opacity 0.3s ease-in-out;
+    opacity: 0; 
+  }
+
+  .product-card:hover .product-name {
+    opacity: 1; 
+  }
+
+  .search-bar {
+    padding: 2rem 0;
+    background-color: #f8f9fa;
+  }
+  .search-bar form {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  .search-bar .input-group {
+    display: flex;
+    border-radius: 50px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  .search-bar .form-control {
+    border: none;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+  }
+  .search-bar .btn {
+    background-color: #f7a400;
+    border: none;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  .search-bar .btn:hover {
+    background-color: #d18e00;
+  }
+
+  /* Styles pour la section des catégories */
+  .categories-section {
+    padding: 2rem 0;
+    background-color: #ffffff;
+  }
+  .categories-section .category {
+    text-align: center;
+    padding: 1rem;
+    border: 1px solid #e3e6f0;
+    border-radius: 0.5rem;
+    transition: box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out;
+    cursor: pointer;
+  }
+  .categories-section .category:hover {
+    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
+    transform: translateY(-5px);
+  }
+  .categories-section .category img {
+    width: 50px;
+    height: 50px;
+    margin-bottom: 0.5rem;
+  }
+  .categories-section .category p {
+    margin: 0;
+    font-weight: 600;
+    color: #343a40;
+  }
+
+ .product-section {
+    background: white;
+  }
+.product-section .section-title {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  .product-section .section-title h2 {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #343a40;
+  }
+
+  /* Styles pour le filtre de catégorie */
+  .filter-buttons {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  .filter-buttons button {
+    margin: 0 0.5rem;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  .filter-buttons button:hover {
+    background-color: #eb907c;
+    color: white;
+  }
+</style>
+{% endblock vendor_js %}
+
+{% block content %}
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-6">
+          <div class="hero-content">
+            <h1 class="display-4 ml-4">Produits</h1>
+            <nav aria-label="breadcrumb">
+              <ol class="breadcrumb breadcrumb-style2">
+                <li class="breadcrumb-item">
+                  <a href="#">Accueil</a>
+                </li>
+                <li class="breadcrumb-item">
+                  <a href="#">Produits</a>
+                </li>
+              </ol>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Barre de Recherche -->
+  <section class="search-bar">
+    <div class="container">
+      <form method="GET">
+        <div class="input-group">
+          <input type="text" class="form-control" placeholder="Rechercher des produits..." name="query" required>
+          <button type="submit" class="btn btn-primary"><i class="ri-search-line"></i></button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- Section des Catégories -->
+  <section class="categories-section">
+    <div class="container">
+     <div class="section-title text-center">
+        <h2>Nos Catégories</h2>
+        <p style="margin: 2rem 8rem;">
+            Découvrez nos catégories variées qui mettent en valeur l'artisanat et le savoir-faire unique de nos artisans. 
+            Chaque catégorie représente une collection soigneusement sélectionnée de produits qui allient tradition et modernité, 
+            offrant ainsi des pièces uniques pour embellir votre quotidien. 
+            Explorez notre sélection et trouvez l'inspiration pour vos projets de décoration ou pour offrir des cadeaux 
+            qui ont une véritable signification.
+        </p>
+    </div>
+      <div class="row">
+        <!-- Boucle à travers les catégories dynamiques -->
+        {% for category in categories %}
+        <div class="col-md-3 col-sm-6 mb-4">
+          <div class="category" data-category="{{ category.nom }}">
+            <img src="../../media/{{ category.image }}" alt="{{ category.nom }}" />  <!-- Utilisez une image dynamique -->
+            <p>{{ category.nom }}</p>  <!-- Nom de la catégorie dynamique -->
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  <!-- Section des Produits -->
+  <section class="product-section py-5">
+    <div class="container">
+      <div class="section-title">
+        <h2>Nos Produits</h2>
+      </div>
+
+      <!-- Filtre par catégories -->
+      <div class="filter-buttons">
+        <button class="filter-button" data-filter="all">Tous</button>
+        {% for category in categories %}
+          <button class="filter-button" data-filter="{{ category.nom }}">{{ category.nom }}</button>
+        {% endfor %}
+      </div>
+
+      <div class="row">
+        <!-- Boucle à travers les produits dynamiques -->
+        {% for product in produits %}
+        <div class="col-lg-3 col-md-6 mb-4 product-item" data-category="{{ product.category }}">
+          <div class="product-card">
+            <img src="../../media/{{ product.image }}" alt="{{ product.nom }}">
+            <div class="hover-content">
+              <div class="icons">
+                <a href="{{ product.detail_url }}" class="icon" title="Voir Détails"><i class="ri-eye-line"></i></a>
+                <a href="#" class="icon" title="Ajouter au Panier"><i class="ri-shopping-cart-line"></i></a>
+                <a href="#" class="icon" title="Ajouter aux Favoris"><i class="ri-heart-line"></i></a>
+              </div>
+              <p class="product-name">{{ product.nom }}</p> <!-- Nom du produit avec fond distinct -->
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    <!-- Pagination -->
+<nav aria-label="Page navigation">
+    <ul class="pagination pagination-rounded pagination-outline-primary justify-content-center">
+        {% if produits.has_previous %}
+            <!-- First Page Link -->
+            <li class="page-item first">
+                <a class="page-link" href="?page=1">
+                    <i class="tf-icon ri-skip-back-mini-line ri-22px"></i>
+                </a>
+            </li>
+            <!-- Previous Page Link -->
+            <li class="page-item prev">
+                <a class="page-link" href="?page={{ produits.previous_page_number }}">
+                    <i class="tf-icon ri-arrow-left-s-line ri-22px"></i>
+                </a>
+            </li>
+        {% else %}
+            <!-- Disabled First and Previous Links if there's no previous page -->
+            <li class="page-item first disabled">
+                <a class="page-link" href="javascript:void(0);">
+                    <i class="tf-icon ri-skip-back-mini-line ri-22px"></i>
+                </a>
+            </li>
+            <li class="page-item prev disabled">
+                <a class="page-link" href="javascript:void(0);">
+                    <i class="tf-icon ri-arrow-left-s-line ri-22px"></i>
+                </a>
+            </li>
+        {% endif %}
+
+        <!-- Page Numbers -->
+        {% for i in produits.paginator.page_range %}
+            {% if produits.number == i %}
+                <li class="page-item active">
+                    <a class="page-link" href="javascript:void(0);">{{ i }}</a>
+                </li>
+            {% else %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+                </li>
+            {% endif %}
+        {% endfor %}
+
+        {% if produits.has_next %}
+            <!-- Next Page Link -->
+            <li class="page-item next">
+                <a class="page-link" href="?page={{ produits.next_page_number }}">
+                    <i class="tf-icon ri-arrow-right-s-line ri-22px"></i>
+                </a>
+            </li>
+            <!-- Last Page Link -->
+            <li class="page-item last">
+                <a class="page-link" href="?page={{ produits.paginator.num_pages }}">
+                    <i class="tf-icon ri-skip-forward-mini-line ri-22px"></i>
+                </a>
+            </li>
+        {% else %}
+            <!-- Disabled Next and Last Links if there's no next page -->
+            <li class="page-item next disabled">
+                <a class="page-link" href="javascript:void(0);">
+                    <i class="tf-icon ri-arrow-right-s-line ri-22px"></i>
+                </a>
+            </li>
+            <li class="page-item last disabled">
+                <a class="page-link" href="javascript:void(0);">
+                    <i class="tf-icon ri-skip-forward-mini-line ri-22px"></i>
+                </a>
+            </li>
+        {% endif %}
+    </ul>
+</nav>
+  </section>
+
+  <script>
+    const filterButtons = document.querySelectorAll('.filter-button');
+    const productItems = document.querySelectorAll('.product-item');
+
+    filterButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        const filterValue = button.getAttribute('data-filter');
+
+        productItems.forEach(item => {
+          const itemCategory = item.getAttribute('data-category');
+
+          if (filterValue === 'all' || itemCategory === filterValue) {
+            item.style.display = 'block';
+          } else {
+            item.style.display = 'none';
+          }
+        });
+      });
+    });
+  </script>
+{% endblock content %}

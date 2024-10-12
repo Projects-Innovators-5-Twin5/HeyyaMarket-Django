@@ -9,6 +9,44 @@
 {% block vendor_js %}
 {{ block.super }}
 <script src="{% static 'vendor/libs/masonry/masonry.js' %}"></script>
+<style>
+
+    .card-horizontal {
+        transition: transform 0.2s, box-shadow 0.2s, opacity 0.3s; /* Transition douce */
+    }
+    .card-underline-hover:hover {
+      color:black;
+      text-decoration :underline;
+
+    }
+    .card-horizontal:hover {
+        opacity: 0.8;
+        transform: scale(1.05); 
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Ombre pour donner un effet de profondeur */
+    }
+
+    /* CSS pour les éléments de la liste */
+    .list-group-item {
+        transition: background-color 0.3s, color 0.3s; /* Transition douce */
+    }
+
+    .list-group-item:hover {
+        background-color: #f8f9fa; /* Changement de couleur de fond */
+        color: #007bff; /* Changement de couleur de texte */
+    }
+</style>
+<style>
+    /* Ajoutez ici l'effet hover choisi */
+    .hero-card {
+    transition: opacity 0.3s;
+    }
+
+    .hero-card:hover {
+           opacity: 0.8; /* Réduit l'opacité au survol */
+    }
+
+    /* Vous pouvez également utiliser d'autres effets ici */
+</style>
 {% endblock vendor_js %}
 
 {% block content %}
@@ -16,7 +54,7 @@
 <div class="bg-hero pb-4">
   <div class="row mb-12 g-6 user-content">
       <div class="col-md-3 col-lg-3">
-          <div class="card mb-6" style="height: 70% !important;"> <!-- Added h-100 for equal height -->
+          <div class="card mb-6 hero-card" style="height: 70% !important;"> <!-- Added h-100 for equal height -->
               <h6 class="mt-2 text-dark" style="margin: 5rem 0rem 0rem 1.3rem !important;">
                   <i class="ri-list-check ri-24px"></i> Nos catégories
               </h6>
@@ -45,7 +83,7 @@
       </div>
 
       <div class="card-group mb-6 col-md-9 col-lg-9" style="padding:0;">
-          <div class="card h-100"> <!-- Added h-100 for equal height -->
+          <div class="card h-100 hero-card cursor-pointer"> <!-- Added h-100 for equal height -->
               <img class="card-img-top" src="{% static 'img/elements/5.jpg' %}" alt="Card image cap" />
               <div class="card-body">
                   <h5 class="card-title">Card title</h5>
@@ -55,7 +93,7 @@
                   <small class="text-muted">Last updated 3 mins ago</small>
               </div>
           </div>
-          <div class="card h-100"> <!-- Added h-100 for equal height -->
+          <div class="card h-100 hero-card cursor-pointer"> <!-- Added h-100 for equal height -->
               <img class="card-img-top" src="{% static 'img/elements/1.jpg' %}" alt="Card image cap" />
               <div class="card-body">
                   <h5 class="card-title">Card title</h5>
@@ -76,37 +114,42 @@
   <!--<h5 class="pb-1 mb-6">Top vente</h5>-->
   <div class="row mb-12 g-6">
     <div class="col-md">
-      <div class="card">
+      <div class="card card-horizontal">
         <div class="row g-0">
           <div class="col-md-4">
             <img class="card-img card-img-left" src="{% static 'img/elements/12.jpg' %}" alt="Card image" />
           </div>
           <div class="col-md-8">
             <div class="card-body">
-              <h5 class="card-title">Card title</h5>
-              <p class="card-text">
+              <div class="card-underline-hover cursor-pointer">
+                 <h5 class="card-title ">Card title</h5>
+              <p class="card-text ">
                 This is a wider card with supporting text below as a natural lead-in to additional content. This content
                 is a
                 little bit longer.
               </p>
-              <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+              </div>
+             
+              <p class="card-text card-date"><small class="text-muted">Last updated 3 mins ago</small></p>
             </div>
           </div>
         </div>
       </div>
     </div>
     <div class="col-md">
-      <div class="card">
+      <div class="card card-horizontal">
         <div class="row g-0">
           <div class="col-md-8">
             <div class="card-body">
-              <h5 class="card-title">Card title</h5>
-              <p class="card-text">
+              <div class="card-underline-hover cursor-pointer">
+                 <h5 class="card-title card-underline-hover">Card title</h5>
+              <p class="card-text card-underline-hover">
                 This is a wider card with supporting text below as a natural lead-in to additional content. This content
                 is a
                 little bit longer.
               </p>
-              <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+              </div>
+              <p class="card-text card-date"><small class="text-muted">Last updated 3 mins ago</small></p>
             </div>
           </div>
           <div class="col-md-4">
@@ -123,7 +166,7 @@
   <h6 class="pb-1 mb-4 text-muted ">Grid Card</h6>
   <div class="row row-cols-1 row-cols-md-3 g-6 mb-6">
     <div class="col">
-      <div class="card h-100">
+      <div class="card h-100 card-vertical">
         <img class="card-img-top" src="{% static 'img/elements/2.jpg' %}" alt="Card image cap" />
         <div class="card-body">
           <h5 class="card-title">Card title</h5>
@@ -132,7 +175,7 @@
       </div>
     </div>
     <div class="col">
-      <div class="card h-100">
+      <div class="card h-100 card-vertical">
         <img class="card-img-top" src="{% static 'img/elements/13.jpg' %}" alt="Card image cap" />
         <div class="card-body">
           <h5 class="card-title">Card title</h5>

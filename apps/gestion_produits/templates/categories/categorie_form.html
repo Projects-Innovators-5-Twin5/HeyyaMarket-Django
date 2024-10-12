@@ -1,23 +1,37 @@
- {% extends layout_path %}
+{% load form_tags %}
 
-{% load static %}
-{% load i18n %}
+<div class="p-2">
+    <h5 class="text-center">{% if form.instance.pk %}Modifier Catégorie{% else %}Ajouter Catégorie{% endif %}</h5>
+    <div class="card-body">
+        <form id="categoryForm" method="post" enctype="multipart/form-data" >  <!-- Important: include enctype for file upload -->
+            {% csrf_token %}
+            <div class="row">  <!-- Start a new row for the form fields -->
+                {% for field in form %}
+                    <div class="mb-3 col-md-6">  <!-- Use col-md-6 here -->
+                        <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                        
+                        {# Customize the description field with two rows #}
+                        {% if field.name == 'description' %}
+                            <textarea class="form-control" id="{{ field.id_for_label }}" name="{{ field.name }}" rows="1"></textarea>
+                        {% else %}
+                            {{ field|add_class:"form-control" }}  <!-- Render other fields normally -->
+                        {% endif %}
+                        
+                        {% if field.help_text %}
+                            <small class="form-text text-muted">{{ field.help_text }}</small>
+                        {% endif %}
+                        
+                        {% for error in field.errors %}
+                            <div class="text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+                   <div class="d-flex justify-content-end col-md-6" style="align-items:end;">
+                <button type="submit" class="btn btn-primary" style="height:55px;">Enregistrer</button>
+            </div>
+            </div> <!-- End of row -->
 
-{% block title %}Landing{% endblock %}
-
-
-{% block vendor_js %}
-{{ block.super }}
-<script src="{% static 'vendor/libs/masonry/masonry.js' %}"></script>
-{% endblock vendor_js %}
-
-{% block content %}
-    <div class="card p-4">
-    <div class="card-header"><h3>{% if form.instance.pk %}Modifier Catégorie{% else %}Ajouter Catégorie{% endif %}</h3></div>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-success">Enregistrer</button>
-    </form>
+         
+        </form>
     </div>
-{% endblock %}
+</div>

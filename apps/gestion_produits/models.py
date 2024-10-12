@@ -1,9 +1,13 @@
 from django.db import models
 from django.urls import reverse
 
+from django.db import models
+from django.urls import reverse
+
 class Category(models.Model):
     nom = models.CharField(max_length=100, unique=True)
     description = models.TextField(blank=True, null=True)
+    image = models.ImageField(upload_to='categories/', blank=True, null=True)  
 
     class Meta:
         verbose_name = "Categorie"
@@ -14,6 +18,7 @@ class Category(models.Model):
 
     def get_absolute_url(self):
         return reverse('categorie_detail', args=[str(self.id)])
+
 
 class Product(models.Model):
     nom = models.CharField(max_length=200)
