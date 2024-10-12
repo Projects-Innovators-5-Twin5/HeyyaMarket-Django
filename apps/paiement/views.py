@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.shortcuts import render , redirect
 from django.shortcuts import get_object_or_404
 from django.views.generic import TemplateView
@@ -10,6 +11,7 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 from .models import Cart , CartItem , Order ,OrderItem
 from decimal import Decimal
+import stripe;
 
 
 """
@@ -137,14 +139,16 @@ class UpdateCartView(View):
         return JsonResponse({'success': True, 'cart': request.session.get('cart', {})})
     
 
-class PaymentView(TemplateView):
 
+class CommandeView(TemplateView):
+    
     def get_context_data(self, **kwargs):
         context = TemplateLayout.init(self, super().get_context_data(**kwargs))
         
         cart_items = []
         total = 0
         livraison = 7.00
+        total_amount = 0
 
         user_cart, created = Cart.objects.get_or_create(user=self.request.user)
         for cart_item in user_cart.items.all():  
@@ -154,12 +158,12 @@ class PaymentView(TemplateView):
                     'total_price': cart_item.product.price * cart_item.quantity
                 })
             total += cart_item.product.price * cart_item.quantity   
-
+        
+        total_amount = Decimal(total) + Decimal(livraison)
         context['cart_items'] = cart_items
-        context['total'] = Decimal(total) + Decimal(livraison)
+        context['total'] = total_amount
         context['livraison'] = livraison
 
-        # Update the context
         context.update({
             "layout_path": TemplateHelper.set_layout("layout_user.html", context),
         })
@@ -190,7 +194,7 @@ class PaymentView(TemplateView):
             user=self.request.user,
             total_amount=self.get_context_data()['total'],
             payment_method=payment_method,
-            is_paid=(payment_method == "carte") 
+            is_paid=False
         )
 
         for cart_item in user_cart.items.all():
@@ -203,8 +207,10 @@ class PaymentView(TemplateView):
         for cart_item in user_cart.items.all():
             cart_item.delete()
 
-        return redirect('confirmation-commande', order_id=order.id)
-
+        if(payment_method == 'livraison'):
+           return redirect('confirmation-commande', order_id=order.id)
+        else:
+           return redirect('payment', order_id=order.id)
 
 
 class ConfirmationCommandeView(TemplateView):
@@ -230,3 +236,66 @@ class ConfirmationCommandeView(TemplateView):
         })
 
         return context   
+    
+
+    
+class PaymentView(TemplateView):
+
+    stripe.api_key = settings.STRIPE_SECRET_KEY
+    
+    def get_context_data(self, **kwargs):
+        context = TemplateLayout.init(self, super().get_context_data(**kwargs))
+
+        order_id = self.kwargs.get('order_id') 
+        order_items = []
+        TND_TO_EUR_RATE = Decimal('0.30')
+
+        order = Order.objects.get(id=order_id)
+        for order_item in order.items.all():  
+            order_items.append({
+                    'product': order_item.product,
+                    'quantity': order_item.quantity,
+                    'total_price': order_item.product.price * order_item.quantity
+                })
+        
+        total_in_eur = order.total_amount * TND_TO_EUR_RATE
+        total_amount_in_eur = int(total_in_eur * 100)
+
+        # Créer un PaymentIntent
+        payment_intent = stripe.PaymentIntent.create(
+            amount=total_amount_in_eur,
+            currency='eur',  
+            payment_method_types=['card'],
+        )
+
+        context['order'] = order
+        context['total'] = order.total_amount
+        context['order_items'] = order_items
+        context['client_secret'] = payment_intent.client_secret  
+
+        context.update({
+            "layout_path": TemplateHelper.set_layout("layout_user.html", context),
+        })
+
+        return context       
+    
+
+class UpdateOrderStatusView(View):
+    @csrf_exempt  
+    def post(self, request, *args, **kwargs):
+        try:
+            data = json.loads(request.body)
+            order_id = data.get('order_id')  
+            
+            order = Order.objects.get(id=order_id)
+            order.is_paid = True
+            order.save()
+            
+            return JsonResponse({'success': True})
+        
+        except Order.DoesNotExist:
+            return JsonResponse({'error': 'Order not found'}, status=404)
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)

@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import PanierView , RemoveFromCartView ,UpdateCartView , PaymentView , ConfirmationCommandeView
+from .views import PanierView , RemoveFromCartView ,UpdateCartView , CommandeView , ConfirmationCommandeView,PaymentView,UpdateOrderStatusView
 
 
 
@@ -29,13 +29,13 @@ urlpatterns = [
   
     path(
         "commande/",
-        PaymentView.as_view(template_name="commande.html"),
+        CommandeView.as_view(template_name="commande.html"),
         name="commande",
     ),
 
     path(
         "add-commande/",
-        PaymentView.as_view(template_name="commande.html"),
+        CommandeView.as_view(template_name="commande.html"),
         name="add-commande",
     ),
       path(
@@ -43,4 +43,13 @@ urlpatterns = [
         ConfirmationCommandeView.as_view(template_name="confirmationCommande.html"),
         name="confirmation-commande",
     ),
+    path(
+        "payment/<int:order_id>/",
+        PaymentView.as_view(template_name="paiement.html"),
+        name="payment",
+    ),
+     path(
+        "update-statusPayment/", 
+        UpdateOrderStatusView.as_view(), 
+        name='update-statusPayment'),
 ]
