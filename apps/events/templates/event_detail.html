@@ -1,11 +1,12 @@
 {% extends layout_path %}
 
 {% load static %}
-{% load i18n %}
+<link rel="stylesheet" type="text/css" href="{% static 'src/assets/css/eventdetails.css' %}">
 
 {% block title %}Event Details{% endblock %}
 
 {% block content %}
+
 <div class="col-xxl">
     <div class="card mb-6">
         <div class="card-header d-flex justify-content-between align-items-center">
@@ -47,7 +48,6 @@
                 {% endif %}
             </p>
             
-            <p>User is authenticated: {{ request.user.is_authenticated }}</p>
 
             <div>
                 <a href="{% url 'event_listfront' %}" class="btn btn-primary">Back to Events</a>  <!-- Button to go back to the event list -->
@@ -79,7 +79,7 @@
                             {% endif %}
                         </td>
                         <td>
-                            {% if participant.user == request.user and participant.status == 'confirmed' %}
+                            {% if participant.user == request.user and participant.status == 'confirmed' and  event.status == 'scheduled' %}
                                 <form method="POST" action="{% url 'cancel_participation' participant.id %}" style="display:inline;">
                                     {% csrf_token %}
                                     <button type="submit" class="btn btn-danger btn-sm">Cancel</button>
@@ -96,5 +96,39 @@
         </table>
 
     </div>
+<!-- Feedback Section -->
+{% if user.is_authenticated and participation and participation.status == 'confirmed' and event.status == 'finished' %}
+    <h5 class="mt-4">How was the Event ? Give Your Feedback </h5>
+    <form method="POST">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="feedback" class="form-label">Feedback</label>
+            <textarea class="form-control" id="feedback" name="feedback" rows="3" required></textarea>
+        </div>
+        <div class="mb-3">
+            <label for="rating" class="form-label">Rating</label>
+            <div class="star-rating">
+                <input type="radio" id="star1" name="rating" value="1" />
+                <label for="star1" title="1 star"></label>
+
+                <input type="radio" id="star2" name="rating" value="2" />
+                <label for="star2" title="2 stars"></label>
+
+
+                <input type="radio" id="star3" name="rating" value="3" />
+                <label for="star3" title="3 stars"></label>
+
+
+                <input type="radio" id="star4" name="rating" value="4" />
+                <label for="star4" title="4 stars"></label>
+
+                <input type="radio" id="star5" name="rating" value="5" required />
+                <label for="star5" title="5 stars"></label>
+
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit Feedback</button>
+    </form>
+{% endif %}
 </div>
 {% endblock %}

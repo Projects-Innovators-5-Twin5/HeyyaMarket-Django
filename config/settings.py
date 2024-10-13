@@ -33,6 +33,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 # If using the .env file for SECRET_KEY then comment below random SECRET_KEY generation code.
 SECRET_KEY = os.environ.get("SECRET_KEY")
+SECRET_KEY_COHERE = os.environ.get("SECRET_KEY_COHERE")
+SECRET_KEY_IMAGE_DESCRIPTION = os.environ.get("SECRET_KEY_IMAGE_DESCRIPTION")
+
 if not SECRET_KEY:
     SECRET_KEY = "".join(random.choice(string.ascii_lowercase) for i in range(32))
 
@@ -170,7 +173,7 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 
 
 STATICFILES_DIRS = [
-    BASE_DIR / "src" / "assets",
+    BASE_DIR / "src" / "assets" / "css",
 ]
 
 # Default URL on which Django application runs for specific environment

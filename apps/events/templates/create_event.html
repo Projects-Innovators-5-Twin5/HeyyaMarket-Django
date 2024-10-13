@@ -18,85 +18,137 @@
             <small class="text-muted float-end">Fill in the event details</small>
         </div>
         <div class="card-body">
-<form method="POST" enctype="multipart/form-data">
-    {% csrf_token %}
-    
-    <!-- Event Title -->
-    <div class="row mb-4">
-        <label class="col-sm-2 col-form-label" for="event-title">Event Title</label>
-        <div class="col-sm-10">
-            <input type="text" class="form-control" id="event-title" name="title" placeholder="Event Title"  required />
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <!-- Event Title -->
+                <div class="row mb-4">
+                    <label class="col-sm-2 col-form-label" for="event-title">Event Title</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="event-title" name="title" placeholder="Event Title"  required />
+                    </div>
+                </div>
+                
+                <!-- Event Description -->
+                <div class="row mb-4">
+                    <label class="col-sm-2 col-form-label" for="event-description">Description</label>
+                    <div class="col-sm-10">
+                        <textarea id="event-description" class="form-control" name="description" placeholder="Event Description" ></textarea>
+                    </div>
+                </div>
+
+                <!-- Event Start Date & Time -->
+                <div class="row mb-4">
+                    <label class="col-sm-2 col-form-label" for="event-start-datetime">Start Date & Time</label>
+                    <div class="col-sm-10">
+                        <input type="datetime-local" id="event-start-datetime" class="form-control" name="start_datetime"
+                               value="{{ form.start_datetime.value|default:'' }}" required />
+                    </div>
+                </div>
+
+                <!-- Event End Date & Time -->
+                <div class="row mb-4">
+                    <label class="col-sm-2 col-form-label" for="event-end-datetime">End Date & Time</label>
+                    <div class="col-sm-10">
+                        <input type="datetime-local" id="event-end-datetime" class="form-control" name="end_datetime" required />
+                    </div>
+                </div>
+
+                <!-- Event Location -->
+                <div class="row mb-4">
+                    <label class="col-sm-2 col-form-label" for="event-location">Location</label>
+                    <div class="col-sm-10">
+                        <input type="text" id="event-location" class="form-control" name="location" placeholder="Event Location"  required />
+                    </div>
+                </div>
+
+                <!-- Available Slots -->
+                <div class="row mb-4">
+                    <label class="col-sm-2 col-form-label" for="available-slots">Available Slots</label>
+                    <div class="col-sm-10">
+                        <input type="number" id="available-slots" class="form-control" name="available_slots"  placeholder="Number of available slots" required />
+                    </div>
+                </div>
+
+                <!-- Status Field -->
+                <div class="row mb-4">
+                    <label class="col-sm-2 col-form-label" for="event-status">Status</label>
+                    <div class="col-sm-10">
+                        <select id="event-status" class="form-select" name="status" required>
+                            <option value="scheduled" selected>Scheduled</option>
+                            <option value="finished">Finished</option>
+                            <option value="cancelled">Cancelled</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Event Image -->
+                <div class="row mb-4">
+                    <label class="col-sm-2 col-form-label" for="event-image">Event Image</label>
+                    <div class="col-sm-10">
+                        <input type="file" id="event-image" class="form-control" name="image" accept="image/*" />
+                    </div>
+                </div>
+
+                <!-- Event Type (Multiple Choice) -->
+                <div class="row mb-4">
+                    <label class="col-sm-2 col-form-label" for="event-type">Event Type</label>
+                    <div class="col-sm-10">
+                        {% for choice in form.event_type.field.choices %}
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="event_type" value="{{ choice.0 }}" id="event_type_{{ forloop.counter }}">
+                            <label class="form-check-label" for="event_type_{{ forloop.counter }}">{{ choice.1 }}</label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Target Audience (Multiple Choice) -->
+                <div class="row mb-4">
+                    <label class="col-sm-2 col-form-label" for="target-audience">Target Audience</label>
+                    <div class="col-sm-10">
+                        {% for choice in form.target_audience.field.choices %}
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="target_audience" value="{{ choice.0 }}" id="target_audience_{{ forloop.counter }}">
+                            <label class="form-check-label" for="target_audience_{{ forloop.counter }}">{{ choice.1 }}</label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Event Theme (Multiple Choice) -->
+                <div class="row mb-4">
+                    <label class="col-sm-2 col-form-label" for="event-theme">Event Theme</label>
+                    <div class="col-sm-10">
+                        {% for choice in form.event_theme.field.choices %}
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="event_theme" value="{{ choice.0 }}" id="event_theme_{{ forloop.counter }}">
+                            <label class="form-check-label" for="event_theme_{{ forloop.counter }}">{{ choice.1 }}</label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Level (Multiple Choice) -->
+                <div class="row mb-4">
+                    <label class="col-sm-2 col-form-label" for="level">Level</label>
+                    <div class="col-sm-10">
+                        {% for choice in form.level.field.choices %}
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="level" value="{{ choice.0 }}" id="level_{{ forloop.counter }}">
+                            <label class="form-check-label" for="level_{{ forloop.counter }}">{{ choice.1 }}</label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="row justify-content-end">
+                    <div class="col-sm-10">
+                        <button type="submit" class="btn btn-primary">Create Event</button>
+                    </div>
+                </div>
+            </form>
         </div>
-    </div>
-    
-    <!-- Event Description -->
-    <div class="row mb-4">
-        <label class="col-sm-2 col-form-label" for="event-description">Description</label>
-        <div class="col-sm-10">
-            <textarea id="event-description" class="form-control" name="description" placeholder="Event Description" ></textarea>
-        </div>
-    </div>
-
-    <!-- Event Start Date & Time -->
-<div class="row mb-4">
-    <label class="col-sm-2 col-form-label" for="event-start-datetime">Start Date & Time</label>
-    <div class="col-sm-10">
-        <input type="datetime-local" id="event-start-datetime" class="form-control" name="start_datetime"
-               value="{{ form.start_datetime.value|default:'' }}" required />
-    </div>
-</div>
-
-    <!-- Event End Date & Time -->
-    <div class="row mb-4">
-        <label class="col-sm-2 col-form-label" for="event-end-datetime">End Date & Time</label>
-        <div class="col-sm-10">
-            <input type="datetime-local" id="event-end-datetime" class="form-control" name="end_datetime" required />
-        </div>
-    </div>
-
-    <!-- Event Location -->
-    <div class="row mb-4">
-        <label class="col-sm-2 col-form-label" for="event-location">Location</label>
-        <div class="col-sm-10">
-            <input type="text" id="event-location" class="form-control" name="location" placeholder="Event Location"  required />
-        </div>
-    </div>
-
-    <!-- Available Slots -->
-    <div class="row mb-4">
-        <label class="col-sm-2 col-form-label" for="available-slots">Available Slots</label>
-        <div class="col-sm-10">
-            <input type="number" id="available-slots" class="form-control" name="available_slots"  placeholder="Number of available slots" required />
-        </div>
-    </div>
-
-    <!-- Status Field -->
-    <div class="row mb-4">
-        <label class="col-sm-2 col-form-label" for="event-status">Status</label>
-        <div class="col-sm-10">
-            <select id="event-status" class="form-select" name="status" required>
-                <option value="scheduled" selected>Scheduled</option>
-                <option value="finished">Finished</option>
-                <option value="cancelled">Cancelled</option>
-            </select>
-        </div>
-    </div>
-
-
-        <div class="row mb-4">
-        <label class="col-sm-2 col-form-label" for="event-image">Event Image</label>
-        <div class="col-sm-10">
-            <input type="file" id="event-image" class="form-control" name="image" accept="image/*" /> <!-- File input for image -->
-        </div>
-    </div>
-
-
-    <div class="row justify-content-end">
-        <div class="col-sm-10">
-            <button type="submit" class="btn btn-primary">Create Event</button>
-        </div>
-    </div>
-</form>
     </div>
 </div>
 {% endblock %}

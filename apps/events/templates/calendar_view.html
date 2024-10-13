@@ -44,6 +44,13 @@
         initialView: 'dayGridMonth',
         editable: {% if request.user.is_authenticated and request.user.role == 'ADMIN' %}true{% else %}false{% endif %},
         droppable: {% if request.user.is_authenticated and request.user.role == 'ADMIN' %}true{% else %}false{% endif %},
+        {% if request.user.is_authenticated and request.user.role == 'ADMIN' %}
+        dateClick: function(info) {
+            var selectedDate = info.dateStr;
+            window.location.href = `/events/create/?start_date=${selectedDate}`;
+        },
+        {% endif %}
+
         timeZone: 'UTC',
         events: [
             {% for event in events %} 
@@ -71,11 +78,7 @@
             }
         },
 
-        // Handle date click
-        dateClick: function(info) {
-    var selectedDate = info.dateStr;  
-    window.location.href = `/events/create/?start_date=${selectedDate}`;
-        },
+       
 
         eventDrop: function(info) {
             updateEvent(info.event);

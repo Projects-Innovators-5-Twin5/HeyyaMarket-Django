@@ -1,0 +1,24 @@
+.star-rating {
+    display: flex;
+    direction: row-reverse;
+    justify-content: flex-end;
+}
+
+.star-rating input {
+    display: none; /* Hide the radio buttons */
+}
+
+.star-rating label {
+    font-size: 2rem; /* Size of the stars */
+    color: #ddd; /* Default star color */
+    cursor: pointer;
+}
+
+.star-rating input:checked ~ label {
+    color: #f8c200; /* Color for checked stars */
+}
+
+.star-rating label:hover,
+.star-rating label:hover ~ label {
+    color: #f8c200; /* Color for stars on hover */
+}
