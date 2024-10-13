@@ -69,6 +69,7 @@ INSTALLED_APPS = [
     "apps.form_layouts",
     "apps.tables",
     "apps.landing",
+    "apps.ModuleReclamationReponse.reclamations"
 
 
 ]

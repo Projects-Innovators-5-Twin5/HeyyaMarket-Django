@@ -1,0 +1,132 @@
+{% extends layout_path %}
+{% load static %}
+{% load i18n %}
+{% block title %}Liste des Réclamations{% endblock %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+{% block content %}
+<div class="container">
+<div class="row mb-3">
+  <div class="col-12">
+    <div class="card" style="border: 1px solid #e0e0e0; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+      <div class="card-body">
+        <div class="row mb-4">
+          <div class="col-md-8">
+            <input
+              type="text"
+              class="form-control"
+              id="searchInput"
+              placeholder="Rechercher une réclamation..."
+              onkeyup="filterReclamations()"
+              style="border-radius: 25px; padding: 10px 15px; border: 1px solid #ced4da; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); transition: border-color 0.3s;"
+              onfocus="this.style.borderColor='#007bff';"
+              onblur="this.style.borderColor='#ced4da';"
+            />
+          </div>
+          <div class="col-md-4 text-end">
+            <a href="{% url 'ajouter_reclamation' %}" class="btn btn-primary"
+               style="border-radius: 25px; padding: 10px 20px; font-weight: 500; transition: background-color 0.3s; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);"
+               onmouseover="this.style.backgroundColor='#0056b3';"
+               onmouseout="this.style.backgroundColor='#007bff';">
+              <i class="bi bi-plus"></i> Ajouter une Réclamation
+            </a>
+          </div>
+        </div>
+
+
+
+  </div>
+
+  <div class="row container">
+    <!-- Loop over reclamations to display cards -->
+    {% for reclamation in reclamations %}
+    <div class="col-md-3 mb-4 reclamation-card" >
+    <div class="card" style="height: auto; border: 1px solid #e0e0e0; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+        <img class="card-img-top" src="{% static 'img/elements/image.png' %}" alt="Card image" style="height: 150px; object-fit: cover; border-radius: 10px 10px 0 0;">
+        <div class="card-body" style="padding: 15px;">
+            <h5 class="card-title" style="margin-bottom: 10px;">{{ reclamation.titre }}</h5>
+            <p class="card-text" style="margin-bottom: 10px;">{{ reclamation.description }}</p>
+            <strong>Statut :</strong>
+            <span class="badge rounded-pill
+                {% if reclamation.statut == 'resolue' %} bg-label-success
+                {% elif reclamation.statut == 'refusé' %} bg-label-danger
+                {% elif reclamation.statut == 'en_attente' %} bg-label-primary
+                {% else %} bg-label-secondary
+                {% endif %} me-1">
+                {{ reclamation.statut }}
+            </span>
+        </div>
+        <div class="card-footer" style="padding: 10px; display: flex; justify-content: space-between; align-items: center;">
+            <small class="text-muted">{{ reclamation.date_creation }}</small>
+            <button type="button" class="badge rounded-pill" style="background-color: #cdcdcd; padding: 5px 10px;" data-bs-toggle="modal" data-bs-target="#reclamationModal-{{ reclamation.id }}">
+                Réponse
+            </button>
+        </div>
+    </div>
+</div>
+
+
+      <!-- Modal for each reclamation -->
+      <div class="modal fade" id="reclamationModal-{{ reclamation.id }}" tabindex="-1" aria-labelledby="modalLabel-{{ reclamation.id }}" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 10px; border: none;">
+            <div class="modal-header" style="background-color: #f8f9fa; border-bottom: 1px solid #e9ecef;">
+                <h5 class="modal-title" id="modalLabel-{{ reclamation.id }}" style="color: #343a40;">Réponse à la Réclamation</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" style="padding: 20px;">
+                <!-- Display the response related to this reclamation -->
+                {% for reponse in reclamation.reponse_set.all %}
+                    <div style="margin-bottom: 20px; padding: 15px; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+                        <p style="font-weight: bold; color: #495057;"><strong>Réponse par:</strong> {{ reponse.utilisateur.username }}</p>
+                        <p style="font-weight: bold; color: #6c757d;"><strong>Date de réponse:</strong> {{ reponse.date_creation }}</p>
+                        <p style="color: #495057;"><strong>Réponse:</strong> {{ reponse.texte }}</p>
+                    </div>
+                {% empty %}
+                    <p style="text-align: center; color: #6c757d;">Aucune réponse disponible pour cette réclamation.</p>
+                {% endfor %}
+            </div>
+            <div class="modal-footer" style="border-top: 1px solid #e9ecef;">
+                <button type="button" class="btn btn-primary"  data-bs-dismiss="modal">Fermer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Modal to add a new reclamation -->
+<div class="modal fade" id="addReclamationModal" tabindex="-1" aria-labelledby="addReclamationModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addReclamationModalLabel">Ajouter une Réclamation</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+    </div>
+  </div>
+</div>
+</div>
+    </div>
+  </div>
+</div>
+<script>
+  function filterReclamations() {
+    let input = document.getElementById('searchInput');
+    let filter = input.value.toLowerCase();
+    let cards = document.getElementsByClassName('reclamation-card');
+
+    for (let i = 0; i < cards.length; i++) {
+      let title = cards[i].getElementsByClassName('card-title')[0].innerText.toLowerCase();
+      if (title.includes(filter)) {
+        cards[i].style.display = '';
+      } else {
+        cards[i].style.display = 'none';
+      }
+    }
+  }
+</script>
+
+{% endblock %}

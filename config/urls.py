@@ -21,7 +21,7 @@ from web_project.views import SystemView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    
+
     path("", include("apps.landing.urls")),
 
     # Dashboard urls
@@ -58,6 +58,9 @@ urlpatterns = [
     path("", include("apps.tables.urls")),
     ## user app pages
     path("", include("apps.landing.urls")),
+
+
+    path("reclamations/", include('apps.ModuleReclamationReponse.reclamations.urls')),
 
 ]
 

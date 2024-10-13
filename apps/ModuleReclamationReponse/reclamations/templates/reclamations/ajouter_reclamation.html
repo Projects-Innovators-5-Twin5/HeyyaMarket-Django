@@ -1,0 +1,82 @@
+{% extends layout_path %}
+{% load static %}
+{% load i18n %}
+{% block title %}Ajouter une Réclamation{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-6">
+    <div class="card mb-6">
+      <h5 class="card-header">Ajouter une réclamation</h5>
+      <div class="card-body demo-vertical-spacing demo-only-element">
+        <form method="post" action="{% url 'ajouter_reclamation' %}">
+          <!-- Ajoutez cette ligne -->
+          {% csrf_token %}
+          <!-- Ajoutez le token CSRF pour la sécurité -->
+          <small class="text-light fw-medium d-block">Titre</small>
+          <div class="input-group input-group-merge speech-to-text mb-3">
+            <input
+              type="text"
+              name="titre"
+              class="form-control"
+              placeholder="Donner le titre de votre réclamation"
+              required
+            />
+            <span class="input-group-text">
+              <i class="ri-mic-line ri-20px cursor-pointer text-to-speech-toggle"></i>
+            </span>
+          </div>
+
+          <small class="text-light fw-medium d-block">Description</small>
+          <div class="input-group input-group-merge speech-to-text mb-3">
+            <textarea
+              name="description"
+              class="form-control"
+              aria-label="With textarea"
+              placeholder="Écrire votre réclamation"
+              required
+            ></textarea>
+            <span class="input-group-text">
+              <i class="ri-mic-line ri-20px cursor-pointer text-to-speech-toggle"></i>
+            </span>
+          </div>
+
+        <div class="mb-4">
+  <label class="block text-sm font-medium text-gray-700 mb-2">Priorité</label>
+  <div class="flex items-center space-x-4">
+    <!-- Low Priority -->
+    <div class="flex items-center">
+      <input class="form-radio h-4 w-4 text-green-600 border-gray-300 focus:ring-green-500" type="radio" name="priorite" id="priorite_basse" value="basse" checked />
+      <label for="priorite_basse" class="ml-2 block text-sm text-gray-900">Basse</label>
+    </div>
+    <!-- Medium Priority -->
+    <div class="flex items-center">
+      <input class="form-radio h-4 w-4 text-yellow-500 border-gray-300 focus:ring-yellow-400" type="radio" name="priorite" id="priorite_moyenne" value="moyenne" />
+      <label for="priorite_moyenne" class="ml-2 block text-sm text-gray-900">Moyenne</label>
+    </div>
+    <!-- High Priority -->
+    <div class="flex items-center">
+      <input class="form-radio h-4 w-4 text-red-600 border-gray-300 focus:ring-red-500" type="radio" name="priorite" id="priorite_elevee" value="elevee" />
+      <label for="priorite_elevee" class="ml-2 block text-sm text-gray-900">Élevée</label>
+    </div>
+  </div>
+</div>
+
+
+          <button type="submit" class="btn btn-primary">Ajouter la réclamation</button>
+          <!-- Ajoutez le bouton de soumission -->
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Image Section -->
+  <div class="col-md-6">
+    <div class="card mb-6"> <!-- Added a card structure for the image -->
+      <div class="card-body p-0"> <!-- Removed padding to ensure the image fits -->
+        <img src="{% static 'img/elements/image.png' %}" class="img-fluid" alt="Image" style="object-fit: cover; height: 410px; width: 100%;"> <!-- Ensured image fits the card -->
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
