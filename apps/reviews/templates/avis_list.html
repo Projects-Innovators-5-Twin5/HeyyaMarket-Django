@@ -128,7 +128,43 @@
                         </button>
                     </form>
                 </div>
-
+ <!-- Modal pour modifier l'avis -->
+ <div class="modal fade" id="editReviewModal{{ avis.id }}" tabindex="-1" aria-labelledby="editReviewModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title" id="editReviewModalLabel">Modifier l'Avis</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+              <form method="POST">
+                  {% csrf_token %}
+                  <input type="hidden" name="avis_id" value="{{ avis.id }}">
+                  <div class="mb-3">
+                      <label for="id_text" class="form-label">Votre avis :</label>
+                      <textarea id="id_text" name="text" class="form-control" required>{{ avis.text }}</textarea>
+                  </div>
+                  <div class="mb-3">
+                      <label for="id_rating" class="form-label">Note :</label>
+                      <div class="star-rating">
+                          <input type="radio" id="5-stars-edit{{ avis.id }}" name="rating" value="5" {% if avis.rating == 5 %}checked{% endif %} required />
+                          <label for="5-stars-edit{{ avis.id }}" class="fa fa-star"></label>
+                          <input type="radio" id="4-stars-edit{{ avis.id }}" name="rating" value="4" {% if avis.rating == 4 %}checked{% endif %} />
+                          <label for="4-stars-edit{{ avis.id }}" class="fa fa-star"></label>
+                          <input type="radio" id="3-stars-edit{{ avis.id }}" name="rating" value="3" {% if avis.rating == 3 %}checked{% endif %} />
+                          <label for="3-stars-edit{{ avis.id }}" class="fa fa-star"></label>
+                          <input type="radio" id="2-stars-edit{{ avis.id }}" name="rating" value="2" {% if avis.rating == 2 %}checked{% endif %} />
+                          <label for="2-stars-edit{{ avis.id }}" class="fa fa-star"></label>
+                          <input type="radio" id="1-star-edit{{ avis.id }}" name="rating" value="1" {% if avis.rating == 1 %}checked{% endif %} />
+                          <label for="1-star-edit{{ avis.id }}" class="fa fa-star"></label>
+                      </div>
+                  </div>
+                  <button type="submit" name="avis_edit" class="btn btn-success"><i class="fas fa-paper-plane"></i> Soumettre les modifications</button>
+              </form>
+          </div>
+      </div>
+  </div>
+</div>
                 <!-- Commentaires -->
                 <div class="mt-3" id="avis-{{ avis.id }}">
                     <h6>Commentaires :</h6>
@@ -140,30 +176,28 @@
                                 <i class="fas fa-trash-alt" style="cursor: pointer;" onclick="confirmDeleteComment({{ commentaire.id }}, {{ avis.id }})"></i>
                             </div>
 
-                            <!-- Modal pour éditer le commentaire -->
-                            <div class="modal fade" id="editCommentModal{{ commentaire.id }}" tabindex="-1" aria-labelledby="editCommentModalLabel{{ commentaire.id }}" aria-hidden="true">
-                                <div class="modal-dialog">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title" id="editCommentModalLabel{{ commentaire.id }}">Modifier le Commentaire</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <form method="POST">
-                                                {% csrf_token %}
-                                                <input type="hidden" name="commentaire_id" value="{{ commentaire.id }}">
-                                                <div class="mb-3">
-                                                    <label for="id_text_edit_comment" class="form-label">Votre commentaire :</label>
-                                                    <textarea id="id_text_edit_comment" name="text" class="form-control" rows="2" required>{{ commentaire.text }}</textarea>
-                                                </div>
-                                                <button type="submit" name="edit_comment_submit" class="btn btn-warning">
-                                                    <i class="fas fa-edit"></i> Modifier le commentaire
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                            <!-- Modal pour modifier le commentaire -->
+                        <div class="modal fade" id="editCommentModal{{ commentaire.id }}" tabindex="-1" aria-labelledby="editCommentModalLabel{{ commentaire.id }}" aria-hidden="true">
+                          <div class="modal-dialog">
+                              <div class="modal-content">
+                                  <div class="modal-header">
+                                      <h5 class="modal-title" id="editCommentModalLabel{{ commentaire.id }}">Modifier le Commentaire</h5>
+                                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                  </div>
+                                  <div class="modal-body">
+                                      <form method="POST">
+                                          {% csrf_token %}
+                                          <input type="hidden" name="commentaire_id" value="{{ commentaire.id }}">
+                                          <div class="mb-3">
+                                              <label for="id_commentaire_text" class="form-label">Votre commentaire :</label>
+                                              <textarea id="id_commentaire_text" name="text" class="form-control" required>{{ commentaire.text }}</textarea>
+                                          </div>
+                                          <button type="submit" name="commentaire_edit" class="btn btn-warning"><i class="fas fa-save"></i> Enregistrer les modifications</button>
+                                      </form>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
                         {% endfor %}
                     </div>
                     <div class="hidden-comments">

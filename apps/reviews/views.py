@@ -18,8 +18,8 @@ def avis_list(request):
     commentaire_form = CommentaireForm()
 
     if request.method == 'POST':
-        # Soumission du formulaire d'avis
         if 'avis_submit' in request.POST:
+            # Soumission du formulaire d'avis
             avis_form = AvisForm(request.POST)
             if avis_form.is_valid():
                 new_avis = avis_form.save(commit=False)
@@ -28,8 +28,8 @@ def avis_list(request):
                 new_avis.save()
                 return redirect('avis_list')
 
-        # Soumission du formulaire de commentaire
         elif 'commentaire_submit' in request.POST:
+            # Soumission du formulaire de commentaire
             avis_id = request.POST.get('avis_id')
             avis_instance = get_object_or_404(Avis, id=avis_id)
             commentaire_form = CommentaireForm(request.POST)
@@ -49,7 +49,16 @@ def avis_list(request):
                 avis_form.save()
                 return redirect('avis_list')
 
-        # Suppression de l'avis
+        # Soumission du formulaire de modification de commentaire
+        elif 'commentaire_edit' in request.POST:
+            commentaire_id = request.POST.get('commentaire_id')
+            commentaire_instance = get_object_or_404(Commentaire, id=commentaire_id)
+            commentaire_form = CommentaireForm(request.POST, instance=commentaire_instance)
+            if commentaire_form.is_valid():
+                commentaire_form.save()
+                return redirect('avis_list')
+
+          # Suppression de l'avis
         elif 'avis_delete' in request.POST:
             avis_id = request.POST.get('avis_id')
             avis_instance = get_object_or_404(Avis, id=avis_id)
@@ -76,6 +85,7 @@ def avis_list(request):
     })
 
     return render(request, 'avis_list.html', context)
+
 
 def stats_avis(request):
     total_avis = Avis.objects.count()  # Nombre total d'avis
