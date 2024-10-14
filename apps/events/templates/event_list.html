@@ -10,20 +10,44 @@
     <div class="card mb-6">
         <div class="card-header d-flex align-items-center justify-content-between">
             <h5 class="mb-0">Event List</h5>
-                    <div>
-
-            <a href="{% url 'calendar_view' %}" class="btn btn-secondary"><i class="ri-calendar-line me-1"></i>See Calendar</a>
-           
-           
-            <a href="{% url 'create_event' %}" class="btn btn-primary">Create New Event</a>
+            <div>
+                <a href="{% url 'calendar_view' %}" class="btn btn-secondary"><i class="ri-calendar-line me-1"></i>See Calendar</a>
+                <a href="{% url 'create_event' %}" class="btn btn-primary">Create New Event</a>
+            </div>
         </div>
-                </div>
 
         <div class="card-body">
+  <div class="row mb-4 justify-content-center">
+        <div class="col-md-8">
+
+    <form class="navbar-search form-inline" id="navbar-search-main">
+        <div class="input-group input-group-merge search-bar">
+            <input type="text" id="search-input" name="q" class="form-control" placeholder="Search events..." value="{{ request.GET.q }}" style="width: 80%;">
+
+            <!-- Add the status filter dropdown nested within the input group -->
+            <select id="status-filter" name="status" class="form-select" style="width: 20%;">
+                <option value="">All</option>
+                <option value="scheduled" {% if request.GET.status == 'scheduled' %}selected{% endif %}>Scheduled</option>
+                <option value="finished" {% if request.GET.status == 'finished' %}selected{% endif %}>Finished</option>
+                <option value="cancelled" {% if request.GET.status == 'cancelled' %}selected{% endif %}>Cancelled</option>
+            </select>
+        </div>
+
+            <div class="input-group mt-2">
+                <input type="date" id="start_datetime" name="start_datetime" class="form-control" value="{{ request.GET.start_datetime }}" style="width: 48%;">
+                <input type="date" id="end_datetime" name="end_datetime" class="form-control" value="{{ request.GET.end_datetime }}" style="width: 48%; margin-left: 4%;">
+            </div>
+
+    </form>
+</div>
+</div>
+
+
+
             <table class="table">
                 <thead>
                     <tr>
-                    <th>Image</th> 
+                        <th>Image</th>
                         <th>Title</th>
                         <th>Description</th>
                         <th>Start Date & Time</th>
@@ -34,65 +58,14 @@
                         <th>Actions</th> <!-- Added Actions header -->
                     </tr>
                 </thead>
-                <tbody>
-                    {% for event in events %}
-                    <tr>
-                                            <td>
-                            {% if event.image %}
-                                <img src="{{ event.image.url }}" alt="{{ event.title }}" style="width: 50px; height: auto;" />  <!-- Display image as a thumbnail -->
-                            {% else %}
-                                <span>No Image</span>  <!-- Fallback if no image exists -->
-                            {% endif %}
-                        </td>
-
-                        <td>{{ event.title }}</td>
-                        <td>{{ event.description|truncatewords:20 }}</td>
-                        <td>{{ event.start_datetime }}</td>
-                        <td>{{ event.end_datetime }}</td>
-                        <td>{{ event.location }}</td>
-                        <td>{{ event.available_slots }}</td>
-        <td>
-            {% if event.status == 'scheduled' %}
-                <span class="badge rounded-pill bg-label-info me-1">Scheduled</span>
-            {% elif event.status == 'finished' %}
-                <span class="badge rounded-pill bg-label-success me-1">Finished</span>
-            {% elif event.status == 'cancelled' %}
-                <span class="badge rounded-pill bg-label-warning me-1">Cancelled</span>
-            {% else %}
-                <span class="badge rounded-pill bg-label-secondary me-1">Pending</span>
-            {% endif %}
-        </td>
-        
-<td>
-    <div class="dropdown">
-        <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
-            <i class="ri-more-2-line"></i>
-        </button>
-        <div class="dropdown-menu">
-            <a class="dropdown-item" href="{% url 'update_event' event.id %}">
-                <i class="ri-pencil-line me-1"></i> Edit
-            </a>
-            <a class="dropdown-item text-danger" href="#" onclick="openDeleteModal({{ event.id }})">
-                <i class="ri-delete-bin-6-line me-1"></i> Delete
-            </a>
-                  <a class="dropdown-item" href="{% url 'event_manage_requests' event.id %}">
-                        <i class="ri-group-line me-1"></i> View Participants
-                                    </a>
-
-        </div>
-    </div>
-</td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="8" class="text-center">No events found.</td> <!-- Adjusted colspan -->
-                    </tr>
-                    {% endfor %}
+                <tbody id="event-table-body">
+                    {% include 'event_list_partial.html' with events=events %}
                 </tbody>
             </table>
         </div>
     </div>
 </div>
+
 <!-- Confirmation Modal -->
 <div class="modal fade" id="deleteConfirmationModal" tabindex="-1" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -111,6 +84,7 @@
         </div>
     </div>
 </div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 let deleteEventId;
 
@@ -142,7 +116,44 @@ document.getElementById('confirmDeleteBtn').addEventListener('click', function()
         alert('Network error. Please try again.');
     });
 });
-</script>
+$(document).ready(function() {
+    function fetchEvents() {
+        let query = $('#search-input').val();
+        let status = $('#status-filter').val();
+        let startDate = $('#start_datetime').val();
+        let endDate = $('#end_datetime').val();
 
+        $.ajax({
+            url: '{% url "event_list" %}', // Update with the correct URL for the event list view
+            data: {
+                'q': query,
+                'status': status,
+                'start_datetime': startDate,
+                'end_datetime': endDate
+            },
+            success: function(data) {
+                $('#event-table-body').html(data); // Update table body with the partial view
+            },
+            error: function(xhr, status, error) {
+                console.error('AJAX Error: ' + status + ' - ' + error);
+            }
+        });
+    }
+
+    // Listen for input events on the search box and filter dropdowns
+    $('#search-input').on('input', function() {
+        fetchEvents();
+    });
+
+    $('#status-filter').on('change', function() {
+        fetchEvents();
+    });
+
+    $('#start_datetime, #end_datetime').on('change', function() {
+        fetchEvents();
+    });
+});
+
+</script>
 
 {% endblock %}

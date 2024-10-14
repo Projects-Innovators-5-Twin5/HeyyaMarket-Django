@@ -26,8 +26,25 @@
                         {% csrf_token %}
                         <button type="submit" class="btn btn-primary">Request to Participate Again</button>
                     </form>
-                {% endif %}
-                            </div>
+{% elif event.status == 'finished' %}
+    <p class="text-muted">
+        Average Rating:
+        {% if average_rating is not None %}
+            <span class="badge bg-label-primary">{{ average_rating }} / 5</span>
+        {% else %}
+            <span class="badge bg-label-secondary">No Ratings</span>
+        {% endif %}
+    </p>
+
+        <p class="text-muted">
+        Attendance Percentage:
+        <span class="badge bg-label-info">{{ attendance_percentage|floatformat:1 }}%</span> <!-- Display attendance percentage -->
+    </p>
+
+{% endif %}
+
+
+                 </div>
         </div>
         <img class="card-img-top" src="{{ event.image.url }}" alt="{{ event.title }}" style="height: 300px; object-fit: cover;">  <!-- Display event image -->
         <div class="card-body">
@@ -46,7 +63,7 @@
                     <span class="badge rounded-pill bg-label-secondary me-1">Pending</span>
                 {% endif %}
             </p>
-            
+
 
             <div>
                 <a href="{% url 'event_listfront' %}" class="btn btn-primary">Back to Events</a>  <!-- Button to go back to the event list -->

@@ -1,0 +1,48 @@
+{% extends layout_path %}
+
+{% load static %}
+{% load i18n %}
+
+{% block title %}Vendor Requests - Dashboard {% endblock %}
+
+{% block page_js %}
+{{ block.super }}
+<script src="{% static 'js/pages-account-settings-account.js' %}"></script>
+{% endblock page_js %}
+
+{% block content %}
+<h2>Vendor Requests</h2>
+
+{% if vendor_requests %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in vendor_requests %}
+                <tr>
+                    <td>{{ user.username }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>
+                        <form action="{% url 'accept-vendor-request' user.pk %}" method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-success">Accept</button>
+                        </form>
+                        <form action="{% url 'reject-vendor-request' user.pk %}" method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger">Reject</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>No vendor requests at this time.</p>
+{% endif %}
+
+{% endblock %}
