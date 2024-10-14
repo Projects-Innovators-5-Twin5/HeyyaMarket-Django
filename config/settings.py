@@ -173,7 +173,7 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 
 
 STATICFILES_DIRS = [
-    BASE_DIR / "src" / "assets" / "css",
+    BASE_DIR / "src" / "assets",
 ]
 
 # Default URL on which Django application runs for specific environment
@@ -202,3 +202,13 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'  # Make sure this directory exists
 TIME_ZONE = 'UTC'  # or your desired timezone
 USE_TZ = True  # Make sure this is set to True
+
+
+
+# Email settings for Gmail SMTP
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'tektaitektai7@gmail.com'  # Replace with your Gmail address
+EMAIL_HOST_PASSWORD = 'jiva rlyt bqba ozzb'  # Replace with your Gmail password

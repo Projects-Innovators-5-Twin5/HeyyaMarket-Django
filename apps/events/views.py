@@ -22,6 +22,10 @@ import requests
 import base64
 from .imageutils import generate_event_image
 from .descriptionutils import generate_event_descriptionhug
+from django.conf import settings  
+from django.core.mail import send_mail, EmailMultiAlternatives
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 
 
 generate_event_descriptionhug
@@ -313,6 +317,24 @@ def event_manage_requests(request, event_id):
                 event.available_slots -= 1  
                 messages.success(request, f"Participation request from {participation.user.username} approved.")
                 event.save()  
+                # Render the email template
+                html_content = render_to_string('emails/eventparticipation_confirmation.html', {
+                    'user': participation.user,
+                    'event': event,
+                })
+                text_content = strip_tags(html_content)  # Fallback plain text content
+
+                # Create an email message object with both HTML and plain text
+                email = EmailMultiAlternatives(
+                    subject='Participation Confirmation',
+                    body=text_content,
+                    from_email=settings.EMAIL_HOST_USER,
+                    to=[participation.user.email]
+                )
+
+                # Attach the HTML content
+                email.attach_alternative(html_content, "text/html")
+                email.send()  # Send the email
             else:
                 messages.error(request, "No available slots for this event.")
         elif action == 'reject':
