@@ -1,0 +1,81 @@
+{% extends layout_path %} {% load static %} {% load i18n %} {% block title %}Account settings - Pages{% endblock %}
+{%block content %}
+<div class="d-flex gap-8">
+  <div class="card mb-6 col-md-12">
+    <div class="card-body">
+      <h4>Details de la commande</h4>
+      <hr />
+
+      <div class="border card-total1 shadow mb-8 col-md-12 mt-4">
+        <div class="card-body">
+          <h6>Commande n° {{order.id}}</h6>
+          <hr />
+
+          <p class="d-none d-sm-block ms-auto">
+            <span class="fw-bold">Nom:</span> {{ user.first_name}} {{user.last_name }}
+          </p>
+          <p class="d-none d-sm-block ms-auto"><span class="fw-bold">Email:</span> {{ user.email}}</p>
+          <p class="d-none d-sm-block ms-auto"><span class="fw-bold">Tel:</span> {{ user.tel}}</p>
+          <p class="d-none d-sm-block ms-auto"><span class="fw-bold">Adresse:</span> {{ user.addresse}}</p>
+          <hr />
+          <div class="d-flex justify-content-between mb-3">
+            <span>Etat</span>
+            {% if order.is_paid %}
+            <span> Payé </span>
+            {% else %}
+            <span>Non payé</span>
+            {% endif %}
+          </div>
+
+          <div class="d-flex justify-content-between">
+            <span>Mode de paiement</span>
+            {% if order.payment_method == 'livraison'%}
+            <span> Sur place </span>
+            {% else %}
+            <span>Par carte</span>
+            {% endif %}
+          </div>
+
+          <hr />
+          <div class="d-flex">
+            <span class="d-none d-sm-block total">Total</span>
+            <span class="d-none d-sm-block ms-auto total" id="total">{{ order.total_amount }} TND </span>
+          </div>
+        </div>
+      </div>
+      <h5>Articles</h5>
+      {% if order_items %} {% for item in order_items %}
+      <hr />
+      <div class="d-flex align-items-start align-items-sm-center gap-5">
+        <img
+          src="{% static 'img/avatars/1.png' %}"
+          alt="user-avatar"
+          class="d-block w-px-100 h-px-100 rounded"
+          id="uploadedAvatar"
+        />
+        <div class="d-flex flex-column">
+          <span class="d-none d-sm-block">{{ item.product.name }} </span>
+          <span class="d-none d-sm-block mt-2">Categorie du produit</span>
+          <span class="d-none d-sm-block mt-4 price">{{ item.product.price }} TND </span>
+        </div>
+
+        <div class="mb-4 d-flex ms-auto">
+          <input
+            id="defaultInput"
+            class="form-control me-8 p-2 mt-2"
+            style="width: 60px"
+            type="number"
+            value="{{ item.quantity }}"
+            readonly
+          />
+          <span class="d-none d-sm-block mt-4 price price-product me-4" id="totalPrice-{{ item.product.id }}"
+            >{{ item.total_price }} TND
+          </span>
+        </div>
+      </div>
+      {% endfor %} {% endif %}
+    </div>
+  </div>
+</div>
+
+{%endblock%}

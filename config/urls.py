@@ -60,6 +60,7 @@ urlpatterns = [
 
    path("produits/", include("apps.gestion_produits.urls")),
 
+    path("", include("apps.paiement.urls")),
 
 ]
 

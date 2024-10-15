@@ -1,0 +1,68 @@
+{% extends layout_path %} {% load static %} {% load i18n %} {% block title %}Account settings - Pages{% endblock %}
+{%block content %}
+<div class="card mb-6 col-md-12">
+  <div class="card-body">
+    {% if request.user.is_authenticated and request.user.role == 'CLIENT' %}
+    <h4>Historique de vos commandes <span></span></h4>
+    {% else %}
+    <h4>Historique des commandes <span></span></h4>
+    {%endif%}
+    <hr />
+
+    {% if request.user.is_authenticated and request.user.role == 'CLIENT' %}
+    <p>Vous trouverez ici vos commandes passées depuis la création de votre compte</p>
+    {% else %}
+    <p>Vous trouverez ici toutes les commandes des clients</p>
+    {%endif%}
+
+    <div class="table-responsive text-nowrap">
+      <table class="table">
+        <thead class="table-dark">
+          <tr>
+            <th>Num commande</th>
+            <th>Date</th>
+            <th>Prix total</th>
+            <th>Paiement</th>
+            <th>Etat</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody class="table-border-bottom-0 table-hover">
+          {% if orders %} {% for order in orders %}
+          <tr>
+            <td>{{order.id}}</td>
+            <td>{{order.created_at}}</td>
+            <td>{{order.total_amount}} TND</td>
+            <td>{% if order.payment_method == 'livraison' %} Sur place {% else %} Par carte {% endif %}</td>
+            <td>
+              {% if order.is_paid == True %} <span class="status-paye"> payé </span> {%else%}
+              <span class="status-nonpaye">non payé</span> {%endif%}
+            </td>
+            {% if request.user.is_authenticated and request.user.role == 'CLIENT' %}
+            <td>
+              <a href="{% url 'commandeDetails' order.id %}" class="link_details_cmd">Details</a>
+            </td>
+            {% else %}
+            <td>
+              <div class="dropdown">
+                <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                  <i class="ri-more-2-line"></i>
+                </button>
+                <div class="dropdown-menu">
+                  <a class="dropdown-item" href="javascript:void(0);"><i class="ri-pencil-line me-1"></i> Edit</a>
+                  <a class="dropdown-item" href="javascript:void(0);"
+                    ><i class="ri-delete-bin-6-line me-1"></i> Delete</a
+                  >
+                </div>
+              </div>
+            </td>
+            {%endif%}
+          </tr>
+          {% endfor %} {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+{%endblock%}

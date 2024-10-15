@@ -1,14 +1,7 @@
-{% extends layout_path %}
-{% load static %}
-{% load i18n %}
-{% load form_tags %}
-
-{% block title %}Produits{% endblock %}
-
-{% block vendor_js %}
-{{ block.super }}
+{% extends layout_path %} {% load static %} {% load i18n %} {% load form_tags %} {% block title %}Produits{% endblock %}
+{% block vendor_js %} {{ block.super }}
 <script src="{% static 'vendor/libs/masonry/masonry.js' %}"></script>
-<link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet" />
 <style>
   .hero-section {
     margin-top: -2rem;
@@ -23,7 +16,6 @@
     text-align: left;
     border-radius: 10px;
   }
-  
 
   .product-card {
     position: relative;
@@ -73,19 +65,19 @@
   }
 
   .hover-content .product-name {
-    background-color: #eb907c; 
+    background-color: #eb907c;
     width: 100%;
     margin-top: 50%;
-    color: black; 
-    font-size: 1.2rem; 
-    text-align: center; 
-    padding: 0.5rem 1rem; 
+    color: black;
+    font-size: 1.2rem;
+    text-align: center;
+    padding: 0.5rem 1rem;
     transition: opacity 0.3s ease-in-out;
-    opacity: 0; 
+    opacity: 0;
   }
 
   .product-card:hover .product-name {
-    opacity: 1; 
+    opacity: 1;
   }
 
   .search-bar {
@@ -132,7 +124,7 @@
     transition: box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out;
     cursor: pointer;
   }
-    .user-content {
+  .user-content {
     padding-left: 0rem !important;
     padding-right: 0rem !important;
   }
@@ -151,10 +143,10 @@
     color: #343a40;
   }
 
- .product-section {
+  .product-section {
     background: white;
   }
-.product-section .section-title {
+  .product-section .section-title {
     text-align: center;
     margin-bottom: 2rem;
   }
@@ -182,142 +174,184 @@
     color: white;
   }
   .carousel-indicators [data-bs-target] {
-  
     background-color: black;
-  
-}
-.nav-tabs .nav-link {
+  }
+  .nav-tabs .nav-link {
     text-align: center; /* Centrer le texte dans chaque onglet */
-}
-
+  }
 </style>
-{% endblock vendor_js %}
-
-{% block content %}
-  <!-- Hero Section -->
-  <section class="hero-section">
-    <div class="container">
-      <div class="row">
-        <div class="col-lg-6">
-          <div class="hero-content">
-            <h1 class="display-4 ml-4">Produits</h1>
-            <nav aria-label="breadcrumb">
-              <ol class="breadcrumb breadcrumb-style2">
-                <li class="breadcrumb-item">
-                  <a href="/">Accueil</a>
-                </li>
-                <li class="breadcrumb-item">
-                  <a href="/produits/front/produits">Produits</a>
-                </li>
-                <li class="breadcrumb-item">
-                  <a href="#">{{produit.nom}}</a>
-                </li>
-              </ol>
-            </nav>
-          </div>
+{% endblock vendor_js %} {% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-6">
+        <div class="hero-content">
+          <h1 class="display-4 ml-4">Produits</h1>
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb breadcrumb-style2">
+              <li class="breadcrumb-item">
+                <a href="/">Accueil</a>
+              </li>
+              <li class="breadcrumb-item">
+                <a href="/produits/front/produits">Produits</a>
+              </li>
+              <li class="breadcrumb-item">
+                <a href="#">{{produit.nom}}</a>
+              </li>
+            </ol>
+          </nav>
         </div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 <section class="product-detail bg-white py-4">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-5  align-items-center"> <!-- Add d-flex align-items-center -->
-                <div id="carouselExample" class="carousel slide" data-bs-ride="carousel">
-                    <div class="carousel-indicators">
-                        <button type="button" data-bs-target="#carouselExample" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-                        <button type="button" data-bs-target="#carouselExample" data-bs-slide-to="1" aria-label="Slide 2"></button>
-                        <button type="button" data-bs-target="#carouselExample" data-bs-slide-to="2" aria-label="Slide 3"></button>
-                    </div>
-                    <div class="carousel-inner">
-                        <div class="carousel-item active">
-                            <img class="d-block w-100" src="../../media/{{ produit.image }}" alt="{{ produit.nom }}" />
-                        </div>
-                        <div class="carousel-item">
-                            <img class="d-block w-100" src="../../media/{{ produit.image }}" alt="{{ produit.nom }}" />
-                        </div>
-                        <div class="carousel-item">
-                            <img class="d-block w-100" src="../../media/{{ produit.image }}" alt="{{ produit.nom }}" />
-                        </div>
-                    </div>
-                    <a class="carousel-control-prev" href="#carouselExample" role="button" data-bs-slide="prev">
-                        <i class="ri-arrow-left-wide-line" style="font-size: 2rem; color:black;"></i>
-                        <span class="visually-hidden">Précédent</span>
-                    </a>
-                    <a class="carousel-control-next" href="#carouselExample" role="button" data-bs-slide="next">
-                        <i class="ri-arrow-right-wide-line" style="font-size: 2rem; color:black;"></i>
-                        <span class="visually-hidden">Suivant</span>
-                    </a>
-                </div>
-            
+  <div class="container">
+    <div class="row">
+      <div class="col-md-5 align-items-center">
+        <!-- Add d-flex align-items-center -->
+        <div id="carouselExample" class="carousel slide" data-bs-ride="carousel">
+          <div class="carousel-indicators">
+            <button
+              type="button"
+              data-bs-target="#carouselExample"
+              data-bs-slide-to="0"
+              class="active"
+              aria-current="true"
+              aria-label="Slide 1"
+            ></button>
+            <button type="button" data-bs-target="#carouselExample" data-bs-slide-to="1" aria-label="Slide 2"></button>
+            <button type="button" data-bs-target="#carouselExample" data-bs-slide-to="2" aria-label="Slide 3"></button>
+          </div>
+          <div class="carousel-inner">
+            <div class="carousel-item active">
+              <img class="d-block w-100" src="../../media/{{ produit.image }}" alt="{{ produit.nom }}" />
             </div>
-            <div class="col-md-1"></div>
-            <div class="col-md-6 vertical-center d-flex align-items-center"> <!-- Add d-flex align-items-center -->
-                <div> <!-- Nouvelle div pour le centrer -->
-                    <h2>{{ produit.nom }}</h2> <!-- Product Name -->
-                    <p>{{ produit.description|slice:":200" }}{% if produit.description|length > 150 %}...{% endif %}</p> <!-- Product Description -->
-                    
-                    <div class="availability">
-                        <strong>Disponibilité:</strong> 
-                        {% if produit.stock > 0 %}
-                            <span class="text-success">Disponible</span>
-                        {% else %}
-                            <span class="text-danger">Indisponible</span>
-                        {% endif %}
-                    </div>
-                    
-                    <div class="price mt-3">
-                        <strong>Prix:</strong> {{ produit.prix }} TND <!-- Product Price -->
-                    </div>
-
-                    <div class="mt-4">
-                        <button class="btn btn-primary">Ajouter au Panier</button>
-                        <button class="btn btn-secondary">Ajouter aux Favoris</button>
-                    </div>
-                </div> <!-- Fin de la nouvelle div -->
+            <div class="carousel-item">
+              <img class="d-block w-100" src="../../media/{{ produit.image }}" alt="{{ produit.nom }}" />
             </div>
+            <div class="carousel-item">
+              <img class="d-block w-100" src="../../media/{{ produit.image }}" alt="{{ produit.nom }}" />
+            </div>
+          </div>
+          <a class="carousel-control-prev" href="#carouselExample" role="button" data-bs-slide="prev">
+            <i class="ri-arrow-left-wide-line" style="font-size: 2rem; color: black"></i>
+            <span class="visually-hidden">Précédent</span>
+          </a>
+          <a class="carousel-control-next" href="#carouselExample" role="button" data-bs-slide="next">
+            <i class="ri-arrow-right-wide-line" style="font-size: 2rem; color: black"></i>
+            <span class="visually-hidden">Suivant</span>
+          </a>
         </div>
+      </div>
+      <div class="col-md-1"></div>
+      <div class="col-md-6 vertical-center d-flex align-items-center">
+        <!-- Add d-flex align-items-center -->
+        <div>
+          <!-- Nouvelle div pour le centrer -->
+          <h2>{{ produit.nom }}</h2>
+          <!-- Product Name -->
+          <p>{{ produit.description|slice:":200" }}{% if produit.description|length > 150 %}...{% endif %}</p>
+          <!-- Product Description -->
+
+          <div class="availability">
+            <strong>Disponibilité:</strong>
+            {% if produit.stock > 0 %}
+            <span class="text-success">Disponible</span>
+            {% else %}
+            <span class="text-danger">Indisponible</span>
+            {% endif %}
+          </div>
+
+          <div class="price mt-3">
+            <strong>Prix:</strong> {{ produit.prix }} TND
+            <!-- Product Price -->
+          </div>
+
+          <div class="mt-4 d-flex gap-4">
+            <form method="POST" action="{% url 'panier' %}">
+              {% csrf_token %}
+              <input type="hidden" name="product_id" value="{{produit.id}}" />
+              <button class="btn btn-primary">Ajouter au Panier</button>
+            </form>
+
+            <button class="btn btn-secondary">Ajouter aux Favoris</button>
+          </div>
+        </div>
+        <!-- Fin de la nouvelle div -->
+      </div>
     </div>
-    <hr style="margin-top: 5rem;">
+  </div>
+  <hr style="margin-top: 5rem" />
 </section>
 
 <section class="bg-white">
   <div class="container mb-6">
     <div class="card-header px-0 pt-0">
       <div class="nav-align-top">
-        <ul class="nav nav-tabs justify-content-center" role="tablist"> <!-- Centrer les onglets -->
+        <ul class="nav nav-tabs justify-content-center" role="tablist">
+          <!-- Centrer les onglets -->
           <li class="nav-item">
-            <button type="button" class="nav-link active" role="tab" data-bs-toggle="tab" data-bs-target="#navs-top-description" aria-controls="navs-top-description" aria-selected="true">Description</button> <!-- Changé en Description -->
+            <button
+              type="button"
+              class="nav-link active"
+              role="tab"
+              data-bs-toggle="tab"
+              data-bs-target="#navs-top-description"
+              aria-controls="navs-top-description"
+              aria-selected="true"
+            >
+              Description
+            </button>
+            <!-- Changé en Description -->
           </li>
           <li class="nav-item">
-            <button type="button" class="nav-link" role="tab" data-bs-toggle="tab" data-bs-target="#navs-top-reviews" aria-controls="navs-top-reviews" aria-selected="false">Avis</button> <!-- Changé en Avis -->
+            <button
+              type="button"
+              class="nav-link"
+              role="tab"
+              data-bs-toggle="tab"
+              data-bs-target="#navs-top-reviews"
+              aria-controls="navs-top-reviews"
+              aria-selected="false"
+            >
+              Avis
+            </button>
+            <!-- Changé en Avis -->
           </li>
           <li class="nav-item">
-            <button type="button" class="nav-link" role="tab" data-bs-toggle="tab" data-bs-target="#navs-top-comments" aria-controls="navs-top-comments" aria-selected="false">Commentaires</button> <!-- Changé en Commentaires -->
+            <button
+              type="button"
+              class="nav-link"
+              role="tab"
+              data-bs-toggle="tab"
+              data-bs-target="#navs-top-comments"
+              aria-controls="navs-top-comments"
+              aria-selected="false"
+            >
+              Commentaires
+            </button>
+            <!-- Changé en Commentaires -->
           </li>
         </ul>
       </div>
     </div>
     <div class="card-body p-6">
       <div class="tab-content p-6">
-        <div class="tab-pane fade show active text-center" style="    line-height: 30px;" id="navs-top-description" role="tabpanel">
-          <p>
-            {{produit.description}}
-          </p>
-         
+        <div
+          class="tab-pane fade show active text-center"
+          style="line-height: 30px"
+          id="navs-top-description"
+          role="tabpanel"
+        >
+          <p>{{produit.description}}</p>
         </div>
-        <div class="tab-pane fade" id="navs-top-reviews" role="tabpanel">
-         
-        </div>
-        <div class="tab-pane fade" id="navs-top-comments" role="tabpanel">
-         
-        </div>
+        <div class="tab-pane fade" id="navs-top-reviews" role="tabpanel"></div>
+        <div class="tab-pane fade" id="navs-top-comments" role="tabpanel"></div>
       </div>
     </div>
   </div>
 </section>
-
-
-
 
 {% endblock content %}
