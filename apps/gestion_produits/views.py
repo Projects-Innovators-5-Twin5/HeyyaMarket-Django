@@ -126,8 +126,28 @@ class ProductView(ListView):
 
 class ProductDetailView(DetailView):
     model = Product
-    template_name = 'produits/product_detail.html'
+    template_name = 'produits/front/details_produit.html'
     context_object_name = 'produit'
+    def get_context_data(self, **kwargs):
+        context = TemplateLayout.init(self, super().get_context_data(**kwargs))
+        context.update(
+            {
+                "layout_path": TemplateHelper.set_layout("layout_user.html", context),
+                "container_class": ""
+            }
+        )
+
+        return context
+
+class ProductDetailBackView(DetailView):
+    model = Product
+    template_name = 'produits/details_produit.html'
+    context_object_name = 'produit'
+    def get_context_data(self, **kwargs):
+        context = TemplateLayout.init(self, super().get_context_data(**kwargs))
+        
+
+        return context
 
 class ProductCreateView(CreateView):
     model = Product
@@ -179,20 +199,16 @@ class ProductFrontView(ListView):
     def get_context_data(self, **kwargs):
         context = TemplateLayout.init(self, super().get_context_data(**kwargs))
         
-        # Obtenez tous les produits
         produits_list = Product.objects.all()
         
-        # Paginons les produits
         paginator = Paginator(produits_list, self.paginate_by)
         page_number = self.request.GET.get('page')
         page_obj = paginator.get_page(page_number)
         
-        # Obtenez seulement 4 catégories
-        categories = Category.objects.all()[:4]  # Limitez à 4 catégories
-        
+        categories = Category.objects.all()[:4]  
         context['form'] = ProductForm()
         context['produits'] = page_obj
-        context['categories'] = categories  # Ajoutez les catégories au contexte
+        context['categories'] = categories  
         context.update(
             {
                 "layout_path": TemplateHelper.set_layout("layout_user.html", context),
@@ -201,3 +217,31 @@ class ProductFrontView(ListView):
         )
 
         return context
+
+class ProductLandingView(ListView):
+    model = Product
+    template_name = 'produits/front/produits.html'
+    context_object_name = 'produits'
+    paginate_by = 7  
+
+    def get_context_data(self, **kwargs):
+        context = TemplateLayout.init(self, super().get_context_data(**kwargs))
+        
+        produits_list = Product.objects.all()
+        
+        paginator = Paginator(produits_list, self.paginate_by)
+        page_number = self.request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+        
+        categories = Category.objects.all()[:4]  
+        context['form'] = ProductForm()
+        context['produits'] = page_obj
+        context['categories'] = categories  
+        context.update(
+            {
+                "layout_path": TemplateHelper.set_layout("layout_user.html", context),
+                "container_class": ""
+            }
+        )
+
+        return context        

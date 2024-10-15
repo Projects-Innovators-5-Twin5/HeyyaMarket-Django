@@ -3860,9 +3860,9 @@ textarea.form-control-lg {
   --bs-nav-tabs-border-color: #e6e5e8;
   --bs-nav-tabs-border-radius: var(--bs-border-radius);
   --bs-nav-tabs-link-hover-border-color: var(--bs-secondary-bg) var(--bs-secondary-bg) #e6e5e8;
-  --bs-nav-tabs-link-active-color: #8c57ff;
+  --bs-nav-tabs-link-active-color: #eb907c;
   --bs-nav-tabs-link-active-bg: #fff;
-  --bs-nav-tabs-link-active-border-color: #8c57ff;
+  --bs-nav-tabs-link-active-border-color: #eb907c;
   border-bottom: var(--bs-nav-tabs-border-width) solid var(--bs-nav-tabs-border-color);
 }
 .nav-tabs .nav-link {
@@ -8767,7 +8767,7 @@ div:not(.nav-align-left):not(.nav-align-right) > .nav-tabs {
   border-top-right-radius: 0;
 }
 .nav-align-top .nav-tabs .nav-link:not(.active):hover {
-  color: #8c57ff !important;
+  color: #eb907c !important;
   border-bottom: 2px solid #ede4ff !important;
   padding-bottom: 0.4185rem;
 }

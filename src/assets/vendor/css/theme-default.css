@@ -237,27 +237,27 @@ button.list-group-item-primary.active {
 }
 
 .nav-tabs .nav-link.active, .nav-tabs .nav-link.active:hover, .nav-tabs .nav-link.active:focus {
-  color: #8c57ff;
+  color: #eb907c;
 }
 .nav-tabs .nav-link.waves-effect .waves-ripple {
   background: radial-gradient(rgba(140, 87, 255, 0.2) 0, rgba(140, 87, 255, 0.3) 40%, rgba(140, 87, 255, 0.4) 50%, rgba(140, 87, 255, 0.5) 60%, rgba(255, 255, 255, 0) 70%);
 }
 .nav-tabs .tab-slider {
-  background-color: #8c57ff;
+  background-color: #eb907c;
 }
 
 .form-control:focus,
 .form-select:focus {
-  border-color: #8c57ff !important;
+  border-color: #eb907c !important;
 }
 .form-floating-outline .form-control:focus,
 .form-floating-outline .form-select:focus {
-  border-color: #8c57ff !important;
+  border-color: #eb907c !important;
 }
 
 .input-group:not(.input-group-floating):focus-within .form-control,
 .input-group:not(.input-group-floating):focus-within .input-group-text {
-  border-color: #8c57ff;
+  border-color: #eb907c;
 }
 
 .form-check-input:hover::after {
