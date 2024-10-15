@@ -23,8 +23,8 @@
       <a href="#" class="text-white me-3"><i class="ri-heart-3-line ri-24px"></i></a>
       <a href="{% url 'panier' %}" class="text-white position-relative">
         <i class="ri-shopping-cart-line ri-24px"></i>
-        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-          >3<span class="visually-hidden">items in cart</span></span
+        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+          3 <span class="visually-hidden">items in cart</span></span
         >
       </a>
     </div>
@@ -87,7 +87,7 @@
             >
           </li>
           <li>
-            <a class="dropdown-item" href="javascript:void(0);"
+            <a class="dropdown-item" href="{% url 'history-commandesClient' %}"
               ><span class="d-flex align-items-center align-middle"
                 ><i class="flex-shrink-0 ri-file-text-line ri-22px me-2"></i
                 ><span class="flex-grow-1 align-middle ms-1">Orders</span

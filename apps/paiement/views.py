@@ -9,9 +9,12 @@ from django.views import View
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
-from .models import Cart , CartItem , Order ,OrderItem
+from .models import Cart , CartItem , Order ,OrderItem , User
 from decimal import Decimal
 import stripe;
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
+
 
 
 """
@@ -208,6 +211,13 @@ class CommandeView(TemplateView):
             cart_item.delete()
 
         if(payment_method == 'livraison'):
+           subject = "Confirmation de votre commande"
+           html_message = render_to_string('emails/confirmation_commandeEmail.html', {'user': user, 'order': order})
+           recipient_list = [user.email]
+
+           email = EmailMultiAlternatives(subject, "", settings.DEFAULT_FROM_EMAIL, recipient_list)
+           email.attach_alternative(html_message, "text/html")
+           email.send(fail_silently=False)
            return redirect('confirmation-commande', order_id=order.id)
         else:
            return redirect('payment', order_id=order.id)
@@ -261,7 +271,6 @@ class PaymentView(TemplateView):
         total_in_eur = order.total_amount * TND_TO_EUR_RATE
         total_amount_in_eur = int(total_in_eur * 100)
 
-        # Créer un PaymentIntent
         payment_intent = stripe.PaymentIntent.create(
             amount=total_amount_in_eur,
             currency='eur',  
@@ -284,12 +293,20 @@ class UpdateOrderStatusView(View):
     @csrf_exempt  
     def post(self, request, *args, **kwargs):
         try:
+            user=self.request.user
             data = json.loads(request.body)
             order_id = data.get('order_id')  
             
             order = Order.objects.get(id=order_id)
             order.is_paid = True
             order.save()
+            subject = "Confirmation de votre commande"
+            html_message = render_to_string('emails/confirmation_commandeEmail.html', {'user': user, 'order': order})
+            recipient_list = [user.email]
+
+            email = EmailMultiAlternatives(subject, "", settings.DEFAULT_FROM_EMAIL, recipient_list)
+            email.attach_alternative(html_message, "text/html")
+            email.send(fail_silently=False)
             
             return JsonResponse({'success': True})
         
@@ -299,3 +316,66 @@ class UpdateOrderStatusView(View):
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
+        
+
+class HistoryClientCommandeView(TemplateView):
+
+    def get_context_data(self, **kwargs):
+        context = TemplateLayout.init(self, super().get_context_data(**kwargs))
+        
+        user = self.request.user
+        orders = Order.objects.filter(user=user)
+        
+        context['orders'] = orders
+
+        # Update the context
+        context.update({
+            "layout_path": TemplateHelper.set_layout("layout_user.html", context),
+        })
+
+        return context      
+
+class HistoryClientCommandeBackView(TemplateView):
+
+    def get_context_data(self, **kwargs):
+        context = TemplateLayout.init(self, super().get_context_data(**kwargs))
+        
+        orders = Order.objects.filter()
+        
+        context['orders'] = orders
+
+        # Update the context
+        context.update({
+            "layout_path": TemplateHelper.set_layout("layout_vertical.html", context),
+        })
+
+        return context         
+
+    
+class HistoryClientCommandeDetailsView(TemplateView):
+
+    def get_context_data(self, **kwargs):
+        context = TemplateLayout.init(self, super().get_context_data(**kwargs))
+        
+        
+        order_id = self.kwargs.get('order_id') 
+
+        order_items = []
+        order = Order.objects.get(id=order_id)
+        user = order.user
+        print(user)
+        for order_item in order.items.all():  
+            order_items.append({
+                    'product': order_item.product,
+                    'quantity': order_item.quantity,
+                    'total_price': order_item.product.price * order_item.quantity
+                })
+        context['order_items'] = order_items
+        context['order'] = order
+        context['user'] = user
+
+        context.update({
+            "layout_path": TemplateHelper.set_layout("layout_user.html", context),
+        })
+
+        return context  
