@@ -1,0 +1,26 @@
+.star-rating {
+    display: flex;
+    justify-content: flex-start; /* Align stars to the left */
+    flex-direction: row; /* Display stars from right to left */
+}
+
+.star-rating input {
+    display: none; /* Hide the radio buttons */
+}
+
+.star-rating label {
+    font-size: 2rem; /* Size of the stars */
+    color: #ddd; /* Default star color (gray) */
+    cursor: pointer;
+}
+
+/* Color the stars on hover (from left to right) */
+.star-rating label:hover,
+.star-rating label:hover ~ label {
+    color: #f8c200; /* Yellow for hover */
+}
+
+/* Color stars on click (checked state) */
+.star-rating input:checked ~ label {
+    color: #f8c200; /* Yellow for checked stars */
+}

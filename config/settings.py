@@ -33,6 +33,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 # If using the .env file for SECRET_KEY then comment below random SECRET_KEY generation code.
 SECRET_KEY = os.environ.get("SECRET_KEY")
+SECRET_KEY_COHERE = os.environ.get("SECRET_KEY_COHERE")
+SECRET_KEY_IMAGE_DESCRIPTION = os.environ.get("SECRET_KEY_IMAGE_DESCRIPTION")
+
 if not SECRET_KEY:
     SECRET_KEY = "".join(random.choice(string.ascii_lowercase) for i in range(32))
 
@@ -70,8 +73,7 @@ INSTALLED_APPS = [
     "apps.tables",
     "apps.landing",
     "apps.gestion_produits",
-
-
+    "apps.events",
     "apps.paiement"
 ]
 MEDIA_URL = '/media/'
@@ -213,3 +215,20 @@ EMAIL_HOST_PASSWORD = 'jiva rlyt bqba ozzb'  # Replace with your Gmail password
 
 # Your stuff...
 # ------------------------------------------------------------------------------
+
+# settings.py
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'  # Make sure this directory exists
+TIME_ZONE = 'UTC'  # or your desired timezone
+USE_TZ = True  # Make sure this is set to True
+
+
+
+# Email settings for Gmail SMTP
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'tektaitektai7@gmail.com'  # Replace with your Gmail address
+EMAIL_HOST_PASSWORD = 'jiva rlyt bqba ozzb'  # Replace with your Gmail password

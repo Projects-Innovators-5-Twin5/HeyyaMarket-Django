@@ -1,0 +1,108 @@
+{% extends layout_path %}
+
+{% load static %}
+{% load i18n %}
+
+{% block title %}Manage Participation Requests for {{ event.title }}{% endblock %}
+
+{% block content %}
+<div class="col-xxl">
+    <div class="card mb-6">
+        <div class="card-header">
+            <h5 class="mb-0">Manage Participation Requests for "{{ event.title }}"</h5>
+        </div>
+        <div class="card-body">
+            <div class="col-md-3 mb-3">
+                <h6>Filter by Status</h6>
+                <form method="GET" action="{% url 'event_manage_requests' event.id %}">
+                    <select name="status" onchange="this.form.submit()" id="selectTypeOpt" class="form-select form-select-sm">
+                        <option value="all" {% if request.GET.status == 'all' %}selected{% endif %}>All</option>
+                        <option value="pending" {% if request.GET.status == 'pending' %}selected{% endif %}>Pending</option>
+                        <option value="confirmed" {% if request.GET.status == 'confirmed' %}selected{% endif %}>Confirmed</option>
+                        <option value="cancelled" {% if request.GET.status == 'cancelled' %}selected{% endif %}>Cancelled</option>
+                        <option value="rejected" {% if request.GET.status == 'rejected' %}selected{% endif %}>Rejected</option>
+                    </select>
+                </form>
+            </div>
+
+            <h6>Participation Requests</h6>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for participation in participations %}
+                    <tr>
+                        <td>{{ participation.user.username }}</td>
+                        <td>
+                            {% if participation.status == 'pending' %}
+                                <span class="badge rounded-pill bg-label-warning">Pending</span>
+                            {% elif participation.status == 'confirmed' %}
+                                <span class="badge rounded-pill bg-label-success">Confirmed</span>
+                            {% elif participation.status == 'rejected' %}
+                                <span class="badge rounded-pill bg-label-danger">Rejected</span>
+                            {% elif participation.status == 'cancelled' %}
+                                <span class="badge rounded-pill bg-label-secondary">Cancelled</span>
+                            {% endif %}
+                        </td>
+                        <td class="d-flex align-items-center">
+                            {% if participation.status == 'pending' %}
+                            <form method="POST" class="me-2">
+                                {% csrf_token %}
+                                <input type="hidden" name="participation_id" value="{{ participation.id }}">
+                                <button type="submit" name="action" value="approve" class="btn btn-success btn-sm">Approve</button>
+                                <button type="submit" name="action" value="reject" class="btn btn-danger btn-sm">Reject</button>
+                            </form>
+                            {% endif %}
+                            <!-- Dropdown for changing status -->
+                            <div class="dropdown">
+                                <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="ri-more-2-line"></i>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <form method="POST" class="dropdown-item">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="participation_id" value="{{ participation.id }}">
+                                            <input type="hidden" name="action" value="approve">
+                                            <button type="submit" class="btn btn-link">Confirm</button>
+                                        </form>
+                                    </li>
+                                    <li>
+                                        <form method="POST" class="dropdown-item">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="participation_id" value="{{ participation.id }}">
+                                            <input type="hidden" name="action" value="reject">
+                                            <button type="submit" class="btn btn-link text-danger">Reject</button>
+                                        </form>
+                                    </li>
+                                    <li>
+                                        <form method="POST" class="dropdown-item">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="participation_id" value="{{ participation.id }}">
+                                            <input type="hidden" name="action" value="cancel">
+                                            <button type="submit" class="btn btn-link">Cancel</button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="3" class="text-center">No participation requests found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div>
+    <a href="{% url 'event_list' %}" class="btn btn-primary">Back to Events</a>  
+</div>
+{% endblock %}

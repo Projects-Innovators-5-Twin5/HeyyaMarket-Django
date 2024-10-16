@@ -1,0 +1,123 @@
+{% extends layout_path %}
+
+{% load static %}
+{% load i18n %}
+
+{% block title %}Event Calendar{% endblock %}
+
+{% block content %}
+<style>
+  #calendar {
+    width: 100%;
+    height: 600px; /* Set a fixed height for the calendar container */
+  }
+  
+.fc-event {
+    cursor: pointer; /* Default pointer cursor for events */
+}
+
+.fc-event.fc-resizable {
+    cursor: ew-resize; /* East-West resize cursor */
+}
+</style>
+
+<div class="col-xxl">
+    <div class="card mb-6">
+        <div class="card-header d-flex align-items-center justify-content-between">
+            <h5 class="mb-0">Event Calendar</h5>
+<a href="{% if request.user.is_authenticated and request.user.role == 'ADMIN' %}{% url 'event_list' %}{% else %}{% url 'event_listfront' %}{% endif %}" class="btn btn-secondary">Back to List</a>
+            
+        </div>
+        <div class="card-body">
+            <div id="calendar"></div> <!-- Calendar container -->
+        </div>
+    </div>
+</div>
+
+<!-- FullCalendar JS -->
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar/index.global.min.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var calendarEl = document.getElementById('calendar');
+
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        editable: {% if request.user.is_authenticated and request.user.role == 'ADMIN' %}true{% else %}false{% endif %},
+        droppable: {% if request.user.is_authenticated and request.user.role == 'ADMIN' %}true{% else %}false{% endif %},
+        {% if request.user.is_authenticated and request.user.role == 'ADMIN' %}
+        dateClick: function(info) {
+            var selectedDate = info.dateStr;
+            window.location.href = `/events/create/?start_date=${selectedDate}`;
+        },
+        {% endif %}
+
+        timeZone: 'UTC',
+        events: [
+            {% for event in events %} 
+            {
+                id: {{ event.id }},
+                title: "{{ event.title }}",
+                start: "{{ event.start_datetime|date:'Y-m-d H:i:s' }}",
+                end: "{{ event.end_datetime|date:'Y-m-d H:i:s' }}",
+                url: "{% if request.user.is_authenticated and request.user.role == 'ADMIN' %}{% url 'update_event' event.id %}{% else %}{% url 'event_detail' event.id %}{% endif %}",
+                status: "{{ event.status }}"
+            },
+            {% endfor %}
+        ],
+        eventDidMount: function(info) {
+            const statusColors = {
+                'scheduled': '#4dc4ff',
+                'finished': '#8cdb53',
+                'cancelled': '#ffb503'
+            };
+            const status = info.event.extendedProps.status;
+            if (status && statusColors[status]) {
+                info.el.style.backgroundColor = statusColors[status];
+                info.el.style.borderColor = statusColors[status];
+                info.el.style.color = '#fff';
+            }
+        },
+
+       
+
+        eventDrop: function(info) {
+            updateEvent(info.event);
+        },
+
+        eventResize: function(info) {
+            updateEvent(info.event);
+        }
+    });
+
+    calendar.render();
+
+    function updateEvent(event) {
+        var eventId = event.id;
+        var newStart = event.start.toISOString();
+        var newEnd = event.end ? event.end.toISOString() : null;
+
+        fetch(`/events/calendar/update/${eventId}/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({
+                start: newStart,
+                end: newEnd
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Event updated:', data);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+});
+
+</script>
+
+
+{% endblock %}
