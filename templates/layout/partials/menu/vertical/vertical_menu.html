@@ -71,6 +71,14 @@
 
 
 
+ 
+
+    <li class="menu-item {% if '/vendor-requests/' in request.path %}active{% endif %}">
+      <a href="{% url 'vendor-requests' %}" class="menu-link">
+        <i class="menu-icon tf-icons ri-bank-card-2-line"></i>
+        <div class="text-truncate" data-i18n="Card">Vendor Requests</div>
+      </a>
+    </li>
 
 
 

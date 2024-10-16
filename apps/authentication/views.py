@@ -154,7 +154,7 @@ class VendorRequestsView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         # Filter to get only users with pending vendor requests
-        return User.objects.filter(role='CLIENT', request_status='pending')  # Adjust your filter based on your model
+        return User.objects.filter( request_status='pending')  # Adjust your filter based on your model
 
     def get_context_data(self, **kwargs):
         context = TemplateLayout.init(self, super().get_context_data(**kwargs))

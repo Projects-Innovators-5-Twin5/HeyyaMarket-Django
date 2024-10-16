@@ -11,38 +11,56 @@
 {% endblock page_js %}
 
 {% block content %}
-<h2>Vendor Requests</h2>
+    <div class="card mb-6">
+        <div class="card-header d-flex align-items-center justify-content-between">
+            <h5 class="mb-0">Vendor Requests</h5>
+</div>
 
-{% if vendor_requests %}
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Username</th>
-                <th>Email</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for user in vendor_requests %}
-                <tr>
-                    <td>{{ user.username }}</td>
-                    <td>{{ user.email }}</td>
-                    <td>
-                        <form action="{% url 'accept-vendor-request' user.pk %}" method="post" style="display:inline;">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-success">Accept</button>
-                        </form>
-                        <form action="{% url 'reject-vendor-request' user.pk %}" method="post" style="display:inline;">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-danger">Reject</button>
-                        </form>
-                    </td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-{% else %}
-    <p>No vendor requests at this time.</p>
-{% endif %}
+
+    {% if vendor_requests %}
+        <div class="table-responsive">
+            <table class="table table-striped ">
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Brand Name</th>
+                        <th>Description</th>
+                        <th>Brand Email</th>
+                        <th>RNE Number</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in vendor_requests %}
+                        <tr>
+                            <td>{{ user.username }}</td>
+                            <td>{{ user.email }}</td>
+                            <td>{{ user.brand_name }}</td>
+                            <td>{{ user.brand_description }}</td>
+                            <td>{{ user.brand_email }}</td>
+                            <td>{{ user.brand_rne_number }}</td>
+                            <td>
+                                <form action="{% url 'accept-vendor-request' user.pk %}" method="post" style="display:inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-success me-1">Accept</button>
+                                </form>
+                                <form action="{% url 'reject-vendor-request' user.pk %}" method="post" style="display:inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-danger">Reject</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-info text-center">No vendor requests at this time.</div>
+    {% endif %}
+
+
+</div>
+</div>
 
 {% endblock %}
