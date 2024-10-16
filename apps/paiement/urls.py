@@ -67,5 +67,7 @@ urlpatterns = [
      path(
         "history-commandesClientBack/", 
         HistoryClientCommandeBackView.as_view(template_name="commandes_client.html"), 
-        name='history-commandesClientBack'),    
+        name='history-commandesClientBack'),   
+
+       
 ]

@@ -15,8 +15,12 @@
             <span class="fw-bold">Nom:</span> {{ user.first_name}} {{user.last_name }}
           </p>
           <p class="d-none d-sm-block ms-auto"><span class="fw-bold">Email:</span> {{ user.email}}</p>
-          <p class="d-none d-sm-block ms-auto"><span class="fw-bold">Tel:</span> {{ user.tel}}</p>
-          <p class="d-none d-sm-block ms-auto"><span class="fw-bold">Adresse:</span> {{ user.addresse}}</p>
+          <p class="d-none d-sm-block ms-auto">
+            <span class="fw-bold">Tel:</span> {% if user.tel %} {{ user.tel}} {%endif%}
+          </p>
+          <p class="d-none d-sm-block ms-auto">
+            <span class="fw-bold">Adresse:</span> {%if user.addresse %} {{ user.addresse}}{%endif%}
+          </p>
           <hr />
           <div class="d-flex justify-content-between mb-3">
             <span>Etat</span>
@@ -48,15 +52,14 @@
       <hr />
       <div class="d-flex align-items-start align-items-sm-center gap-5">
         <img
-          src="{% static 'img/avatars/1.png' %}"
-          alt="user-avatar"
+          src="../../media/{{ item.product.image }}"
+          alt="{{ item.product.nom }}"
           class="d-block w-px-100 h-px-100 rounded"
-          id="uploadedAvatar"
         />
         <div class="d-flex flex-column">
-          <span class="d-none d-sm-block">{{ item.product.name }} </span>
-          <span class="d-none d-sm-block mt-2">Categorie du produit</span>
-          <span class="d-none d-sm-block mt-4 price">{{ item.product.price }} TND </span>
+          <span class="d-none d-sm-block mt-2">{{ item.product.nom }} </span>
+          <span class="d-none d-sm-block mt-2">{{ item.product.categorie }} </span>
+          <span class="d-none d-sm-block mt-4 price">{{ item.product.prix }} TND </span>
         </div>
 
         <div class="mb-4 d-flex ms-auto">

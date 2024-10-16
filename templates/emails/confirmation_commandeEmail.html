@@ -545,7 +545,7 @@
                                   <p>Voici les détails de votre commande :</p>
                                   <div>
                                     {% for item in order.items.all %}
-                                    <p>{{ item.product.name }} - {{ item.quantity }} x {{ item.product.price }} TND</p>
+                                    <p>{{ item.product.nom }} - {{ item.quantity }} x {{ item.product.prix }} TND</p>
                                     {% endfor %}
                                   </div>
                                   <p>total à payer : {{order.total_amount}} TND</p>

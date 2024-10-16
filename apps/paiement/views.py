@@ -363,7 +363,6 @@ class HistoryClientCommandeDetailsView(TemplateView):
         order_items = []
         order = Order.objects.get(id=order_id)
         user = order.user
-        print(user)
         for order_item in order.items.all():  
             order_items.append({
                     'product': order_item.product,
@@ -374,8 +373,17 @@ class HistoryClientCommandeDetailsView(TemplateView):
         context['order'] = order
         context['user'] = user
 
-        context.update({
-            "layout_path": TemplateHelper.set_layout("layout_user.html", context),
-        })
+        if(self.request.user.role == 'ADMIN'):
+            context.update({
+            "layout_path": TemplateHelper.set_layout("layout_vertical.html", context),
+            })
 
-        return context  
+            return context  
+        else:
+            context.update({
+            "layout_path": TemplateHelper.set_layout("layout_user.html", context),
+            })
+
+            return context  
+        
+        
