@@ -74,7 +74,8 @@ INSTALLED_APPS = [
     "apps.landing",
     "apps.gestion_produits",
     "apps.events",
-    "apps.paiement"
+    "apps.paiement",
+    "apps.ModuleReclamationReponse.reclamations"
 ]
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

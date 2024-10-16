@@ -55,13 +55,6 @@
       </ul>
     </li>
 
-    <li class="menu-item {% if 'history-commandesClientBack/' in request.path %}active{% endif %}">
-      <a href="{% url 'history-commandesClientBack' %}" class="menu-link">
-        <i class="menu-icon tf-icons ri-bank-card-2-line"></i>
-        <div class="text-truncate" data-i18n="Card">Commandes</div>
-      </a>
-    </li>
-
     <li class="menu-item {% if '/events/' in request.path %}active open{% endif %}">
       <a href="javascript:void(0);" class="menu-link menu-toggle">
         <i class="menu-icon tf-icons ri-user-line"></i>
@@ -90,6 +83,20 @@
       <a href="{% url 'vendor-requests' %}" class="menu-link">
         <i class="menu-icon tf-icons ri-bank-card-2-line"></i>
         <div class="text-truncate" data-i18n="Card">Vendor Requests</div>
+      </a>
+    </li>
+
+    <li class="menu-item {% if 'history-commandesClientBack/' in request.path %}active{% endif %}">
+      <a href="{% url 'history-commandesClientBack' %}" class="menu-link">
+        <i class="menu-icon tf-icons ri-bank-card-2-line"></i>
+        <div class="text-truncate" data-i18n="Card">Commandes</div>
+      </a>
+    </li>
+
+    <li class="menu-item {% if 'reclamations/' in request.path %}active{% endif %}">
+      <a href="{% url 'liste_reclamations' %}" class="menu-link">
+        <i class="menu-icon tf-icons ri-bank-card-2-line"></i>
+        <div class="text-truncate" data-i18n="Card">Reclamations</div>
       </a>
     </li>
 

@@ -24,6 +24,7 @@ from django.conf.urls.static import static
 urlpatterns = [
     path("admin/", admin.site.urls),
     
+    path("", include("apps.landing.urls")),
 
     # Dashboard urls
     path("", include("apps.dashboards.urls")),
@@ -64,8 +65,12 @@ urlpatterns = [
 
     path("", include("apps.paiement.urls")),
     path("", include("apps.events.urls")),
-
+    path("reclamations/", include('apps.ModuleReclamationReponse.reclamations.urls')),
+    
 ]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+
+
 
 handler404 = SystemView.as_view(template_name="pages_misc_error.html", status=404)
 handler400 = SystemView.as_view(template_name="pages_misc_error.html", status=400)

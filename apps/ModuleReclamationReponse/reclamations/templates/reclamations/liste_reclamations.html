@@ -1,0 +1,226 @@
+{% extends layout_path %}
+
+{% load static %}
+{% load i18n %}
+
+{% block title %}Tables - Basic Tables{% endblock %}
+
+{% block content %}
+<!-- Basic Bootstrap Table -->
+<div class="card">
+{% if messages %}
+            {% for message in messages %}
+              <div class="alert alert-success alert-dismissible fade show mb-0" role="alert">
+                {{ message }}
+              </div>
+            {% endfor %}
+          {% endif %}
+  <h5 class="card-header">Liste des réclamations</h5>
+
+  <div class="table-responsive text-nowrap">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Titre</th>
+          <th>Date de Création</th>
+          <th>Users</th>
+          <th>Priorité</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody class="table-border-bottom-0">
+        {% for reclamation in reclamations %}
+        <tr>
+          <td><i class="ri-suitcase-2-line ri-22px text-danger me-4"></i><span>{{ reclamation.titre }}</span></td>
+          <td>{{ reclamation.date_creation }}</td>
+          <td>
+            <ul class="list-unstyled m-0 avatar-group d-flex align-items-center">
+              <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" class="avatar avatar-xs pull-up" title="Lilian Fuller">
+                <img src="{% static 'img/avatars/5.png' %}" alt="Avatar" class="rounded-circle">
+              </li>
+            </ul>
+          </td>
+          <td>{{ reclamation.priorite }}</td>
+          <td>
+            <span class="badge rounded-pill
+              {% if reclamation.statut == 'resolue' %}
+                bg-label-success <!-- Vert pour résolu -->
+              {% elif reclamation.statut == 'refusé' %}
+                bg-label-danger  <!-- Rouge pour refusé -->
+              {% elif reclamation.statut == 'en_attente' %}
+                bg-label-primary <!-- Bleu pour en attente -->
+              {% else %}
+                bg-label-secondary <!-- Optionnel : couleur par défaut -->
+              {% endif %}
+              me-1">
+              {{ reclamation.statut }}
+            </span>
+          </td>
+          <td>
+            <div>
+              <!-- Icône œil qui déclenche le modal des détails -->
+              <i class="ri-eye-line ri-15px" style="color: #c4b463; cursor: pointer;"
+                 data-bs-toggle="modal" data-bs-target="#reclamationModal{{ reclamation.id }}"></i>
+
+              <!-- Icône stylo qui déclenche le modal d'édition -->
+              <i class="ri-pencil-line ri-15px" style="color: #639fc4; cursor: pointer;"
+                 data-bs-toggle="modal" data-bs-target="#editReclamationModal{{ reclamation.id }}"></i>
+
+               <form method="post" action="{% url 'supprimer_reclamation' reclamation.id %}" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit" style="border: none; background: none;">
+                <i class="ri-delete-bin-line ri-15px" style="color: #da6d60; cursor: pointer;"></i>
+            </button>
+           </form>
+
+
+      {% if reclamation.statut == 'resolue' %}
+  <span class="disabled" style="cursor: not-allowed; color: #d3d3d3;"> <!-- Couleur grise pour simuler un état désactivé -->
+    <i class="ri-mail-line ri-15px"></i>
+  </span>
+{% else %}
+  <a href="#" data-bs-toggle="modal" data-bs-target="#repondreModal{{ reclamation.id }}">
+    <i class="ri-mail-line ri-15px" style="color: #bcda60;"></i>
+  </a>
+{% endif %}
+
+
+
+            </div>
+
+
+
+<!-- Modal Bootstrap pour répondre à la réclamation -->
+<div class="modal fade" id="repondreModal{{ reclamation.id }}" tabindex="-1" aria-labelledby="repondreModalLabel{{ reclamation.id }}" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="repondreModalLabel{{ reclamation.id }}">
+
+          Répondre à la Réclamation : {{ reclamation.titre }}
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form action="{% url 'repondre_reclamation' reclamation.id %}" method="POST">
+        {% csrf_token %}
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="reponseTexte{{ reclamation.id }}" class="form-label">Votre Réponse</label>
+            <textarea class="form-control" id="reponseTexte{{ reclamation.id }}" name="texte" rows="4" required></textarea>
+          </div>
+          <!-- Champ caché pour l'utilisateur (automatique) -->
+          <input type="hidden" name="utilisateur" value="{{ reclamation.utilisateur_id }}">
+          <input type="hidden" name="reclamation" value="{{ reclamation.id }}">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+        <button type="submit" class="btn btn-primary" >Envoyer</button>
+
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+            <!-- Modal Bootstrap pour afficher les détails de la réclamation -->
+            <div class="modal fade" id="reclamationModal{{ reclamation.id }}" tabindex="-1" aria-labelledby="reclamationModalLabel{{ reclamation.id }}" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="reclamationModalLabel{{ reclamation.id }}">Détails de la Réclamation</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <p><strong>Titre :</strong> {{ reclamation.titre }}</p>
+                    <p><strong>Description :</strong> {{ reclamation.description }}</p>
+                    <p><strong>User ID :</strong> {{ reclamation.utilisateur.first_name  }} {{ reclamation.utilisateur.last_name }}</p>
+                    <p><strong>Date de Création :</strong> {{ reclamation.date_creation }}</p>
+                    <p><strong>Priorité :</strong> {{ reclamation.priorite }}</p>
+                    <p><strong>Status :</strong>
+                        <span class="badge rounded-pill
+                            {% if reclamation.statut == 'resolue' %}
+                                bg-label-success
+                            {% elif reclamation.statut == 'refusé' %}
+                                bg-label-danger
+                            {% elif reclamation.statut == 'en_attente' %}
+                                bg-label-primary
+                            {% else %}
+                                bg-label-secondary
+                            {% endif %}">
+                            {{ reclamation.statut }}
+                        </span>
+                    </p>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Modal Bootstrap pour modifier la réclamation -->
+            <div class="modal fade" id="editReclamationModal{{ reclamation.id }}" tabindex="-1" aria-labelledby="editReclamationModalLabel{{ reclamation.id }}" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="editReclamationModalLabel{{ reclamation.id }}">Modifier la Réclamation</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <form action="{% url 'modifier_reclamation' reclamation.id %}" method="POST">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                      <div class="mb-3">
+                        <label for="titre{{ reclamation.id }}" class="form-label">Titre</label>
+                        <input type="text" class="form-control" id="titre{{ reclamation.id }}" name="titre" value="{{ reclamation.titre }}" required>
+                      </div>
+                      <div class="mb-3">
+                        <label for="description{{ reclamation.id }}" class="form-label">Description</label>
+                        <textarea class="form-control" id="description{{ reclamation.id }}" name="description" required>{{ reclamation.description }}</textarea>
+                      </div>
+
+                      <div class="mb-3">
+                        <label for="statut{{ reclamation.id }}" class="form-label">Status</label>
+                        <select class="form-select" id="statut{{ reclamation.id }}" name="statut" required>
+                          <option value="resolue" {% if reclamation.statut == 'resolue' %}selected{% endif %}>Résolue</option>
+                          <option value="refusé" {% if reclamation.statut == 'refusé' %}selected{% endif %}>Refusé</option>
+                          <option value="en_attente" {% if reclamation.statut == 'en_attente' %}selected{% endif %}>En attente</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                      <button type="submit" class="btn btn-primary">Modifier</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Sélectionner tous les messages d'alerte dans les modales
+    const alerts = document.querySelectorAll('.alert');
+    alerts.forEach(alert => {
+      // Vérifier si l'alerte est affichée
+      if (alert) {
+        setTimeout(() => {
+          // Masquer l'alerte après 2 secondes
+          alert.classList.remove('show');
+          alert.classList.add('fade');
+        }, 2000); // 2000 ms = 2 secondes
+      }
+    });
+  });
+</script>
+{% endblock %}
