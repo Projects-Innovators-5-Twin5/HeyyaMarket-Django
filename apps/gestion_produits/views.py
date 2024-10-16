@@ -128,6 +128,7 @@ class ProductDetailView(DetailView):
     model = Product
     template_name = 'produits/front/details_produit.html'
     context_object_name = 'produit'
+    
     def get_context_data(self, **kwargs):
         context = TemplateLayout.init(self, super().get_context_data(**kwargs))
         context.update(

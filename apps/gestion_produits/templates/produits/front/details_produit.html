@@ -307,36 +307,20 @@
             <!-- Changé en Description -->
           </li>
           <li class="nav-item">
-            <button
-              type="button"
+            <a
+              href="{% url 'avis_list' produit.id %}" 
               class="nav-link"
               role="tab"
-              data-bs-toggle="tab"
-              data-bs-target="#navs-top-reviews"
-              aria-controls="navs-top-reviews"
-              aria-selected="false"
+             
             >
-              Avis
-            </button>
-            <!-- Changé en Avis -->
+              Avis & commentaires
+            </a>
           </li>
-          <li class="nav-item">
-            <button
-              type="button"
-              class="nav-link"
-              role="tab"
-              data-bs-toggle="tab"
-              data-bs-target="#navs-top-comments"
-              aria-controls="navs-top-comments"
-              aria-selected="false"
-            >
-              Commentaires
-            </button>
-            <!-- Changé en Commentaires -->
-          </li>
+          
         </ul>
       </div>
     </div>
+
     <div class="card-body p-6">
       <div class="tab-content p-6">
         <div
