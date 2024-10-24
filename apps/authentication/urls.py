@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import AuthView , LogoutView , RegisterView , ProfileView , VendorRequestsView, AcceptVendorRequestView, RejectVendorRequestView
+from .views import AuthView , LogoutView , RegisterView , ProfileView , VendorRequestsView, AcceptVendorRequestView, RejectVendorRequestView 
 
 
 urlpatterns = [
@@ -26,7 +26,7 @@ urlpatterns = [
     path('request-become-vendeur/', ProfileView.as_view(), name='send_brand_request'),
 
 
-        path("account/settings/", ProfileView.as_view(), name="account-settings"),  
+        path("account/settings/", ProfileView.as_view(), name="account-settings"),
 
     path('vendor-requests/', VendorRequestsView.as_view(), name='vendor-requests'),
     path('vendor-requests/accept/<int:pk>/', AcceptVendorRequestView.as_view(), name='accept-vendor-request'),

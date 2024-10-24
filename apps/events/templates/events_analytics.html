@@ -114,9 +114,8 @@
             </div>
         </div>
         <div class="card-body pt-lg-2">
-            <canvas id="monthlyOverviewChart"></canvas> <!-- Changed to <canvas> -->
+            <canvas id="monthlyOverviewChart"></canvas>
             <div class="mt-1 mt-md-3">
-
                 <div class="d-grid mt-3 mt-md-4">
                     <button class="btn btn-primary" type="button">Details</button>
                 </div>
@@ -128,6 +127,7 @@
 <script>
     const months = {{ months|safe }};
     const eventCounts = {{ event_counts|safe }};
+    const incomeCounts = {{ income_counts|safe }};  // New income data
 
     // Chart.js initialization
     const ctx = document.getElementById('monthlyOverviewChart').getContext('2d');
@@ -140,8 +140,15 @@
                 data: eventCounts,
                 backgroundColor: 'rgba(157,112,255,255)',
                 borderColor: 'rgba(157,112,255,255)',
-                borderWidth: 0, // Set to 0 to remove borders
-                borderRadius: 10, // Adjust the radius for rounded corners
+                borderWidth: 0,
+                borderRadius: 10,
+            }, {
+                label: 'Income',
+                data: incomeCounts,
+                backgroundColor: 'rgba(54,162,235,255)',  // Different color for income
+                borderColor: 'rgba(54,162,235,255)',
+                borderWidth: 0,
+                borderRadius: 10,
             }]
         },
         options: {
@@ -155,12 +162,14 @@
             },
             elements: {
                 bar: {
-                    borderRadius: 10, // Set this value for all bars
+                    borderRadius: 10,
                 }
             }
         }
     });
 </script>
+
+
 
 
 

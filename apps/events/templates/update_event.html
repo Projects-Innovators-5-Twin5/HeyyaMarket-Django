@@ -15,14 +15,14 @@
     <div class="card mb-6">
         <div class="card-header d-flex align-items-center justify-content-between">
             <h5 class="mb-0">Update Event</h5>
-            <small class="text-muted float-end">  
-                          <a href="{% url 'event_list' %}" class="btn btn-primary">Back to Events</a>  
+            <small class="text-muted float-end">
+                          <a href="{% url 'event_list' %}" class="btn btn-primary">Back to Events</a>
 </small>
         </div>
         <div class="card-body">
-<form method="POST" enctype="multipart/form-data">  
+<form method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
-                
+
                 <!-- Event Title -->
                 <div class="row mb-4">
                     <label class="col-sm-2 col-form-label" for="event-title">Event Title</label>
@@ -33,7 +33,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Event Description -->
                 <div class="row mb-4">
                     <label class="col-sm-2 col-form-label" for="event-description">Description</label>
@@ -44,7 +44,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Event Start Date & Time -->
                 <div class="row mb-4">
                     <label class="col-sm-2 col-form-label" for="event-start-date">Start Date & Time</label>
@@ -89,6 +89,20 @@
                     </div>
                 </div>
 
+                   <!-- Price -->
+                <div class="row mb-4">
+                    <label class="col-sm-2 col-form-label" for="price">Prix</label>
+                    <div class="col-sm-10">
+                          <div class="input-group input-group-merge">
+                            <span class="input-group-text"><i class="ri-money-dollar-circle-line ri-20px"></i></span>
+                            <input type="number" id="price" class="form-control" name="price" value="{{ form.price.value }}" required />
+                        </div>
+                    </div>
+                </div>
+
+
+
+
                 <!-- Status Field -->
                 <div class="row mb-4">
                     <label class="col-sm-2 col-form-label" for="event-status">Status</label>
@@ -110,6 +124,62 @@
             {% endif %}
         </div>
     </div>
+
+<!-- Event Type (Multiple Choice) -->
+<div class="row mb-4">
+    <label class="col-sm-2 col-form-label" for="event-type">Event Type</label>
+    <div class="col-sm-10">
+        {% for choice in form.event_type.field.choices %}
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="event_type" value="{{ choice.0 }}" id="event_type_{{ forloop.counter }}" {% if choice.0 in form.event_type.value|slice:":" %}checked{% endif %}>
+            <label class="form-check-label" for="event_type_{{ forloop.counter }}">{{ choice.1 }}</label>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Target Audience (Multiple Choice) -->
+<div class="row mb-4">
+    <label class="col-sm-2 col-form-label" for="target-audience">Target Audience</label>
+    <div class="col-sm-10">
+        {% for choice in form.target_audience.field.choices %}
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="target_audience" value="{{ choice.0 }}" id="target_audience_{{ forloop.counter }}" {% if choice.0 in form.target_audience.value|slice:":" %}checked{% endif %}>
+            <label class="form-check-label" for="target_audience_{{ forloop.counter }}">{{ choice.1 }}</label>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Event Theme (Multiple Choice) -->
+<div class="row mb-4">
+    <label class="col-sm-2 col-form-label" for="event-theme">Event Theme</label>
+    <div class="col-sm-10">
+        {% for choice in form.event_theme.field.choices %}
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="event_theme" value="{{ choice.0 }}" id="event_theme_{{ forloop.counter }}" {% if choice.0 in form.event_theme.value|slice:":" %}checked{% endif %}>
+            <label class="form-check-label" for="event_theme_{{ forloop.counter }}">{{ choice.1 }}</label>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Level (Multiple Choice) -->
+<div class="row mb-4">
+    <label class="col-sm-2 col-form-label" for="level">Level</label>
+    <div class="col-sm-10">
+        {% for choice in form.level.field.choices %}
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="level" value="{{ choice.0 }}" id="level_{{ forloop.counter }}" {% if choice.0 in form.level.value|slice:":" %}checked{% endif %}>
+            <label class="form-check-label" for="level_{{ forloop.counter }}">{{ choice.1 }}</label>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+
+
+
 
 
                 <div class="row justify-content-end">

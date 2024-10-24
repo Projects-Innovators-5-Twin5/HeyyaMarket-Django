@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', function () {
         event.preventDefault();
 
         const {paymentIntent, error} = await stripe.confirmCardPayment(
-            clientSecret, {  
+            clientSecret, {
                 payment_method: {
                     card: card,
                 }
@@ -23,17 +23,17 @@ document.addEventListener('DOMContentLoaded', function () {
             console.log(error.message);
             document.getElementById('payment-status').classList.add('alert alert-danger')
             document.getElementById('payment-status').textContent = error.message;
-            
+
         } else {
             console.log("Payment successful!");
             document.getElementById('payment-status').classList.add('alert-success')
             document.getElementById('payment-status').textContent = "Paiement réussi !";
-            
-            fetch('/update-statusPayment/', { 
+
+            fetch('/update-statusPayment/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRFToken': getCookie('csrftoken'), 
+                    'X-CSRFToken': getCookie('csrftoken'),
                 },
                 body: JSON.stringify({
                     order_id: orderId,
@@ -46,9 +46,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 return response.json();
             })
             .then(data => {
-                console.log('Order status updated:', data); 
+                console.log('Order status updated:', data);
                 setTimeout(()=>{
-                    window.location.href = `/confirmation-commande/${orderId}/`; 
+                    window.location.href = `/confirmation-commande/${orderId}/`;
                 },2000)
             })
             .catch(error => {
