@@ -14,6 +14,12 @@ from decimal import Decimal
 import stripe;
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
+from django.db.models import Sum, Max, Count, F, ExpressionWrapper, DurationField,IntegerField
+from django.db.models.functions import Now
+from datetime import date, timedelta
+import joblib
+import os
+import pandas as pd
 
 
 
@@ -387,3 +393,129 @@ class HistoryClientCommandeDetailsView(TemplateView):
             return context  
         
         
+class RemoveOrderView(View):
+    def post(self, request, *args, **kwargs):
+        
+        order_id = self.kwargs.get('order_id')  
+        order = get_object_or_404(Order, id=order_id)
+        order.delete()
+
+        return redirect('history-commandesClientBack') 
+    
+
+class UpdateOrderView(View):
+    def get_context_data(self, **kwargs):
+        context = TemplateLayout.init(self, super().get_context_data(**kwargs))
+        
+        orders = Order.objects.filter()
+        
+        context['orders'] = orders
+
+        # Update the context
+        context.update({
+            "layout_path": TemplateHelper.set_layout("layout_vertical.html", context),
+        })
+
+        return context  
+     
+    def post(self, request, order_id):
+        order = get_object_or_404(Order, id=order_id)
+        order_status = request.POST.get('order_status')
+
+        order.is_paid = order_status 
+        order.save()
+
+        return redirect('history-commandesClientBack') 
+
+
+
+
+def get_user_data():
+    user_data = (
+        User.objects.annotate(
+            total_spend=Sum('order__total_amount'),
+            items_purchased=Sum('order__items__quantity'),
+            last_order_date=Max('order__created_at')
+        ).annotate(
+            # Calculate days since last purchase using ExpressionWrapper
+            days_since_last_purchase=ExpressionWrapper(
+                Now() - F('last_order_date'),
+                output_field=DurationField()
+            )
+        ).annotate(
+            # Extract total days from the DurationField
+            total_days=ExpressionWrapper(
+                F('days_since_last_purchase') / timedelta(days=1),  # Divide by a day to get total days
+                output_field=IntegerField()
+            )
+        )
+    )
+    
+    return user_data
+
+
+def prepare_data(user_data):
+    prepared_data = []
+    
+    for user in user_data:
+        if user.total_spend and user.items_purchased and user.last_order_date:
+            prepared_data.append({
+                'user_id': user.id,
+                'Total Spend': user.total_spend,
+                'Items Purchased': user.items_purchased,
+                'Days Since Last Purchase': user.days_since_last_purchase.days,  # Get the integer value of days
+            })
+    
+    return prepared_data
+
+
+
+def classify_users(prepared_data):
+    model_path = os.path.join(os.path.dirname(__file__), 'model.pkl')
+    model = joblib.load(model_path)
+    X = pd.DataFrame([
+        [data['Total Spend'], data['Items Purchased'], data['Days Since Last Purchase']]
+        for data in prepared_data
+    ], columns=['Total Spend', 'Items Purchased', 'Days Since Last Purchase'])
+    print(X)
+    predictions = model.predict(X)
+
+    for i in range(len(prepared_data)):
+        prepared_data[i]['prediction'] = predictions[i]
+    return prepared_data
+
+
+class UserLoyaltyView(TemplateView):
+    def get_context_data(self, **kwargs):
+        context = TemplateLayout.init(self, super().get_context_data(**kwargs))
+        user_data = get_user_data()
+        prepared_data = prepare_data(user_data)
+        
+        classified_data = classify_users(prepared_data)
+       
+        loyal_users = []
+        not_loyal_users = []
+       
+        for data in classified_data:
+            user_id = data['user_id']
+            prediction = data['prediction']
+            user = User.objects.get(id=user_id)  
+
+            print(f'${user} ${prediction}') 
+            if user.role != 'ADMIN': 
+                loyalty_status = "Loyal" if prediction == 1 else "Not Loyal"
+                if loyalty_status == "Loyal":
+                    loyal_users.append(user)
+                else:
+                    not_loyal_users.append(user)
+
+        print(loyal_users)
+        print(not_loyal_users)          
+
+        context.update({
+            'loyal_users': loyal_users,
+            'not_loyal_users': not_loyal_users,
+            "layout_path": TemplateHelper.set_layout("layout_vertical.html", context),
+        })
+
+        return context  

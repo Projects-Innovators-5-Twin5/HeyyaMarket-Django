@@ -1,5 +1,5 @@
 {% extends layout_path %} {% load static %} {% load i18n %} {% block title %}Account settings - Pages{% endblock %}
-{%block content %}
+{%block content %} {% include 'modalConfirmation_suppression.html' %} {% include 'modalUpdate_commande.html' %}
 <div class="card mb-6 col-md-12">
   <div class="card-body">
     {% if request.user.is_authenticated and request.user.role == 'CLIENT' %}
@@ -54,7 +54,24 @@
                   <a class="dropdown-item" href="{% url 'commandeDetails' order.id %}">
                     <i class="ri-eye-line me-1"></i>Details</a
                   >
-                  <a class="dropdown-item" href="javascript:void(0);"><i class="ri-pencil-line me-1"></i>Modifier</a>
+                  <a
+                    class="dropdown-item"
+                    href="javascript:void(0);"
+                    data-bs-toggle="modal"
+                    data-bs-target="#editCommandeModal"
+                    data-id="{{ order.id }}"
+                    ><i class="ri-pencil-line me-1"></i>Modifier</a
+                  >
+                  <a
+                    class="dropdown-item"
+                    href="javascript:void(0);"
+                    data-bs-toggle="modal"
+                    data-bs-target="#deleteConfirmationModalCommande"
+                    data-type="cette commande"
+                    data-id="{{ order.id }}"
+                  >
+                    <i class="ri-delete-bin-6-line me-1"></i> Supprimer
+                  </a>
                 </div>
               </div>
             </td>
