@@ -1,0 +1,20 @@
+{% extends 'layout_user.html' %}
+{% load static %}
+{% load i18n %}
+{% load form_tags %}
+
+{% block content %}
+    <h1>Reviews for {{ product.name }}</h1>
+    <ul>
+        {% for avis in avis_list %}
+            <li>
+                <strong>{{ avis.user.username }}</strong>: {{ avis.text }} (Rating: {{ avis.rating }})
+                <ul>
+                    {% for commentaire in avis.commentaires.all %}
+                        <li><strong>{{ commentaire.user.username }}</strong>: {{ commentaire.text }}</li>
+                    {% endfor %}
+                </ul>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}

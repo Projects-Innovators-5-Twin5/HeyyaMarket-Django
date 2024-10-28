@@ -280,8 +280,10 @@
         </p>
         <!-- Boutons et formulaire de commentaire -->
         <i class="fas fa-comment" data-bs-toggle="collapse" data-bs-target="#commentForm{{ avis.id }}" aria-expanded="false" aria-controls="commentForm{{ avis.id }}" style="cursor: pointer;"></i>
-        <i class="fas fa-edit" data-bs-toggle="modal" data-bs-target="#editReviewModal{{ avis.id }}" style="cursor: pointer;"></i>
-        <i class="fas fa-trash-alt" style="cursor: pointer;" onclick="confirmDeleteReview({{ avis.id }})"></i>
+        {% if request.user.is_authenticated and request.user == avis.user %}
+    <i class="fas fa-edit" data-bs-toggle="modal" data-bs-target="#editReviewModal{{ avis.id }}" style="cursor: pointer;"></i>
+    <i class="fas fa-trash-alt" style="cursor: pointer;" onclick="confirmDeleteReview({{ avis.id }})"></i>
+{% endif %}
         <div class="collapse" id="commentForm{{ avis.id }}">
             <form method="POST">
                 {% csrf_token %}
@@ -334,83 +336,91 @@
       </div>
   </div>
 </div>
-                <!-- Commentaires -->
-                <div class="mt-3" id="avis-{{ avis.id }}">
-                    <h6>Commentaires :</h6>
-                    <div class="visible-comments">
-                        {% for commentaire in avis.commentaires.all|slice:":2" %}
-                            <div class="comment mt-2">
-                                <p><strong>{{ commentaire.user.username }} :</strong> {{ commentaire.text }}</p>
-                                <i class="fas fa-edit" data-bs-toggle="modal" data-bs-target="#editCommentModal{{ commentaire.id }}" style="cursor: pointer;"></i>
-                                <i class="fas fa-trash-alt" style="cursor: pointer;" onclick="confirmDeleteComment({{ commentaire.id }}, {{ avis.id }})"></i>
-                            </div>
+                 <!-- Commentaires -->
+                 <div class="mt-3" id="avis-{{ avis.id }}">
+                  <h6>Commentaires :</h6>
+                  <div class="visible-comments">
+                      {% for commentaire in avis.commentaires.all|slice:":2" %}
+                      <div class="comment mt-2">
+                        <p><strong>{{ commentaire.user.username }} :</strong> {{ commentaire.text }}</p>
 
-                            <!-- Modal pour modifier le commentaire -->
-                        <div class="modal fade" id="editCommentModal{{ commentaire.id }}" tabindex="-1" aria-labelledby="editCommentModalLabel{{ commentaire.id }}" aria-hidden="true">
-                          <div class="modal-dialog">
-                              <div class="modal-content">
-                                  <div class="modal-header">
-                                      <h5 class="modal-title" id="editCommentModalLabel{{ commentaire.id }}">Modifier le Commentaire</h5>
-                                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                  </div>
-                                  <div class="modal-body">
-                                      <form method="POST">
-                                          {% csrf_token %}
-                                          <input type="hidden" name="commentaire_id" value="{{ commentaire.id }}">
-                                          <div class="mb-3">
-                                              <label for="id_commentaire_text" class="form-label">Votre commentaire :</label>
-                                              <textarea id="id_commentaire_text" name="text" class="form-control" required>{{ commentaire.text }}</textarea>
-                                          </div>
-                                          <button type="submit" name="commentaire_edit" class="btn btn-warning"><i class="fas fa-save"></i> Enregistrer les modifications</button>
-                                      </form>
+                        {% if request.user.is_authenticated and request.user == commentaire.user %}
+                            <i class="fas fa-edit" data-bs-toggle="modal" data-bs-target="#editCommentModal{{ commentaire.id }}" style="cursor: pointer;"></i>
+                            <i class="fas fa-trash-alt" style="cursor: pointer;" onclick="confirmDeleteComment({{ commentaire.id }}, {{ avis.id }})"></i>
+                        {% endif %}
+                    </div>
+
+
+                          <!-- Modal pour modifier le commentaire -->
+                          <div class="modal fade" id="editCommentModal{{ commentaire.id }}" tabindex="-1" aria-labelledby="editCommentModalLabel{{ commentaire.id }}" aria-hidden="true">
+                              <div class="modal-dialog">
+                                  <div class="modal-content">
+                                      <div class="modal-header">
+                                          <h5 class="modal-title" id="editCommentModalLabel{{ commentaire.id }}">Modifier le Commentaire</h5>
+                                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                      </div>
+                                      <div class="modal-body">
+                                          <form method="POST">
+                                              {% csrf_token %}
+                                              <input type="hidden" name="commentaire_id" value="{{ commentaire.id }}">
+                                              <div class="mb-3">
+                                                  <label for="id_commentaire_text" class="form-label">Votre commentaire :</label>
+                                                  <textarea id="id_commentaire_text" name="text" class="form-control" required>{{ commentaire.text }}</textarea>
+                                              </div>
+                                              <button type="submit" name="commentaire_edit" class="btn btn-warning"><i class="fas fa-save"></i> Enregistrer les modifications</button>
+                                          </form>
+                                      </div>
                                   </div>
                               </div>
                           </div>
-                      </div>
-                        {% endfor %}
-                    </div>
-                    <div class="hidden-comments">
-                        {% for commentaire in avis.commentaires.all|slice:"2:" %}
-                            <div class="comment mt-2">
-                                <p><strong>{{ commentaire.user.username }} :</strong> {{ commentaire.text }}</p>
-                                <i class="fas fa-edit" data-bs-toggle="modal" data-bs-target="#editCommentModal{{ commentaire.id }}" style="cursor: pointer;"></i>
-                                <i class="fas fa-trash-alt" style="cursor: pointer;" onclick="confirmDeleteComment({{ commentaire.id }}, {{ avis.id }})"></i>
-                            </div>
+                      {% endfor %}
+                  </div>
 
-                            <!-- Modal pour éditer le commentaire -->
-                            <div class="modal fade" id="editCommentModal{{ commentaire.id }}" tabindex="-1" aria-labelledby="editCommentModalLabel{{ commentaire.id }}" aria-hidden="true">
-                                <div class="modal-dialog">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title" id="editCommentModalLabel{{ commentaire.id }}">Modifier le Commentaire</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <form method="POST">
-                                                {% csrf_token %}
-                                                <input type="hidden" name="commentaire_id" value="{{ commentaire.id }}">
-                                                <div class="mb-3">
-                                                    <label for="id_text_edit_comment" class="form-label">Votre commentaire :</label>
-                                                    <textarea id="id_text_edit_comment" name="text" class="form-control" rows="2" required>{{ commentaire.text }}</textarea>
-                                                </div>
-                                                <button type="submit" name="edit_comment_submit" class="btn btn-warning">
-                                                    <i class="fas fa-edit"></i> Modifier le commentaire
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        {% endfor %}
-                    </div>
-                    {% if avis.commentaires.count > 2 %}
-                        <button class="btn btn-link" id="toggle-button-{{ avis.id }}" onclick="toggleComments({{ avis.id }})">Voir plus</button>
-                    {% endif %}
-                </div>
-            </div>
-        {% endfor %}
-    </div>
+                  <div class="hidden-comments">
+                      {% for commentaire in avis.commentaires.all|slice:"2:" %}
+                          <div class="comment mt-2">
+                              <p><strong>{{ commentaire.user.username }} :</strong> {{ commentaire.text }}</p>
+                              <i class="fas fa-edit" data-bs-toggle="modal" data-bs-target="#editCommentModal{{ commentaire.id }}" style="cursor: pointer;"></i>
+                              <i class="fas fa-trash-alt" style="cursor: pointer;" onclick="confirmDeleteComment({{ commentaire.id }}, {{ avis.id }})"></i>
+                          </div>
 
+                          <!-- Modal pour éditer le commentaire -->
+                          <div class="modal fade" id="editCommentModal{{ commentaire.id }}" tabindex="-1" aria-labelledby="editCommentModalLabel{{ commentaire.id }}" aria-hidden="true">
+                              <div class="modal-dialog">
+                                  <div class="modal-content">
+                                      <div class="modal-header">
+                                          <h5 class="modal-title" id="editCommentModalLabel{{ commentaire.id }}">Modifier le Commentaire</h5>
+                                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                      </div>
+                                      <div class="modal-body">
+                                          <form method="POST">
+                                              {% csrf_token %}
+                                              <input type="hidden" name="commentaire_id" value="{{ commentaire.id }}">
+                                              <div class="mb-3">
+                                                  <label for="id_text_edit_comment" class="form-label">Votre commentaire :</label>
+                                                  <textarea id="id_text_edit_comment" name="text" class="form-control" rows="2" required>{{ commentaire.text }}</textarea>
+                                              </div>
+                                              <button type="submit" name="edit_comment_submit" class="btn btn-warning">
+                                                  <i class="fas fa-edit"></i> Modifier le commentaire
+                                              </button>
+                                          </form>
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                      {% endfor %}
+                  </div>
+
+                  {% if avis.commentaires.count > 2 %}
+                      <button class="btn btn-link" id="toggle-button-{{ avis.id }}" onclick="toggleComments({{ avis.id }})">Voir plus</button>
+                  {% endif %}
+              </div>
+          </div>
+      </div>
+  {% empty %}
+      <p>Aucun avis disponible pour ce produit.</p>
+  {% endfor %}
+</div>
     <script>
         function toggleComments(avisId) {
             const hiddenComments = document.querySelector(`#avis-${avisId} .hidden-comments`);

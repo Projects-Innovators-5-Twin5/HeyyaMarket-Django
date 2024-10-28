@@ -7,8 +7,34 @@ from django.db.models import Avg, Count
 from web_project.template_helpers.theme import TemplateHelper
 from transformers import pipeline
 
+
+def backoffice_reviews(request, product_id):
+    # Récupérer le produit
+    product = get_object_or_404(Product, id=product_id)
+
+    # Récupérer les avis pour le produit
+    avis_list = Avis.objects.filter(product_id=product_id).prefetch_related('commentaires')
+
+    context = {
+        'product': product,
+        'avis_list': avis_list,
+    }
+
+  # Ajouter le chemin de mise en page
+    context.update({
+        "layout_path": TemplateHelper.set_layout("layout_user.html", context),
+    })
+
+    return render(request, 'reviews.html', context)
+
+
 # Charger le pipeline de sentiment multilingue
 sentiment_pipeline = pipeline("sentiment-analysis", model="nlptown/bert-base-multilingual-uncased-sentiment")
+
+# Liste de mots offensants
+offensive_words = [
+    "mauvais", "nul", "dégoûtant", "idiot", "con", "débile"  # Ajoutez d'autres mots offensants ici
+]
 
 # Fonction pour analyser le sentiment d'un texte
 def analyze_sentiment(text):
@@ -30,7 +56,12 @@ def analyze_sentiment(text):
         sentiment = "neutre"
 
     return sentiment, score
-
+def contains_offensive_language(comment):
+    comment_lower = comment.lower()  # Convertir en minuscules pour la comparaison
+    for word in offensive_words:  # Assurez-vous que `offensive_words` est défini
+        if word in comment_lower:
+            return True  # Commentaire inapproprié trouvé
+    return False  # Aucun commentaire inapproprié
 
 def avis_list(request, product_id):
     # Récupérer les avis pour le produit
@@ -62,6 +93,17 @@ def avis_list(request, product_id):
             avis_instance = get_object_or_404(Avis, id=avis_id)
             commentaire_form = CommentaireForm(request.POST)
             if commentaire_form.is_valid():
+                text = commentaire_form.cleaned_data['text']
+                if contains_offensive_language(text):
+                    # Gérer le cas d'un commentaire inapproprié
+                    return render(request, 'avis_list.html', {
+                        'avis': avis,
+                        'avis_form': avis_form,
+                        'commentaire_form': commentaire_form,
+                        'produit': product,
+                        'error': "Commentaire inapproprié."
+                    })
+
                 new_commentaire = commentaire_form.save(commit=False)
                 new_commentaire.user = request.user
                 new_commentaire.avis = avis_instance
@@ -111,13 +153,12 @@ def avis_list(request, product_id):
 
     return render(request, 'avis_list.html', context)
 
-
-def stats_avis(request):
-    total_avis = Avis.objects.count()  # Nombre total d'avis
-    average_rating = Avis.objects.aggregate(Avg('rating'))['rating__avg']  # Note moyenne
+def stats_avis(request, product_id):
+    total_avis = Avis.objects.filter(product_id=product_id).count()  # Nombre total d'avis pour un produit spécifique
+    average_rating = Avis.objects.filter(product_id=product_id).aggregate(Avg('rating'))['rating__avg']  # Note moyenne pour ce produit
 
     # Comptage des notes (1 à 5)
-    ratings_count = Avis.objects.values('rating').annotate(count=Count('id')).order_by('rating')
+    ratings_count = Avis.objects.filter(product_id=product_id).values('rating').annotate(count=Count('id')).order_by('rating')
     ratings_data = [0] * 5  # Initialise une liste de 5 zéros pour les notes 1-5
 
     for rating in ratings_count:
@@ -128,6 +169,8 @@ def stats_avis(request):
         'total_avis': total_avis,
         'average_rating': average_rating,
         'ratings_count': ratings_data,
+        'product_id': product_id,  # Ajoutez le product_id ici
     }
+
 
     return render(request, 'stats_avis.html', context)
