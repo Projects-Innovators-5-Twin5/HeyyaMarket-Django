@@ -171,6 +171,9 @@ def stats_avis(request, product_id):
         'ratings_count': ratings_data,
         'product_id': product_id,  # Ajoutez le product_id ici
     }
-
+ # Ajouter le chemin de mise en page
+    context.update({
+        "layout_path": TemplateHelper.set_layout("layout_user.html", context),
+    })
 
     return render(request, 'stats_avis.html', context)
