@@ -41,13 +41,33 @@ $(document).ready(function () {
                             location.reload();  
                         }, 3000);
                     } else {
-                        $('#alert-container').html(`
-                            <div class="alert alert-danger" role="alert">
-                              ${response.message}
-                            </div>
-                        `);
-                        window.scrollTo({ top: 0, behavior: 'smooth' });  
-
+                        var errors = JSON.parse(response.errors); // Récupérer l'objet d'erreur
+                        console.log("Errors object:", errors); // Afficher l'objet d'erreur dans la console
+                    
+                        // Effacer les messages d'erreur précédents
+                        for (var field in errors) {
+                            if (errors.hasOwnProperty(field)) {
+                                console.log(field); // Affiche le nom du champ
+            
+                                var messages = errors[field];
+            
+                                // Vérifiez si messages est un tableau
+                                if (Array.isArray(messages)) {
+                                    var errorMessagesHtml = '';
+                                    messages.forEach(function(error) {
+                                        errorMessagesHtml += '<div>' + error.message + '</div>'; // Créer le message d'erreur
+                                    });
+            
+                                    // Cibler le div d'erreur spécifique par ID
+                                    var errorDiv = $('#' + field + '-errors-edit-');
+            
+                                    // Ajouter les messages d'erreur au div correspondant
+                                    errorDiv.html(errorMessagesHtml);
+                                } else {
+                                    console.error('Format d’erreur inattendu pour ' + field); // Gestion d'erreur si le format n'est pas un tableau
+                                }
+                            }
+                        }
                     }
                 },
                 error: function (xhr, status, error) {
@@ -136,62 +156,116 @@ $(document).ready(function() {
                     setTimeout(function () {
                         location.reload();  
                     }, 3000);         
-                   } else {
-                    var errors = response.errors;
-                    
-                    var errorHtml = '<div class="alert alert-danger"><ul>';
-                    $.each(errors, function(key, value) {
-                        errorHtml += '<li>' + value[0] + '</li>';  // Adjust error display
-                    });
-                    errorHtml += '</ul></div>';
-                    $('#alert-container').html(errorHtml);
+                }else {
+                    var errors = JSON.parse(response.errors); // Récupérer l'objet d'erreur
+                    console.log("Errors object:", errors); // Afficher l'objet d'erreur dans la console
+                
+                    // Effacer les messages d'erreur précédents
+                    for (var field in errors) {
+                        if (errors.hasOwnProperty(field)) {
+                            console.log(field); // Affiche le nom du champ
+        
+                            var messages = errors[field];
+        
+                            // Vérifiez si messages est un tableau
+                            if (Array.isArray(messages)) {
+                                var errorMessagesHtml = '';
+                                messages.forEach(function(error) {
+                                    errorMessagesHtml += '<div>' + error.message + '</div>'; // Créer le message d'erreur
+                                });
+        
+                                // Cibler le div d'erreur spécifique par ID
+                                var errorDiv = $('#' + field + '-errors');
+        
+                                // Ajouter les messages d'erreur au div correspondant
+                                errorDiv.html(errorMessagesHtml);
+                            } else {
+                                console.error('Format d’erreur inattendu pour ' + field); // Gestion d'erreur si le format n'est pas un tableau
+                            }
+                        }
+                    }
                 }
+                
             },
             error: function(xhr, status, error) {
                 $('#alert-container').html('<div class="alert alert-danger">An error occurred. Please try again.</div>');
             }
         });
     });
-    $('#productForm').on('submit', function(e) {
-        e.preventDefault(); 
-        var formData = new FormData(this);
-        var form = $(this);
-        var actionUrl = form.attr('action');  
-        $.ajax({
-            type: 'POST',
-            data: formData,
-            processData: false,
-            contentType: false,
-            success: function(response) {
-                if (response.success) {
-                    $('#alert-container').html(`
-                        <div class="alert alert-success" role="alert">
-                          ${response.message}
-                        </div>
-                    `);
-                    $('#editModal').modal('hide');  
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-
-                   
-                    setTimeout(function () {
-                        location.reload();  
-                    }, 3000);         
-                   } else {
-                    var errors = response.errors;
+    $(document).ready(function() {
+        $('#productForm').on('submit', function(e) {
+            e.preventDefault(); 
+            var formData = new FormData(this);
+            var form = $(this);
+            var actionUrl = form.attr('action');  
+    
+            // Effacer les alertes précédentes
+            $('#alert-container').html('');
+    
+            $.ajax({
+                type: 'POST',
+                url: actionUrl,  // Assurez-vous que l'URL est définie ici
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    if (response.success) {
+                        $('#alert-container').html(`
+                            <div class="alert alert-success" role="alert">
+                              ${response.message}
+                            </div>
+                        `);
+                        $('#editModal').modal('hide');  
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                
+                        setTimeout(function () {
+                            console.log("reload");
+                            location.reload();  
+                        }, 4000);         
+                    }else {
+                        var errors = JSON.parse(response.errors); // Récupérer l'objet d'erreur
+                        console.log("Errors object:", errors); // Afficher l'objet d'erreur dans la console
                     
-                    var errorHtml = '<div class="alert alert-danger"><ul>';
-                    $.each(errors, function(key, value) {
-                        errorHtml += '<li>' + value[0] + '</li>';  // Adjust error display
-                    });
-                    errorHtml += '</ul></div>';
-                    $('#alert-container').html(errorHtml);
+                        // Effacer les messages d'erreur précédents
+                        for (var field in errors) {
+                            if (errors.hasOwnProperty(field)) {
+                                console.log(field); // Affiche le nom du champ
+            
+                                var messages = errors[field];
+            
+                                // Vérifiez si messages est un tableau
+                                if (Array.isArray(messages)) {
+                                    var errorMessagesHtml = '';
+                                    messages.forEach(function(error) {
+                                        errorMessagesHtml += '<div>' + error.message + '</div>'; // Créer le message d'erreur
+                                    });
+            
+                                    // Cibler le div d'erreur spécifique par ID
+                                    var errorDiv = $('#' + field + '-errors');
+            
+                                    // Ajouter les messages d'erreur au div correspondant
+                                    errorDiv.html(errorMessagesHtml);
+                                } else {
+                                    console.error('Format d’erreur inattendu pour ' + field); // Gestion d'erreur si le format n'est pas un tableau
+                                }
+                            }
+                        }
+                    }
+                    
+                    
+                    
+                },
+                
+                
+                
+                
+                error: function(xhr, status, error) {
+                    $('#alert-container').html('<div class="alert alert-danger">Une erreur est survenue. Veuillez réessayer.</div>');
                 }
-            },
-            error: function(xhr, status, error) {
-                $('#alert-container').html('<div class="alert alert-danger">An error occurred. Please try again.</div>');
-            }
+            });
         });
     });
+    
     $('#editProduitModal').on('show.bs.modal', function (event) {
         var button = $(event.relatedTarget); 
         var url = button.data('url');
@@ -235,11 +309,31 @@ $(document).ready(function() {
                             location.reload();  
                         }, 3000);
                     } else {
-                        $('#alert-container').html(`
-                            <div class="alert alert-danger" role="alert">
-                              ${response.message}
-                            </div>
-                        `);
+                        var errors = JSON.parse(response.errors); // Récupérer l'objet d'erreur
+
+                        for (var field in errors) {
+                            if (errors.hasOwnProperty(field)) {
+                                console.log(field); // Affiche le nom du champ
+        
+                                var messages = errors[field];
+                                // Vérifiez si messages est un tableau
+                                if (Array.isArray(messages)) {
+                                    var errorMessagesHtml = '';
+                                    messages.forEach(function(error) {
+
+                                        errorMessagesHtml += '<div>' + error.message + '</div>'; // Créer le message d'erreur
+                                    });
+        
+                                    // Cibler le div d'erreur spécifique par ID
+                                    var errorDiv = $('#' + field + '-errors-edit-');
+        
+                                    // Ajouter les messages d'erreur au div correspondant
+                                    errorDiv.html(errorMessagesHtml);
+                                } else {
+                                    console.error('Format d’erreur inattendu pour ' + field); // Gestion d'erreur si le format n'est pas un tableau
+                                }
+                            }
+                        }
                         window.scrollTo({ top: 0, behavior: 'smooth' });  
                     }
                 },

@@ -13,6 +13,7 @@ from django.shortcuts import redirect
 from django.http import JsonResponse
 from django.template.loader import render_to_string
 from django.core.paginator import Paginator, Page
+from .models import est_a_archiver
 
 class CategoryView(ListView):
     model = Category
@@ -40,9 +41,8 @@ class CategoryView(ListView):
             form.save()
             return JsonResponse({'success': True, 'message': 'Catégorie ajoutée avec succés.'}) 
         else:
-            context = self.get_context_data()
-            context['form'] = form
-            return JsonResponse({'success': False, 'message': 'Erreur lors de lajout de la catégorie.'})
+            errors = form.errors.as_json()
+            return JsonResponse({'success': False, 'message': 'Erreur lors de lajout de la catégorie.','errors':errors})
 
 class CategoryDetailView(DetailView):
     model = Category
@@ -71,6 +71,7 @@ class CategoryUpdateView(View):
                     'form': rendered_form 
                 })
             else:
+                
                 return render(request, 'categories/update_categorie_form.html', {'form': form})
 
     def post(self, request, pk):
@@ -81,7 +82,8 @@ class CategoryUpdateView(View):
             form.save()  
             return JsonResponse({'success': True, 'message': 'Catégorie mise à jour avec succès!'}) 
         else:
-            return JsonResponse({'error': False, 'message': 'Erreur lors de la mise à jour de la catégorie.'})
+            errors = form.errors.as_json()
+            return JsonResponse({'error': False, 'message': 'Erreur lors de la mise à jour de la catégorie.','errors':errors})
 
 
 class CategoryDeleteView(DeleteView):
@@ -106,6 +108,9 @@ class ProductView(ListView):
     def get_context_data(self, **kwargs):
         context = TemplateLayout.init(self, super().get_context_data(**kwargs))
         produits_list = Product.objects.all()
+        for produit in produits_list:
+            if est_a_archiver(produit):
+                produit.archiver()  
         paginator = Paginator(produits_list, 5)
         page_number = self.request.GET.get('page')
         page_obj = paginator.get_page(page_number)
@@ -119,16 +124,14 @@ class ProductView(ListView):
             form.save()
             return JsonResponse({'success': True, 'message': 'Produit ajoutée avec succés.'}) 
         else:
-            context = self.get_context_data()
-            context['form'] = form
-            return JsonResponse({'success': False, 'message': 'Erreur lors dajout de produit.'}) 
+            errors = form.errors.as_json()
+            return JsonResponse({'success': False, 'message': 'Erreur lors de l\'ajout de produit.', 'errors': errors})
 
 
 class ProductDetailView(DetailView):
     model = Product
     template_name = 'produits/front/details_produit.html'
     context_object_name = 'produit'
-    
     def get_context_data(self, **kwargs):
         context = TemplateLayout.init(self, super().get_context_data(**kwargs))
         context.update(
@@ -177,7 +180,8 @@ class ProductUpdateView(View):
             form.save()  
             return JsonResponse({'success': True, 'message': 'Produit mis à jour avec succès!'}) 
         else:
-            return JsonResponse({'error': False, 'message': 'Erreur lors de la mise à jour du produit.'})
+            errors = form.errors.as_json()
+            return JsonResponse({'error': False, 'message': 'Erreur lors de la mise à jour du produit.', 'errors': errors})
 
 class ProductDeleteView(DeleteView):
     model = Product

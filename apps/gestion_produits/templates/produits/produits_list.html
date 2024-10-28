@@ -30,13 +30,17 @@
                               <a class="dropdown-item" href="/produits/back/produit/{{produit.id}}">
                                    <i class="ri-eye-line me-1"></i> Voir
                                 </a>
+                                {% if produit.pk %}
                                 <a class="dropdown-item" href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#editProduitModal" 
                                    data-url="{% url 'product_edit' produit.pk %}">
                                    <i class="ri-pencil-line me-1"></i> Modifier
                                 </a>
+                                
                                 <a class="dropdown-item" href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#deleteConfirmationModal" data-type="ce produit" data-url="{% url 'product_delete' produit.pk %}">
                                    <i class="ri-delete-bin-6-line me-1"></i> Supprimer
                                 </a>
+                                {% endif %}
+
                                
                             </div>
                         </div>
