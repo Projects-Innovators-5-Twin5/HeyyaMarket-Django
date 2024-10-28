@@ -25,9 +25,15 @@ from django.conf import settings
 from django.core.mail import send_mail, EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
-from django.db.models import Count, Sum, Avg
+from django.db.models import Count, Sum, Avg , F , Q
 from django.db.models.functions import TruncMonth
+import stripe
+from django.views.decorators.csrf import csrf_exempt
+from .apps import EventsConfig
 
+
+
+stripe.api_key = settings.STRIPE_SECRET
 
 def event_list(request):
     now = timezone.now()
@@ -77,7 +83,7 @@ def calendar_view(request):
 
     # Check if the user is authenticated and has the admin role
     if request.user.is_authenticated:
-        if request.user.role == 'ADMIN':
+        if request.user.role == 'ADMIN' :
             layout_context['layout_path'] = TemplateHelper.set_layout("layout_vertical.html", layout_context)
         else:
             layout_context['layout_path'] = TemplateHelper.set_layout("layout_user.html", layout_context)
@@ -132,11 +138,11 @@ def create_event(request):
             # Auto-generate description if not provided
             if not event.description:
                 event.description = generate_event_descriptioncohere(
-                    event.title, event.start_datetime, event.end_datetime, event.location, event.available_slots,event.event_type,event.target_audience,event.event_theme,event.level
+                    event.title, event.start_datetime, event.end_datetime, event.location, event.available_slots, event.event_type, event.target_audience, event.event_theme, event.level
                 )
 
             if not event.image:
-                # Generate the image and get just the image filename
+                # Generate the image and set image path
                 image_filename = generate_event_image(
                     title=event.title,
                     description=event.description,
@@ -144,14 +150,47 @@ def create_event(request):
                     start_datetime=event.start_datetime,
                     end_datetime=event.end_datetime,
                     available_slots=event.available_slots,
-                    event_type = event.event_type,
-                    target_audience = event.target_audience,
-                    event_theme = event.event_theme,
-                    level= event.level
-
+                    event_type=event.event_type,
+                    target_audience=event.target_audience,
+                    event_theme=event.event_theme,
+                    level=event.level
                 )
-
                 event.image = f'events/{image_filename}'
+
+            # Predict and set price if empty
+            if not event.price:
+
+                   feature_dict = {
+                    'event_type_workshop': int(event.event_type == 'workshop'),
+                    'event_type_seminar': int(event.event_type == 'seminar'),
+                    'event_type_bootcamp': int(event.event_type == 'bootcamp'),
+                    'event_type_conference': int(event.event_type == 'conference'),
+                    'event_type_bazaar': int(event.event_type == 'bazaar'),
+                    'event_type_networking': int(event.event_type == 'networking'),
+
+                    'target_audience_artisans_and_craftswomen': int(event.target_audience == 'artisans_and_craftswomen'),
+                    'target_audience_aspiring_entrepreneurs': int(event.target_audience == 'aspiring_entrepreneurs'),
+                    'target_audience_small_business_owners': int(event.target_audience == 'small_business_owners'),
+                    'target_audience_students_and_young_professionals': int(event.target_audience == 'students_and_young_professionals'),
+                    'target_audience_community_leaders_and_activists': int(event.target_audience == 'community_leaders_and_activists'),
+                    'target_audience_hobbyists_and_creatives': int(event.target_audience == 'hobbyists_and_creatives'),
+                    'target_audience_mentors_and_educators': int(event.target_audience == 'mentors_and_educators'),
+                    'target_audience_nonprofit_organizations': int(event.target_audience == 'nonprofit_organizations'),
+
+                    'event_theme_empowerment': int(event.event_theme == 'empowerment'),
+                    'event_theme_entrepreneurship': int(event.event_theme == 'entrepreneurship'),
+                    'event_theme_marketing': int(event.event_theme == 'marketing'),
+                    'event_theme_craftsmanship': int(event.event_theme == 'craftsmanship'),
+                    'event_theme_digital_skills': int(event.event_theme == 'digital_skills'),
+
+                    'level_beginner': int(event.level == 'beginner'),
+                    'level_intermediate': int(event.level == 'intermediate'),
+                    'level_advanced': int(event.level == 'advanced'),
+                }
+
+                   features = list(feature_dict.values())
+                   event.price = int(EventsConfig.price_predictor_model.predict([features])[0])
+
 
             event.save()
             messages.success(request, "Event created successfully.")
@@ -171,10 +210,29 @@ def update_event(request, event_id):
     if request.method == 'POST':
         form = EventForm(request.POST, request.FILES, instance=event)  # Include request.FILES here
         if form.is_valid():
+
+            event_type = request.POST.getlist('event_type')
+            target_audience = request.POST.getlist('target_audience')
+            event_theme = request.POST.getlist('event_theme')
+            level = request.POST.getlist('level')
+
+            # Join the selected values into a comma-separated string
+            event.event_type = ','.join(event_type)
+            event.target_audience = ','.join(target_audience)
+            event.event_theme = ','.join(event_theme)
+            event.level = ','.join(level)
+
             form.save()
             messages.success(request, "Event updated successfully.")
             return redirect('event_list')
     else:
+
+
+        event.event_type = event.event_type.split(',') if event.event_type else []
+        event.target_audience = event.target_audience.split(',') if event.target_audience else []
+        event.event_theme = event.event_theme.split(',') if event.event_theme else []
+        event.level = event.level.split(',') if event.level else []
+
         form = EventForm(instance=event)
 
     layout_context = TemplateLayout.init(request, {})
@@ -238,9 +296,14 @@ def event_listfront(request):
 def event_detail(request, event_id):
     event = get_object_or_404(Event, id=event_id)
     layout_context = TemplateLayout.init(request, {})
-    layout_context['layout_path'] = TemplateHelper.set_layout("layout_user.html", layout_context)
-    layout_context['event'] = event  # Pass the event to the template
+    if request.user.is_authenticated:
+        if request.user.role == 'ADMIN':
+           layout_context['layout_path'] = TemplateHelper.set_layout("layout_vertical.html", layout_context)
+        else:
+           layout_context['layout_path'] = TemplateHelper.set_layout("layout_user.html", layout_context)
 
+    layout_context['event'] = event  # Pass the event to the template
+    layout_context['stripe_public_key'] = settings.STRIPE_KEY
     # Check if the user is authenticated
     if request.user.is_authenticated:
         user_is_vendeur = request.user.role == 'VENDEUR'
@@ -270,14 +333,6 @@ def event_detail(request, event_id):
     total_capacity = confirmed_count + available_slots  # Total capacity for attendance
     attendance_percentage = (confirmed_count / total_capacity * 100) if total_capacity > 0 else 0  # Calculate percentage
     layout_context['attendance_percentage'] = attendance_percentage  # Pass the attendance percentage to the template
-
-
-
-
-
-
-
-
     layout_context['rating_options'] = range(1, 6)
 
     if event.status == 'finished':
@@ -306,40 +361,102 @@ def event_detail(request, event_id):
 def request_participation(request, event_id):
     event = get_object_or_404(Event, id=event_id)
 
-    print(f"User Role: {request.user.role}, User Authenticated: {request.user.is_authenticated}")
-
     if request.method == "POST":
         if request.user.role == 'VENDEUR':
-            print("User is vendeur.")
             participation = Participation.objects.filter(event=event, user=request.user).first()
 
             if participation:
                 if participation.status == 'cancelled':
                     participation.status = 'pending'
                     participation.save()
-                    messages.success(request, "Participation request sent successfully.")
-                    print("Participation status updated to pending.")
+                    messages.success(request, "Participation request reactivated successfully.")
+                    # Redirect to the event details page without triggering the modal
+                    return redirect('event_detail', event_id=event.id)
                 else:
                     messages.info(request, "You have already requested participation.")
-                    print("Participation already exists with status: ", participation.status)
+                    return redirect('event_detail', event_id=event.id)
             else:
+                # First-time request
                 participation = Participation(event=event, user=request.user, status='pending')
                 participation.save()
-                messages.success(request, "Participation request sent successfully.")
-                print("New participation created.")
 
+            if event.price > 0 and not participation.status == 'cancelled':
+                return JsonResponse({
+                    'status': 'modal',
+                    'message': "Open payment modal",
+                    'participation_id': participation.id
+                })
+            else:
+                participation.status = 'pending'
+                participation.save()
+                messages.success(request, "Participation request sent successfully and accepted.")
+                return redirect('event_detail', event_id=event.id)
         else:
             messages.error(request, "You do not have permission to request participation.")
-            print("User does not have permission.")
-
     else:
         messages.error(request, "Invalid request method.")
-        print("Invalid request method.")
 
     return redirect('event_detail', event_id=event.id)
 
 
+@csrf_exempt
+def process_payment(request, event_id):
+    if request.method == "POST":
+        event = get_object_or_404(Event, id=event_id)
 
+        # Get the payment method ID from the request body
+        data = json.loads(request.body)
+        payment_method_id = data.get("payment_method_id")
+        participation_id = data.get("participation_id")  # Get the participation ID
+
+        if not payment_method_id:
+            return JsonResponse({'error': 'Payment method ID is required'}, status=400)
+
+        try:
+            # Create a Payment Intent
+            payment_intent = stripe.PaymentIntent.create(
+                amount=int(event.price * 100),  # Amount in cents
+                currency='usd',
+                payment_method=payment_method_id,
+                automatic_payment_methods={
+                    'enabled': True,
+                }
+            )
+
+            # Update participation status to accepted
+            event.available_slots -= 1
+            event.save()
+            participation = get_object_or_404(Participation, id=participation_id)
+            participation.status = 'confirmed'
+
+
+            participation.save()
+
+            # Return the client_secret
+            return JsonResponse({'client_secret': payment_intent['client_secret']})
+
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+
+    return JsonResponse({'error': 'Invalid request'}, status=400)
+
+
+
+def payment_success(request):
+    event_id = request.GET.get('event_id')
+    if event_id:
+        event = get_object_or_404(Event, id=event_id)
+
+        # Create the participation record and set status to 'accepted'
+        participation = Participation.objects.create(event=event, user=request.user, status='confirmed')
+        participation.save()
+        messages.success(request, "Payment successful! Your participation is confirmed.")
+        print("Payment successful, participation status set to accepted.")
+    else:
+        messages.error(request, "No event ID provided.")
+
+    # Redirect to the event detail page
+    return redirect('event_detail', event_id=event.id)
 
 
 def event_manage_requests(request, event_id):
@@ -437,31 +554,24 @@ def events_analytics(request):
     layout_context = TemplateLayout.init(request, {})
     layout_context['layout_path'] = TemplateHelper.set_layout("layout_vertical.html", layout_context)
 
-    # Get the current month
     now = timezone.now()
-    current_month = now.month
     current_year = now.year
 
-    # Total number of events
+    # Aggregate event counts
     total_events = Event.objects.count()
-
-    # Number of events by status
     active_events = Event.objects.filter(status='scheduled').count()
     finished_events = Event.objects.filter(status='finished').count()
     cancelled_events = Event.objects.filter(status='cancelled').count()
-
 
     # Participation metrics
     total_participations = Participation.objects.count()
     confirmed_participations = Participation.objects.filter(status='confirmed').count()
     pending_participations = Participation.objects.filter(status='pending').count()
     refused_participations = Participation.objects.filter(status='refused').count()
-
-    # Average feedback ratings
     average_rating = Participation.objects.filter(rating__isnull=False).aggregate(Avg('rating'))['rating__avg'] or 0
 
-
-    # Top event of the month: finished events, available_slots = 0, end date in current month
+    # Top event of the month
+    current_month = now.month
     top_event = Event.objects.filter(
         available_slots=0,
         status='finished',
@@ -469,7 +579,6 @@ def events_analytics(request):
         end_datetime__year=current_year
     ).annotate(participant_count=Count('participation')).order_by('-participant_count').first()
 
-    # If a top event exists, get its details
     if top_event:
         top_event_title = top_event.title
         top_event_type = top_event.event_type
@@ -484,31 +593,52 @@ def events_analytics(request):
     total_participants = Participation.objects.filter(status='confirmed').count()
     total_available_slots = Event.objects.filter(status='scheduled').aggregate(total=Sum('available_slots'))['total'] or 0
 
-    now = datetime.now()
-
-    start_of_year = now.replace(month=1, day=1)
-
-    events_per_month = (
-        Event.objects
-       .filter(start_datetime__gte=start_of_year)
-       .annotate(month=TruncMonth('start_datetime'))
-       .values('month')
-       .annotate(count=Count('id'))
-       .order_by('month')
+    # Event counts per month
+    event_counts_per_month = (
+        Event.objects.filter(start_datetime__year=current_year)
+        .annotate(month=TruncMonth('start_datetime'))
+        .values('month')
+        .annotate(event_count=Count('id'))
+        .order_by('month')
     )
 
-# Prepare data for the chart
+    # Income per month
+    income_per_month = (
+        Participation.objects.filter(event__start_datetime__year=current_year, status='confirmed')
+        .annotate(month=TruncMonth('event__start_datetime'))
+        .values('month')
+        .annotate(total_income=Sum('event__price'))
+        .order_by('month')
+    )
+
+    # Initialize monthly data
+    monthly_data = {month: {'event_count': 0, 'total_income': 0.0} for month in range(1, 13)}
+
+    # Populate event counts per month
+    for data in event_counts_per_month:
+        month = data['month'].month
+        monthly_data[month]['event_count'] = data['event_count']
+
+    # Populate income per month
+    for data in income_per_month:
+        month = data['month'].month
+        monthly_data[month]['total_income'] = (data['total_income'] or 0) / 1000  # Adjust to thousands if needed
+
+    # Prepare data for the chart
     months = []
     event_counts = []
+    income_counts = []
 
-# Loop through all months of the year
     for month in range(1, 13):
-     month_name = datetime(now.year, month, 1).strftime('%B %Y')
-     months.append(month_name)
-    # Check if there is an event count for the month, if not append 0
-     count = next((event['count'] for event in events_per_month if event['month'].month == month), 0)
-     event_counts.append(count)
+        month_name = datetime(current_year, month, 1).strftime('%B %Y')
+        months.append(month_name)
+        event_counts.append(monthly_data[month]['event_count'])
+        income_counts.append(monthly_data[month]['total_income'])
 
+    # Debug print to verify final structure
+    print("Monthly Data:", monthly_data)
+    print("Event Counts by Month:", event_counts)
+    print("Income by Month:", income_counts)
 
     # Adding data to context
     layout_context.update({
@@ -525,6 +655,7 @@ def events_analytics(request):
         'total_available_slots': total_available_slots,
         'months': months,
         'event_counts': event_counts,
+        'income_counts': income_counts,
     })
 
     return render(request, 'events_analytics.html', layout_context)

@@ -15,10 +15,11 @@
             </div>
             <div>
  {% if user_is_vendeur and not has_requested and event.available_slots > 0 and event.status != 'finished' and event.status != 'cancelled' %}
-                    <form method="POST" action="{% url 'request_participation' event.id %}" class="d-inline">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-primary">Participate</button>
-                    </form>
+                  <form method="POST" action="{% url 'request_participation' event.id %}" class="d-inline" id="participation-request-form">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-primary" id="participation-request-button">Participate</button>
+</form>
+
                 {% elif has_requested and participation_status == 'pending' %}
                     <p class="text-muted">Participation request already sent. Waiting for confirmation.</p>
                 {% elif has_requested and participation_status == 'cancelled' %}
@@ -48,10 +49,24 @@
         </div>
         <img class="card-img-top" src="{{ event.image.url }}" alt="{{ event.title }}" style="height: 300px; object-fit: cover;">  <!-- Display event image -->
         <div class="card-body">
+    <div class="row">
+
+        <div class="col-md-6">
+
             <p class="card-text">{{ event.description }}</p>  <!-- Event description -->
             <p class="card-text"><strong>Start Date & Time:</strong> {{ event.start_datetime }}</p>
             <p class="card-text"><strong>End Date & Time:</strong> {{ event.end_datetime }}</p>
             <p class="card-text"><strong>Available Slots:</strong> {{ event.available_slots }}</p>
+            <p class="card-text"><strong>Prix :</strong> {{ event.price }} Dt </p>
+                    </div>
+
+        <div class="col-md-6">
+<br>
+            <p class="card-text"><strong>Event Type:</strong> {{ event.event_type }}</p>
+            <p class="card-text"><strong>Event Theme:</strong> {{ event.event_theme }}</p>
+            <p class="card-text"><strong>Target Audience:</strong> {{ event.target_audience }}</p>
+            <p class="card-text"><strong>Level:</strong> {{ event.level }}</p>
+</div>
             <p class="card-text">
                 {% if event.status == 'scheduled' %}
                     <span class="badge rounded-pill bg-label-info me-1">Scheduled</span>
@@ -113,15 +128,17 @@
 
     </div>
 <!-- Feedback Section -->
+
 {% if user.is_authenticated and participation and participation.status == 'confirmed' and event.status == 'finished' %}
-    <h5 class="mt-4">How was the Event ? Give Your Feedback </h5>
+    <div class="card my-4 p-4">
+        <h5 class="mb-4">How was the Event? Give Your Feedback</h5>
     <form method="POST">
         {% csrf_token %}
-        <div class="mb-3">
-            <label for="feedback" class="form-label">Feedback</label>
+        <div class="mb-4">
+            <label for="feedback" class="form-label fw-bold ">Feedback</label>
             <textarea class="form-control" id="feedback" name="feedback" rows="3" required></textarea>
         </div>
-        <div class="mb-3">
+            <div class="mb-4">
             <label for="rating" class="form-label">Rating</label>
             <p> From 5 to 1 </p>
 <div class="star-rating">
@@ -145,4 +162,155 @@
     </form>
 {% endif %}
 </div>
+
+<div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="paymentModalLabel">Payment for {{ event.title }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+<div class="modal-body">
+    <p>Total Amount: ${{ event.price }}</p>
+    <form id="payment-form">
+        <div id="card-element"></div> <!-- Stripe card element will be inserted here -->
+
+        <button id="checkout-button" class="btn btn-primary mt-3">Pay Now</button>
+    </form>
+    <div id="card-errors" role="alert"></div> <!-- For displaying errors -->
+</div>
+        </div>
+    </div>
+</div>
+
+
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    const stripe = Stripe('pk_test_51PCMzNHTb56tjMDuH9mlRWNgGo94uv9xBBcqLA67OjhwCn1U3GM6D0hF6xBZ1BixF9Trikzz2pwydkpGyugQFymD00UL9exp8n');
+    const elements = stripe.elements();
+    const cardElement = elements.create('card');
+    cardElement.mount('#card-element'); // Mount the card element
+});
+
+    const stripe = Stripe('pk_test_51PCMzNHTb56tjMDuH9mlRWNgGo94uv9xBBcqLA67OjhwCn1U3GM6D0hF6xBZ1BixF9Trikzz2pwydkpGyugQFymD00UL9exp8n');
+    const elements = stripe.elements();
+    const cardElement = elements.create('card');
+    cardElement.mount('#card-element'); // Mount the card element
+
+
+document.getElementById("participation-request-button").addEventListener("click", function(event) {
+    event.preventDefault();  // Prevent the default form submission
+
+    // Send the participation request
+    fetch("{% url 'request_participation' event.id %}", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": "{{ csrf_token }}"
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'modal') {
+            // Open the payment modal and store participation ID
+            const participationId = data.participation_id; // Get participation ID
+            openPaymentModal(participationId); // Call the function to open the payment modal
+        } else {
+            alert(data.message);  // Handle other responses
+        }
+    })
+    .catch(error => {
+        console.error("Error:", error);
+        alert("An error occurred. Please try again.");
+    });
+});
+
+function openPaymentModal(participationId) {
+    var modal = new bootstrap.Modal(document.getElementById('paymentModal'));
+    modal.show();
+    document.getElementById("checkout-button").setAttribute("data-participation-id", participationId); // Store participation ID
+}
+
+document.getElementById("checkout-button").addEventListener("click", async (event) => {
+    event.preventDefault(); // Prevent default form submission
+
+    const participationId = event.target.getAttribute("data-participation-id"); // Get participation ID
+    // Create a payment method
+    const { paymentMethod, error } = await stripe.createPaymentMethod({
+        type: 'card',
+        card: cardElement,
+    });
+
+    if (error) {
+        // Display error in #card-errors
+        document.getElementById('card-errors').textContent = error.message;
+        return; // Exit the function
+    }
+
+    // Send paymentMethod.id and participation ID to your server
+    fetch("{% url 'process_payment' event.id %}", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": "{{ csrf_token }}",
+        },
+        body: JSON.stringify({
+            payment_method_id: paymentMethod.id,
+            participation_id: participationId // Send participation ID
+        }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            // Display error message
+            document.getElementById('card-errors').textContent = data.error;
+            return; // Exit the function
+        }
+
+        if (data.client_secret) {
+            // Confirm the payment with the client secret returned from the server
+            return stripe.confirmCardPayment(data.client_secret);
+        }
+    })
+    .then(result => {
+        if (result && result.error) {
+            // Show error to your customer (e.g., insufficient funds)
+            document.getElementById('card-errors').textContent = result.error.message;
+        } else if (result && result.paymentIntent) {
+            // Payment has been processed successfully
+            if (result.paymentIntent.status === 'succeeded') {
+                // Close the modal
+                const paymentModal = bootstrap.Modal.getInstance(document.getElementById('paymentModal'));
+                paymentModal.hide();
+                // Redirect to the event detail page
+                window.location.href = "{% url 'event_detail' event.id %}";
+            } else {
+                // Handle other statuses (e.g., requires_confirmation, requires_action)
+                console.log("PaymentIntent status:", result.paymentIntent.status);
+            }
+        }
+    })
+    .catch(error => {
+        console.error("Error:", error);
+        alert("An error occurred. Please try again.");
+    });
+});
+
+
+const paymentModal = document.getElementById('paymentModal');
+paymentModal.addEventListener('shown.bs.modal', () => {
+    cardElement.mount('#card-element'); // Ensure cardElement is mounted when the modal is shown
+});
+
+paymentModal.addEventListener('hidden.bs.modal', () => {
+    cardElement.unmount(); // Unmount the card element when modal closes
+});
+
+  const clientSecret = '{{ client_secret }}';
+
+
+</script>
 {% endblock %}

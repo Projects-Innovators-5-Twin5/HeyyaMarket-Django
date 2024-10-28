@@ -170,7 +170,6 @@ from .forms import ReponseForm
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
-from django.contrib import messages  # Ajoutez ceci en haut de votre fichier
 User = get_user_model()  # Récupérer le modèle utilisateur
 
 

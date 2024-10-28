@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 
 from django.db import models
 
+
 class Event(models.Model):
     STATUS_CHOICES = [
         ('scheduled', 'Scheduled'),
@@ -57,6 +58,8 @@ class Event(models.Model):
     target_audience = models.TextField(blank=True)
     event_theme = models.TextField(blank=True)
     level = models.TextField(blank=True)
+    price = models.IntegerField(default=0)
+
 
     def __str__(self):
         return self.title

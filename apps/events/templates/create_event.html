@@ -20,20 +20,24 @@
         <div class="card-body">
             <form method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
-                
+
                 <!-- Event Title -->
                 <div class="row mb-4">
                     <label class="col-sm-2 col-form-label" for="event-title">Event Title</label>
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" id="event-title" name="title" placeholder="Event Title"  required />
+        <input type="text" name="title" id="event-title" class="form-control" placeholder="Event Title"  value="{{ form.title.value|default:'' }}">
+                        {% if form.title.errors %}
+                        <div class="text-danger">{{ form.title.errors.0 }}</div>
+                        {% endif %}
+
                     </div>
                 </div>
-                
+
                 <!-- Event Description -->
                 <div class="row mb-4">
                     <label class="col-sm-2 col-form-label" for="event-description">Description</label>
                     <div class="col-sm-10">
-                        <textarea id="event-description" class="form-control" name="description" placeholder="Event Description" ></textarea>
+                        <textarea id="event-description" class="form-control" name="description" placeholder="Event Description"  ></textarea>
                     </div>
                 </div>
 
@@ -41,8 +45,10 @@
                 <div class="row mb-4">
                     <label class="col-sm-2 col-form-label" for="event-start-datetime">Start Date & Time</label>
                     <div class="col-sm-10">
-                        <input type="datetime-local" id="event-start-datetime" class="form-control" name="start_datetime"
-                               value="{{ form.start_datetime.value|default:'' }}" required />
+        <input type="datetime-local" name="start_datetime" id="start-datetime" class="form-control" value="{{ form.start_datetime.value|default:'' }}">
+                        {% if form.start_datetime.errors %}
+                         <div class="text-danger">{{ form.start_datetime.errors.0 }}</div>
+                         {% endif %}
                     </div>
                 </div>
 
@@ -50,7 +56,10 @@
                 <div class="row mb-4">
                     <label class="col-sm-2 col-form-label" for="event-end-datetime">End Date & Time</label>
                     <div class="col-sm-10">
-                        <input type="datetime-local" id="event-end-datetime" class="form-control" name="end_datetime" required />
+        <input type="datetime-local" name="end_datetime" id="end-datetime" class="form-control" value="{{ form.end_datetime.value|default:'' }}">
+                        {% if form.end_datetime.errors %}
+                          <div class="text-danger">{{ form.end_datetime.errors.0 }}</div>
+                        {% endif %}
                     </div>
                 </div>
 
@@ -58,7 +67,10 @@
                 <div class="row mb-4">
                     <label class="col-sm-2 col-form-label" for="event-location">Location</label>
                     <div class="col-sm-10">
-                        <input type="text" id="event-location" class="form-control" name="location" placeholder="Event Location"  required />
+        <input type="text" name="location" id="location" class="form-control" placeholder="Event Location" value="{{ form.location.value|default:'' }}">
+                        {% if form.location.errors %}
+                        <div class="text-danger">{{ form.location.errors.0 }}</div>
+                        {% endif %}
                     </div>
                 </div>
 
@@ -66,15 +78,29 @@
                 <div class="row mb-4">
                     <label class="col-sm-2 col-form-label" for="available-slots">Available Slots</label>
                     <div class="col-sm-10">
-                        <input type="number" id="available-slots" class="form-control" name="available_slots"  placeholder="Number of available slots" required />
+        <input type="number" name="available_slots" id="available-slots" class="form-control" placeholder="Number of Available Slots" value="{{ form.available_slots.value|default:'' }}">
+                        {% if form.available_slots.errors %}
+                        <div class="text-danger">{{ form.available_slots.errors.0 }}</div>
+                        {% endif %}
+
+
                     </div>
                 </div>
+
+                    <!-- Price -->
+<div class="row mb-4">
+    <label class="col-sm-2 col-form-label" for="price">Price</label>
+    <div class="col-sm-10">
+        <input type="number" name="price" id="price" class="form-control" placeholder="Event Price" value="{{ form.price.value|default:'' }}">
+    </div>
+</div>
+
 
                 <!-- Status Field -->
                 <div class="row mb-4">
                     <label class="col-sm-2 col-form-label" for="event-status">Status</label>
                     <div class="col-sm-10">
-                        <select id="event-status" class="form-select" name="status" required>
+                        <select id="event-status" class="form-select" name="status" >
                             <option value="scheduled" selected>Scheduled</option>
                             <option value="finished">Finished</option>
                             <option value="cancelled">Cancelled</option>
@@ -86,7 +112,7 @@
                 <div class="row mb-4">
                     <label class="col-sm-2 col-form-label" for="event-image">Event Image</label>
                     <div class="col-sm-10">
-                        <input type="file" id="event-image" class="form-control" name="image" accept="image/*" />
+                        <input type="file" id="event-image" class="form-control"   name="image" accept="image/*" />
                     </div>
                 </div>
 
