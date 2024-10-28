@@ -40,7 +40,7 @@
     <!-- Loop over reclamations to display cards -->
     {% for reclamation in reclamations %}
     <div class="col-md-3 mb-4 reclamation-card" >
-    <div class="card" style="height: auto; border: 1px solid #e0e0e0; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+    <div class="card" style="height: 100%; border: 1px solid #e0e0e0; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); display: flex; flex-direction: column; justify-content: space-between;">
         <img class="card-img-top" src="{% static 'img/elements/image.png' %}" alt="Card image" style="height: 150px; object-fit: cover; border-radius: 10px 10px 0 0;">
         <div class="card-body" style="padding: 15px;">
             <h5 class="card-title" style="margin-bottom: 10px;">{{ reclamation.titre }}</h5>
@@ -65,8 +65,8 @@
 </div>
 
 
-      <!-- Modal for each reclamation -->
-      <div class="modal fade" id="reclamationModal-{{ reclamation.id }}" tabindex="-1" aria-labelledby="modalLabel-{{ reclamation.id }}" aria-hidden="true">
+    <!-- Modal for each reclamation -->
+<div class="modal fade" id="reclamationModal-{{ reclamation.id }}" tabindex="-1" aria-labelledby="modalLabel-{{ reclamation.id }}" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content" style="border-radius: 10px; border: none;">
             <div class="modal-header" style="background-color: #f8f9fa; border-bottom: 1px solid #e9ecef;">
@@ -74,8 +74,18 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body" style="padding: 20px;">
-                <!-- Display the response related to this reclamation -->
+
+                <!-- Afficher la réponse automatique s'il y en a une -->
+
+
+                <!-- Afficher les réponses associées à cette réclamation -->
                 {% for reponse in reclamation.reponse_set.all %}
+                {% if reponse_automatique %}
+    <div class="alert alert-info">
+        Réponse automatique générée par l'IA : {{ reponse_automatique }}
+    </div>
+{% endif %}
+
                     <div style="margin-bottom: 20px; padding: 15px; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
                         <p style="font-weight: bold; color: #495057;"><strong>Réponse par:</strong> {{ reponse.utilisateur.username }}</p>
                         <p style="font-weight: bold; color: #6c757d;"><strong>Date de réponse:</strong> {{ reponse.date_creation }}</p>
@@ -86,15 +96,12 @@
                 {% endfor %}
             </div>
             <div class="modal-footer" style="border-top: 1px solid #e9ecef;">
-                <button type="button" class="btn btn-primary"  data-bs-dismiss="modal">Fermer</button>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Fermer</button>
             </div>
         </div>
     </div>
 </div>
-
-    {% endfor %}
-  </div>
-</div>
+{% endfor %}
 
 <!-- Modal to add a new reclamation -->
 <div class="modal fade" id="addReclamationModal" tabindex="-1" aria-labelledby="addReclamationModalLabel" aria-hidden="true">

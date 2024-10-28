@@ -1,0 +1,279 @@
+{% extends layout_path %}
+
+{% load static %}
+{% load i18n %}
+
+{% block title %}Tables - Basic Tables{% endblock %}
+
+{% block content %}
+<!-- Basic Bootstrap Table -->
+<div class="card">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-success alert-dismissible fade show mb-0" role="alert">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <h5 class="card-header">Liste des utilisateurs</h5>
+
+    <div class="table-responsive text-nowrap">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Photo de profil</th>
+                    <th>Nom et prénom</th>
+                    <th>Bio</th>
+                    <th>Adresse</th>
+                    <th>Téléphone</th>
+                    <th>Rôle</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody class="table-border-bottom-0">
+                {% for users in user_list %}
+                <tr>
+                    <td>
+    <ul class="list-unstyled m-0 avatar-group d-flex align-items-center">
+        <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" class="avatar avatar-md pull-up" title="{{ users.first_name }}">
+            <img src="{{ users.profile_photo.url }}" alt="Avatar" class="rounded-circle" style="width: 50px; height: 50px;">
+        </li>
+    </ul>
+</td>
+
+                    <td>
+
+                        <span>{{ users.username}}</span>
+                    </td>
+                    <td>{{ users.bio }}</td>
+                    <td>{{ users.addresse }}</td>
+                    <td>{{ users.tel }}</td>
+                    <td>
+                        <span class="badge rounded-pill
+                            {% if users.role == 'Vendeur' %}
+                                bg-label-success
+                            {% elif users.role == 'Client' %}
+                                bg-label-danger
+                            {% elif users.role == 'Admin' %}
+                                bg-label-primary
+                            {% else %}
+                                bg-label-secondary
+                            {% endif %}
+                            me-1">
+                            {{ users.role }}
+                        </span>
+                    </td>
+                    <td>
+                        <div>
+                            <!-- Icône œil qui déclenche le modal des détails -->
+                            <i class="ri-eye-line ri-15px" style="color: #c4b463; cursor: pointer;"
+                               data-bs-toggle="modal" data-bs-target="#reclamationModal{{ users.id }}"></i>
+
+                            <!-- Icône stylo qui déclenche le modal d'édition -->
+                            <i class="ri-pencil-line ri-15px" style="color: #639fc4; cursor: pointer;"
+                               data-bs-toggle="modal" data-bs-target="#editReclamationModal{{ users.id }}"></i>
+
+                            <form method="post" action="{% url 'supprimer_user' users.id %}" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" style="border: none; background: none;">
+                                    <i class="ri-delete-bin-line ri-15px" style="color: #da6d60; cursor: pointer;"></i>
+                                </button>
+                            </form>
+
+
+                        </div>
+<!-- Modal Bootstrap pour afficher les détails de l'utilisateur -->
+<div class="modal fade" id="reclamationModal{{ users.id }}" tabindex="-1" aria-labelledby="reclamationModalLabel{{ users.id }}" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 10px;">
+            <div class="modal-header" style="background-color: #f8f9fa;">
+                <h5 class="modal-title" id="reclamationModalLabel{{ users.id }}" style="font-weight: bold; color: #333;">Détails de l'utilisateur</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong style="color: var(--primary-color);">Utilisateur :</strong> {{ users.first_name }} {{ users.last_name }}</p>
+                <p><strong style="color: var(--primary-color);">Adresse Email :</strong> {{ users.email }}</p>
+               {% if users.role == 'Vendeur' %}
+<div style="background-color: #f8f9fa; border-radius: 10px; padding: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); margin-top: 1rem;">
+    <h4 style="color: #343a40; margin-bottom: 15px;">Brand</h4>
+    <p><strong style="color: var(--primary-color);">Nom de la marque :</strong> <span style="color: #555;">{{ users.brand_name }}</span></p>
+    <p><strong style="color: var(--primary-color);">Description de la marque :</strong> <span style="color: #555;">{{ users.brand_description }}</span></p>
+    <p><strong style="color: var(--primary-color);">Email de la marque :</strong> <span style="color: #555;">{{ users.brand_email }}</span></p>
+    <p><strong style="color: var(--primary-color);">Numéro RNE de la marque :</strong> <span style="color: #555;">{{ users.brand_rne_number }}</span></p>
+    <div style="margin-top: 10px;">
+        <strong style="color: var(--primary-color);">Logo de la marque :</strong>
+        <ul class="list-unstyled m-0 avatar-group d-flex align-items-center">
+            <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" class="avatar avatar-md pull-up" title="{{ users.first_name }}">
+                <img src="{{ users.brand_logo }}" alt="Logo de la marque" class="rounded-circle" style="width: 80px; height: 80px; border: 2px solid var(--primary-color);">
+            </li>
+        </ul>
+    </div>
+</div>
+{% endif %}
+
+                <p><strong style="color: var(--primary-color);">Statut :</strong>
+                    <span class="badge rounded-pill
+                        {% if users.request_status == 'pending' %}
+                            bg-label-warning
+                        {% else %}
+                            bg-label-success
+                        {% endif %}" style="font-size: 0.9rem;">
+                        {{ users.request_status }}
+                    </span>
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" style="border-radius: 5px;">Fermer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+                       <!-- Modal Bootstrap pour modifier l'utilisateur -->
+<div class="modal fade" id="editReclamationModal{{ users.id }}" tabindex="-1" aria-labelledby="editReclamationModalLabel{{ users.id }}" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editReclamationModalLabel{{ users.id }}">Modifier l'utilisateur</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post" action="{% url 'modifier_user' users.id %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="first_name" class="form-label">Prénom</label>
+                        <input type="text" class="form-control" id="first_name" name="first_name" value="{{ users.first_name }}">
+                        {% if form.first_name.errors %}
+                            <div class="text-danger">
+                                {{ form.first_name.errors.as_text }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="last_name" class="form-label">Nom</label>
+                        <input type="text" class="form-control" id="last_name" name="last_name" value="{{ users.last_name }}" >
+                        {% if form.last_name.errors %}
+                            <div class="text-danger">
+                                {{ form.last_name.errors.as_text }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" value="{{ users.email }}" >
+                        {% if form.email.errors %}
+                            <div class="text-danger">
+                                {{ form.email.errors.as_text }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="tel" class="form-label">Téléphone</label>
+                        <input type="text" class="form-control" id="tel" name="tel" value="{{ users.tel }}">
+                        {% if form.tel.errors %}
+                            <div class="text-danger">
+                                {{ form.tel.errors.as_text }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="addresse" class="form-label">Adresse</label>
+                        <input type="text" class="form-control" id="addresse" name="addresse" value="{{ users.addresse }}">
+                        {% if form.addresse.errors %}
+                            <div class="text-danger">
+                                {{ form.addresse.errors.as_text }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="bio" class="form-label">Bio</label>
+                        <textarea class="form-control" id="bio" name="bio">{{ users.bio }}</textarea>
+                        {% if form.bio.errors %}
+                            <div class="text-danger">
+                                {{ form.bio.errors.as_text }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="role" class="form-label">Rôle</label>
+                        <select class="form-select" id="role" name="role" >
+                            <option value="Admin" {% if users.role == 'Admin' %}selected{% endif %}>Admin</option>
+                            <option value="Vendeur" {% if users.role == 'Vendeur' %}selected{% endif %}>Vendeur</option>
+                            <option value="Client" {% if users.role == 'Client' %}selected{% endif %}>Client</option>
+                        </select>
+                        {% if form.role.errors %}
+                            <div class="text-danger">
+                                {{ form.role.errors.as_text }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                        <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div id="generatedResponse"></div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Sélectionner tous les messages d'alerte dans les modales
+        const alerts = document.querySelectorAll('.alert');
+        alerts.forEach(alert => {
+            // Vérifier si l'alerte est affichée
+            if (alert) {
+                setTimeout(() => {
+                    // Masquer l'alerte après 2 secondes
+                    alert.classList.remove('show');
+                    alert.classList.add('fade');
+                }, 2000); // 2000 ms = 2 secondes
+            }
+        });
+    });
+</script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+
+<script>
+    function handleAIResponse(complaintId) {
+        $.ajax({
+            url: `/reclamations/api/analyze-complaint/${complaintId}/`,
+            type: 'GET',
+            success: function(response) {
+                // Affichez la réponse générée par l'IA dans le div approprié
+                document.getElementById('generatedResponse').innerHTML = `<strong>Réponse générée :</strong> ${response.message}`;
+            },
+            error: function(xhr) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erreur',
+                    text: 'Une erreur s\'est produite lors de la récupération de la réponse.',
+                });
+            }
+        });
+    }
+</script>
+{% endblock %}
