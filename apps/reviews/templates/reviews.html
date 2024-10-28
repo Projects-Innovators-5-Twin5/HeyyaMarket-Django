@@ -1,0 +1,75 @@
+{% extends layout_path %}
+{% load static %}
+{% load i18n %}
+{% load form_tags %}
+
+{% block title %}Gestion des Avis{% endblock %}
+
+{% block vendor_js %}
+{{ block.super }}
+<script src="{% static 'vendor/libs/masonry/masonry.js' %}"></script>
+{% endblock vendor_js %}
+
+{% block content %}
+<div id="alert-container"></div>
+
+<div class="accordion p-4 rounded" id="reviewsAccordion">
+    <!-- Section pour les avis -->
+    <div class="card my-4">
+        <div class="accordion-item">
+            <div class="accordion-header d-flex justify-content-between py-4">
+                <h2 class="accordion-header" id="headingReviews">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseReviews" aria-expanded="true" aria-controls="collapseReviews">
+                        Liste des Avis pour {{ product.name }}
+                    </button>
+                </h2>
+                <div class="form-floating form-floating-outline mx-4">
+                    <input class="form-control" type="search" placeholder="Search ..." id="html5-search-input" />
+                    <label for="html5-search-input">Search</label>
+                </div>
+            </div>
+            <div id="collapseReviews" class="accordion-collapse collapse show" aria-labelledby="headingReviews" data-bs-parent="#reviewsAccordion">
+                <div class="accordion-body">
+                    {% if avis_list %}
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Utilisateur</th>
+                                    <th>Note</th>
+                                    <th>Avis</th>
+                                    <th>Commentaires</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for avis in avis_list %}
+                                    <tr>
+                                        <td>{{ avis.user.username }}</td>
+                                        <td>{{ avis.rating }}</td>
+                                        <td>{{ avis.text }}</td>
+                                        <td>
+                                            <ul>
+                                                {% for commentaire in avis.commentaires.all %}
+                                                    <li><strong>{{ commentaire.user.username }}</strong>: {{ commentaire.text }}</li>
+                                                {% empty %}
+                                                    Aucun commentaire disponible.
+                                                {% endfor %}
+                                            </ul>
+                                        </td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="4" class="text-center">Aucun avis disponible pour ce produit.</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    {% else %}
+                        <p>Aucun avis disponible pour ce produit.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
