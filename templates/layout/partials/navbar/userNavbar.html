@@ -21,12 +21,14 @@
     <!-- Cart and Favorite Icons -->
     <div class="d-flex align-items-center">
       <a href="#" class="text-white me-3"><i class="ri-heart-3-line ri-24px"></i></a>
+   
       <a href="{% url 'panier' %}" class="text-white position-relative">
         <i class="ri-shopping-cart-line ri-24px"></i>
-        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-          3 <span class="visually-hidden">items in cart</span></span
-        >
+        {% if user.is_authenticated %} <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+        {{ user.cart.items.all|length }} <span class="visually-hidden">items in cart</span> {% endif %} 
+        
       </a>
+      
     </div>
   </div>
 </nav>
@@ -51,12 +53,18 @@
           <a class="nav-link text-dark" href="#" id="nav-link">Categories</a>
         </div>
           <div class="nav-item">
-          <a class="nav-link text-dark" href="/eventsfront" id="nav-link">Events</a>
+          <a class="nav-link text-dark" href="/reclamations/reclamations/" id="nav-link">Réclamations</a>
         </div>
+          {% if user.is_authenticated and user.role != 'CLIENT' %}
+      <div class="nav-item">
+        <a class="nav-link text-dark" href="/eventsfront" id="nav-link">Events</a>
+      </div>
+      <div class="nav-item">
+        <a class="nav-link text-dark" href="{% url 'index' %}" id="nav-link">Dashboard</a>
+      </div>
+      {% endif %}
 
-         <div class="nav-item">
-          <a class="nav-link text-dark" href="/reclamations/reclamations/" id="nav-link">reclamation</a>
-        </div>
+       
       </div>
     </div>
 
@@ -75,32 +83,35 @@
           <li>
             <a class="dropdown-item" href="javascript:void(0);">
               <div class="d-flex align-items-center">
-                <div class="flex-grow-1">
-                  <h6 class="mb-0 small">{{request.user|capfirst}}</h6>
-                  <small class="text-muted">{{request.user.role}}</small>
+                  <div class="d-flex align-items-center">
+                <div class="flex-shrink-0 me-2">
+                  <div class="avatar avatar-online">
+                    <img src="../media/{{ user.profile_photo }}" alt class="w-px-40 h-auto rounded-circle" />
+                  </div>
                 </div>
+                <div class="flex-grow-1">
+                  <h6 class="mb-0 small">{{user.username|capfirst}}</h6>
+                  <small class="text-muted">{{user.role}}</small>
+                </div>
+              </div>
               </div>
             </a>
           </li>
           <li><div class="dropdown-divider"></div></li>
           <li>
             <a class="dropdown-item" href="{% url 'account-settings' %}";"
-              ><i class="ri-user-3-line ri-22px me-2"></i><span class="align-middle">My Profile</span></a
+              ><i class="ri-user-3-line ri-22px me-2"></i><span class="align-middle">Mon Profile</span></a
             >
           </li>
-          <li>
-            <a class="dropdown-item" href="javascript:void(0);"
-              ><i class="ri-settings-4-line ri-22px me-2"></i><span class="align-middle">Settings</span></a
-            >
-          </li>
+       
           <li>
             <a class="dropdown-item" href="{% url 'history-commandesClient' %}"
               ><span class="d-flex align-items-center align-middle"
                 ><i class="flex-shrink-0 ri-file-text-line ri-22px me-2"></i
-                ><span class="flex-grow-1 align-middle ms-1">Orders</span
+                ><span class="flex-grow-1 align-middle ms-1">Mes commandes</span
                 ><span
                   class="flex-shrink-0 badge badge-center rounded-pill bg-danger h-px-20 d-flex align-items-center justify-content-center"
-                  >4</span
+                  >{{ user.orders.all|length }}</span
                 ></span
               ></a
             >

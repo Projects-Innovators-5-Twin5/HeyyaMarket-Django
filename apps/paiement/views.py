@@ -20,6 +20,8 @@ from datetime import date, timedelta
 import joblib
 import os
 import pandas as pd
+from django.core.paginator import Paginator
+
 
 
 
@@ -331,8 +333,14 @@ class HistoryClientCommandeView(TemplateView):
         
         user = self.request.user
         orders = Order.objects.filter(user=user)
+
+        paginator = Paginator(orders, 6)  
+
+        page_number = self.request.GET.get('page')  
+        page_obj = paginator.get_page(page_number)
         
         context['orders'] = orders
+        context['page_obj'] = page_obj
 
         # Update the context
         context.update({
@@ -348,7 +356,13 @@ class HistoryClientCommandeBackView(TemplateView):
         
         orders = Order.objects.filter()
         
+        paginator = Paginator(orders, 6)  
+
+        page_number = self.request.GET.get('page')  
+        page_obj = paginator.get_page(page_number)
+        
         context['orders'] = orders
+        context['page_obj'] = page_obj
 
         # Update the context
         context.update({
@@ -379,7 +393,7 @@ class HistoryClientCommandeDetailsView(TemplateView):
         context['order'] = order
         context['user'] = user
 
-        if(self.request.user.role == 'ADMIN'):
+        if(self.request.user.role == 'ADMIN' or self.request.user.role == 'VENDEUR' ):
             context.update({
             "layout_path": TemplateHelper.set_layout("layout_vertical.html", context),
             })
@@ -433,19 +447,17 @@ class UpdateOrderView(View):
 def get_user_data():
     user_data = (
         User.objects.annotate(
-            total_spend=Sum('order__total_amount'),
-            items_purchased=Sum('order__items__quantity'),
-            last_order_date=Max('order__created_at')
+            total_spend=Sum('orders__total_amount'),
+            items_purchased=Sum('orders__items__quantity'),
+            last_order_date=Max('orders__created_at')
         ).annotate(
-            # Calculate days since last purchase using ExpressionWrapper
             days_since_last_purchase=ExpressionWrapper(
                 Now() - F('last_order_date'),
                 output_field=DurationField()
             )
         ).annotate(
-            # Extract total days from the DurationField
             total_days=ExpressionWrapper(
-                F('days_since_last_purchase') / timedelta(days=1),  # Divide by a day to get total days
+                F('days_since_last_purchase') / timedelta(days=1),  
                 output_field=IntegerField()
             )
         )

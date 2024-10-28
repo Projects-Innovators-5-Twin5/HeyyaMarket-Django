@@ -93,7 +93,7 @@ class AuthView(TemplateView):
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
-                if user.role == 'ADMIN':
+                if user.role == 'ADMIN' or user.role == 'VENDEUR':
                   return redirect('index')
                 else:
                    return redirect('landing')
@@ -134,7 +134,7 @@ class RegisterView(TemplateView):
         if register_form.is_valid():
             user = register_form.save()
             login(request, user)
-            if user.role == 'ADMIN':
+            if user.role == 'ADMIN' or user.role == 'VENDEUR':
                 return redirect('index')
             else:
                 return redirect('landing')
