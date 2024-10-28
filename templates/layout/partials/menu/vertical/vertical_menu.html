@@ -55,6 +55,7 @@
       </ul>
     </li>
 
+    {% if user.is_authenticated and user.role == 'ADMIN' %}
     <li class="menu-item {% if '/events/' in request.path %}active open{% endif %}">
       <a href="javascript:void(0);" class="menu-link menu-toggle">
         <i class="menu-icon tf-icons ri-user-line"></i>
@@ -85,12 +86,27 @@
         <div class="text-truncate" data-i18n="Card">Vendor Requests</div>
       </a>
     </li>
+    {% endif %}
 
     <li class="menu-item {% if 'history-commandesClientBack/' in request.path %}active{% endif %}">
-      <a href="{% url 'history-commandesClientBack' %}" class="menu-link">
-        <i class="menu-icon tf-icons ri-bank-card-2-line"></i>
-        <div class="text-truncate" data-i18n="Card">Commandes</div>
+      <a href="javascript:void(0);" class="menu-link menu-toggle">
+        <div class="text-truncate" data-i18n="Events">
+          <i class="menu-icon tf-icons ri-bank-card-2-line"></i>Commandes
+        </div>
       </a>
+      <ul class="menu-sub">
+        <li class="menu-item {% if 'history-commandesClientBack/' in request.path %}active{% endif %}">
+          <a href="{% url 'history-commandesClientBack' %}" class="menu-link">
+            <div class="text-truncate" data-i18n="Card">Commandes List</div>
+          </a>
+        </li>
+
+        <li class="menu-item {% if 'prediction/' in request.path %}active{% endif %}">
+          <a href="{% url 'user_prediction' %}" class="menu-link">
+            <div class="text-truncate" data-i18n="Events">Commande Analytics</div>
+          </a>
+        </li>
+      </ul>
     </li>
 
     <li class="menu-item {% if 'reclamations/' in request.path %}active{% endif %}">

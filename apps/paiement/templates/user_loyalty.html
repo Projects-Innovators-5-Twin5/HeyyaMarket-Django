@@ -1,0 +1,91 @@
+{% extends layout_path %} {% load static %} {% load i18n %} {% block title %}Account settings - Pages{% endblock %}
+{%block content %} {% include 'modalConfirmation_suppression.html' %} {% include 'modalUpdate_commande.html' %}
+<div class="card col-md-12">
+  <div class="card-body">
+    <h4>Catégorisation des Clients : Fidèles et Occasionnels</h4>
+    <hr />
+
+    <div class="card-body">
+      <div style="background-image: linear-gradient(270deg, #eb907c 50%, #e7bdb3 100%)">
+        <h5 style="color: white" class="p-2">Clients fidéles</h5>
+      </div>
+
+      <div class="d-flex gap-12">
+        {% for user in loyal_users %}
+        <div class="card col-md-3 p-3 d-flex flex-column align-items-center justify-content-center text-center">
+          <img
+            src="../media/{{ user.profile_photo }}"
+            alt="user-avatar"
+            class="d-block w-px-100 h-px-100 rounded-circle"
+            id="uploadedAvatar"
+          />
+
+          <div class="mt-4">
+            <p>{{ user.first_name }} {{ user.last_name }}</p>
+            <p>{{ user.email }}</p>
+            <p>{{ user.date_joined }}</p>
+          </div>
+        </div>
+        {% empty %}
+        <p class="text-center">Aucun client fidèle trouvé.</p>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="card-body">
+      <div style="background-image: linear-gradient(270deg, #d3d3d3 100%, #f0f0f0 100%)">
+        <h5 style="color: gray" class="p-2">Clients nouveaux / occasionnels</h5>
+      </div>
+      <div class="d-flex justify-content-between">
+        {% for user in not_loyal_users %}
+        <div class="card col-md-3 p-3 d-flex flex-column align-items-center justify-content-center text-center">
+          <img
+            src="../media/{{ user.profile_photo }}"
+            alt="user-avatar"
+            class="d-block w-px-100 h-px-100 rounded-circle"
+            id="uploadedAvatar"
+          />
+
+          <div class="mt-4">
+            <p>{{ user.first_name }} {{ user.last_name }}</p>
+            <p>{{ user.email }}</p>
+            <p>{{ user.date_joined }}</p>
+          </div>
+        </div>
+        {% empty %}
+        <p class="text-center">Aucun client nouveau ou occasionnel trouvé.</p>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const ctx = document.getElementById('customerChart').getContext('2d');
+    const customerChart = new Chart(ctx, {
+      type: 'pie',
+      data: {
+        labels: ['Clients Fidèles', 'Clients Non Fidèles'],
+        datasets: [
+          {
+            label: 'Nombre de Clients',
+            data: [20, 30],
+            backgroundColor: ['rgba(75, 192, 192, 0.2)', 'rgba(255, 99, 132, 0.2)'],
+            borderColor: ['rgba(75, 192, 192, 1)', 'rgba(255, 99, 132, 1)'],
+            borderWidth: 1
+          }
+        ]
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+  });
+</script>
+
+{%endblock%}

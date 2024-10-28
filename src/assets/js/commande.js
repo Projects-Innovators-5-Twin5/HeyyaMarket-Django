@@ -62,3 +62,8 @@ step3Element.addEventListener("click", function() {
     info.classList.add('d-none')
     paiement.classList.remove('d-none')
 });
+
+
+
+
+

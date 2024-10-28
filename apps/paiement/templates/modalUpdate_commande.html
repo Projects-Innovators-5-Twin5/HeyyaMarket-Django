@@ -1,0 +1,49 @@
+<div
+  class="modal fade"
+  id="editCommandeModal"
+  tabindex="-1"
+  aria-labelledby="editCommandeModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editCommandeModalLabel">Modifier l'état de la commande</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="modal-content-placeholder">
+          <form id="commandeForm" method="post" enctype="multipart/form-data">
+            <!-- Important: include enctype for file upload -->
+            {% csrf_token %}
+            <div class="row">
+              <div class="form-group">
+                <label for="orderStatus">État de la commande</label>
+                <select id="orderStatus" name="order_status" class="form-select">
+                  <option value="0">Non payé</option>
+                  <option value="1">Payé</option>
+                </select>
+              </div>
+              <div class="d-flex justify-content-end mt-4" style="align-items: end">
+                <button type="submit" class="btn btn-primary">Enregistrer</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('[data-bs-target="#editCommandeModal"]').forEach(item => {
+      item.addEventListener('click', function () {
+        const commandeId = this.getAttribute('data-id');
+        const url = `/update-order/${commandeId}/`;
+
+        document.getElementById('commandeForm').setAttribute('action', url);
+      });
+    });
+  });
+</script>
