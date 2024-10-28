@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import event_list, create_event , update_event , delete_event , event_listfront , event_detail , request_participation  , event_manage_requests , cancel_participation , calendar_view , calendar_update_event , events_analytics , payment_success , process_payment , dynamic_pricing
+from .views import event_list, create_event , update_event , delete_event , event_listfront , event_detail , request_participation  , event_manage_requests , cancel_participation , calendar_view , calendar_update_event , events_analytics , payment_success , process_payment 
 
 urlpatterns = [
     path('events/', event_list, name='event_list'),
@@ -17,6 +17,5 @@ urlpatterns = [
     path('cancel_participation/<int:participation_id>/', cancel_participation, name='cancel_participation'),
     path('success/', payment_success, name='payment_success'),
     path('events/<int:event_id>/process-payment/', process_payment, name='process_payment'),
-   path('dynamic-pricing/<int:event_id>/', dynamic_pricing, name='dynamic_pricing'),
 
 ]

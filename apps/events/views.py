@@ -26,11 +26,10 @@ from django.core.mail import send_mail, EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.db.models import Count, Sum, Avg , F , Q
-
 from django.db.models.functions import TruncMonth
 import stripe
 from django.views.decorators.csrf import csrf_exempt
-from .pricing_optimization import DynamicPricingRL
+from .apps import EventsConfig
 
 
 
@@ -139,11 +138,11 @@ def create_event(request):
             # Auto-generate description if not provided
             if not event.description:
                 event.description = generate_event_descriptioncohere(
-                    event.title, event.start_datetime, event.end_datetime, event.location, event.available_slots,event.event_type,event.target_audience,event.event_theme,event.level
+                    event.title, event.start_datetime, event.end_datetime, event.location, event.available_slots, event.event_type, event.target_audience, event.event_theme, event.level
                 )
 
             if not event.image:
-                # Generate the image and get just the image filename
+                # Generate the image and set image path
                 image_filename = generate_event_image(
                     title=event.title,
                     description=event.description,
@@ -151,14 +150,47 @@ def create_event(request):
                     start_datetime=event.start_datetime,
                     end_datetime=event.end_datetime,
                     available_slots=event.available_slots,
-                    event_type = event.event_type,
-                    target_audience = event.target_audience,
-                    event_theme = event.event_theme,
-                    level= event.level
-
+                    event_type=event.event_type,
+                    target_audience=event.target_audience,
+                    event_theme=event.event_theme,
+                    level=event.level
                 )
-
                 event.image = f'events/{image_filename}'
+
+            # Predict and set price if empty
+            if not event.price:
+
+                   feature_dict = {
+                    'event_type_workshop': int(event.event_type == 'workshop'),
+                    'event_type_seminar': int(event.event_type == 'seminar'),
+                    'event_type_bootcamp': int(event.event_type == 'bootcamp'),
+                    'event_type_conference': int(event.event_type == 'conference'),
+                    'event_type_bazaar': int(event.event_type == 'bazaar'),
+                    'event_type_networking': int(event.event_type == 'networking'),
+
+                    'target_audience_artisans_and_craftswomen': int(event.target_audience == 'artisans_and_craftswomen'),
+                    'target_audience_aspiring_entrepreneurs': int(event.target_audience == 'aspiring_entrepreneurs'),
+                    'target_audience_small_business_owners': int(event.target_audience == 'small_business_owners'),
+                    'target_audience_students_and_young_professionals': int(event.target_audience == 'students_and_young_professionals'),
+                    'target_audience_community_leaders_and_activists': int(event.target_audience == 'community_leaders_and_activists'),
+                    'target_audience_hobbyists_and_creatives': int(event.target_audience == 'hobbyists_and_creatives'),
+                    'target_audience_mentors_and_educators': int(event.target_audience == 'mentors_and_educators'),
+                    'target_audience_nonprofit_organizations': int(event.target_audience == 'nonprofit_organizations'),
+
+                    'event_theme_empowerment': int(event.event_theme == 'empowerment'),
+                    'event_theme_entrepreneurship': int(event.event_theme == 'entrepreneurship'),
+                    'event_theme_marketing': int(event.event_theme == 'marketing'),
+                    'event_theme_craftsmanship': int(event.event_theme == 'craftsmanship'),
+                    'event_theme_digital_skills': int(event.event_theme == 'digital_skills'),
+
+                    'level_beginner': int(event.level == 'beginner'),
+                    'level_intermediate': int(event.level == 'intermediate'),
+                    'level_advanced': int(event.level == 'advanced'),
+                }
+
+                   features = list(feature_dict.values())
+                   event.price = int(EventsConfig.price_predictor_model.predict([features])[0])
+
 
             event.save()
             messages.success(request, "Event created successfully.")
@@ -390,12 +422,13 @@ def process_payment(request, event_id):
 
             # Update participation status to accepted
             event.available_slots -= 1
+            event.save()
             participation = get_object_or_404(Participation, id=participation_id)
             participation.status = 'confirmed'
 
 
             participation.save()
-            event.save()
+
             # Return the client_secret
             return JsonResponse({'client_secret': payment_intent['client_secret']})
 
@@ -404,31 +437,6 @@ def process_payment(request, event_id):
 
     return JsonResponse({'error': 'Invalid request'}, status=400)
 
-
-def dynamic_pricing(request, event_id):
-    # Fetch the event object
-    event = get_object_or_404(Event, id=event_id)
-
-    # Get the number of confirmed participants (for calculating demand)
-    confirmed_participants = Participation.objects.filter(event=event, status='confirmed').count()
-
-    # Demand over time simulation (this could be replaced by real-time data)
-    demand_over_time = [confirmed_participants] * 10  # For simplicity, using the same demand repeatedly
-
-    # Initialize the pricing model
-    pricing_model = DynamicPricingRL(event)
-
-    # Run the pricing simulation
-    optimized_price = pricing_model.run_simulation(demand_over_time)
-
-    # Update the event's dynamic price in the database
-    event.dynamic_price = optimized_price
-    event.save()
-
-    return JsonResponse({
-        'message': 'Dynamic pricing updated successfully.',
-        'optimized_price': optimized_price
-    })
 
 
 def payment_success(request):
@@ -546,7 +554,7 @@ def events_analytics(request):
     now = timezone.now()
     current_year = now.year
 
-    # Total number of events
+    # Aggregate event counts
     total_events = Event.objects.count()
     active_events = Event.objects.filter(status='scheduled').count()
     finished_events = Event.objects.filter(status='finished').count()
@@ -582,15 +590,36 @@ def events_analytics(request):
     total_participants = Participation.objects.filter(status='confirmed').count()
     total_available_slots = Event.objects.filter(status='scheduled').aggregate(total=Sum('available_slots'))['total'] or 0
 
-    monthly_event_data = (
-     Event.objects.filter(start_datetime__year=current_year)  # Ensure events are from the current year
-     .annotate(month=TruncMonth('start_datetime'))  # Group by month
-     .values('month')
-     .annotate(event_count=Count('id'))  # Count events per month
-     .annotate(total_income=Sum('participation__event__price', filter=Q(participation__status='confirmed')))  # Calculate income from confirmed participations
-     .filter(start_datetime__year=current_year)  # Filter only current year's events
-     .order_by('month')
+    # Event counts per month
+    event_counts_per_month = (
+        Event.objects.filter(start_datetime__year=current_year)
+        .annotate(month=TruncMonth('start_datetime'))
+        .values('month')
+        .annotate(event_count=Count('id'))
+        .order_by('month')
     )
+
+    # Income per month
+    income_per_month = (
+        Participation.objects.filter(event__start_datetime__year=current_year, status='confirmed')
+        .annotate(month=TruncMonth('event__start_datetime'))
+        .values('month')
+        .annotate(total_income=Sum('event__price'))
+        .order_by('month')
+    )
+
+    # Initialize monthly data
+    monthly_data = {month: {'event_count': 0, 'total_income': 0.0} for month in range(1, 13)}
+
+    # Populate event counts per month
+    for data in event_counts_per_month:
+        month = data['month'].month
+        monthly_data[month]['event_count'] = data['event_count']
+
+    # Populate income per month
+    for data in income_per_month:
+        month = data['month'].month
+        monthly_data[month]['total_income'] = (data['total_income'] or 0) / 1000  # Adjust to thousands if needed
 
     # Prepare data for the chart
     months = []
@@ -600,20 +629,13 @@ def events_analytics(request):
     for month in range(1, 13):
         month_name = datetime(current_year, month, 1).strftime('%B %Y')
         months.append(month_name)
+        event_counts.append(monthly_data[month]['event_count'])
+        income_counts.append(monthly_data[month]['total_income'])
 
-        # Filter monthly data for the current month
-        current_month_data = next((data for data in monthly_event_data if data['month'].month == month), None)
-
-        if current_month_data:
-            event_count = current_month_data['event_count']
-            total_income = current_month_data['total_income'] or 0
-            total_income /= 1000  # Divide by 1000 to adjust income to the correct currency format
-        else:
-            event_count = 0
-            total_income = 0
-
-        event_counts.append(event_count)
-        income_counts.append(total_income)
+    # Debug print to verify final structure
+    print("Monthly Data:", monthly_data)
+    print("Event Counts by Month:", event_counts)
+    print("Income by Month:", income_counts)
 
     # Adding data to context
     layout_context.update({

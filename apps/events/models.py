@@ -3,7 +3,6 @@ from django.conf import settings  # Pour utiliser AUTH_USER_MODEL
 from django.contrib.auth.models import User
 
 from django.db import models
-from .pricing_optimization import DynamicPricingRL
 
 
 class Event(models.Model):
@@ -60,13 +59,6 @@ class Event(models.Model):
     event_theme = models.TextField(blank=True)
     level = models.TextField(blank=True)
     price = models.IntegerField(default=0)
-    dynamic_price = models.IntegerField(null=True, blank=True)
-    
-    def save(self, *args, **kwargs):
-        # Initialize dynamic_price with price if it is None
-        if self.dynamic_price is None:
-            self.dynamic_price = self.price
-        super(Event, self).save(*args, **kwargs)  # Call the superclass's save method
 
 
     def __str__(self):
