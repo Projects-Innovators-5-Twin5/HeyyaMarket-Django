@@ -39,7 +39,7 @@
             margin-bottom: 1rem;
             background-color: #ffffff;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            
+
         }
         .hidden-comments {
             display: none;
@@ -133,7 +133,7 @@
 
 
 
-     
+
 
 
         <!-- Affichage du produit -->
@@ -213,7 +213,7 @@
     </div>
   </div>
 </section>
-              
+
             </div>
         </div>
 
@@ -258,36 +258,45 @@
 
         <!-- Liste des avis -->
         {% for avis in avis %}
-            <div class="avis-card">
-                <h5 class="card-title">{{ avis.user.username }} - Note:
-                    <span class="badge bg-info">{{ avis.rating }}/5</span>
-                </h5>
-                <div class="star-rating" style="font-size: 1.5rem;">
-                    {% for i in avis.rating|range_filter %}
-                        <span class="fa fa-star" style="color: #f5c518;"></span>
-                    {% endfor %}
-                    {% for i in avis.remaining_stars|range_filter %}
-                        <span class="fa fa-star" style="color: #ddd;"></span>
-                    {% endfor %}
+    <div class="avis-card">
+        <h5 class="card-title">{{ avis.user.username }} - Note:
+            <span class="badge bg-info">{{ avis.rating }}/5</span>
+        </h5>
+        <div class="star-rating" style="font-size: 1.5rem;">
+            {% for i in avis.rating|range_filter %}
+                <span class="fa fa-star" style="color: #f5c518;"></span>
+            {% endfor %}
+            {% for i in avis.remaining_stars|range_filter %}
+                <span class="fa fa-star" style="color: #ddd;"></span>
+            {% endfor %}
+        </div>
+        <p class="card-text mt-2">{{ avis.text }}</p>
+        <p class="mt-1">
+            Sentiment:
+            <span class="{% if avis.sentiment == 'positif' or avis.sentiment == 'très positif' %}text-success{% elif avis.sentiment == 'négatif' or avis.sentiment == 'très négatif' %}text-danger{% else %}text-muted{% endif %}">
+                {{ avis.sentiment }}
+            </span>
+            (Score: {{ avis.sentiment_score|floatformat:2 }})
+        </p>
+        <!-- Boutons et formulaire de commentaire -->
+        <i class="fas fa-comment" data-bs-toggle="collapse" data-bs-target="#commentForm{{ avis.id }}" aria-expanded="false" aria-controls="commentForm{{ avis.id }}" style="cursor: pointer;"></i>
+        <i class="fas fa-edit" data-bs-toggle="modal" data-bs-target="#editReviewModal{{ avis.id }}" style="cursor: pointer;"></i>
+        <i class="fas fa-trash-alt" style="cursor: pointer;" onclick="confirmDeleteReview({{ avis.id }})"></i>
+        <div class="collapse" id="commentForm{{ avis.id }}">
+            <form method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="avis_id" value="{{ avis.id }}">
+                <div class="mb-3">
+                    <label for="id_commentaire" class="form-label">Votre commentaire :</label>
+                    <textarea id="id_commentaire" name="text" class="form-control" rows="2" required></textarea>
                 </div>
-                <p class="card-text mt-2">{{ avis.text }}</p>
-                <i class="fas fa-comment" data-bs-toggle="collapse" data-bs-target="#commentForm{{ avis.id }}" aria-expanded="false" aria-controls="commentForm{{ avis.id }}" style="cursor: pointer;"></i>
-                <i class="fas fa-edit" data-bs-toggle="modal" data-bs-target="#editReviewModal{{ avis.id }}" style="cursor: pointer;"></i>
-                <i class="fas fa-trash-alt" style="cursor: pointer;" onclick="confirmDeleteReview({{ avis.id }})"></i>
+                <button type="submit" name="commentaire_submit" class="btn btn-primary btn-sm">
+                    <i class="fas fa-plus"></i> Ajouter un commentaire
+                </button>
+            </form>
+        </div>
+    </div>
 
-                <div class="collapse" id="commentForm{{ avis.id }}">
-                    <form method="POST">
-                        {% csrf_token %}
-                        <input type="hidden" name="avis_id" value="{{ avis.id }}">
-                        <div class="mb-3">
-                            <label for="id_commentaire" class="form-label">Votre commentaire :</label>
-                            <textarea id="id_commentaire" name="text" class="form-control" rows="2" required></textarea>
-                        </div>
-                        <button type="submit" name="commentaire_submit" class="btn btn-primary btn-sm">
-                            <i class="fas fa-plus"></i> Ajouter un commentaire
-                        </button>
-                    </form>
-                </div>
  <!-- Modal pour modifier l'avis -->
  <div class="modal fade" id="editReviewModal{{ avis.id }}" tabindex="-1" aria-labelledby="editReviewModalLabel" aria-hidden="true">
   <div class="modal-dialog">

@@ -24,7 +24,7 @@ from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-
+    
     path('reviews/', include('apps.reviews.urls')),  # Inclure les routes de l'application reviews
 
     path("", include("apps.landing.urls")),
@@ -69,7 +69,7 @@ urlpatterns = [
     path("", include("apps.paiement.urls")),
     path("", include("apps.events.urls")),
     path("reclamations/", include('apps.ModuleReclamationReponse.reclamations.urls')),
-    
+
 ]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 
