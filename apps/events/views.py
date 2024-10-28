@@ -296,7 +296,12 @@ def event_listfront(request):
 def event_detail(request, event_id):
     event = get_object_or_404(Event, id=event_id)
     layout_context = TemplateLayout.init(request, {})
-    layout_context['layout_path'] = TemplateHelper.set_layout("layout_user.html", layout_context)
+    if request.user.is_authenticated:
+        if request.user.role == 'ADMIN':
+         layout_context['layout_path'] = TemplateHelper.set_layout("layout_vertical.html", layout_context)
+    else:
+        layout_context['layout_path'] = TemplateHelper.set_layout("layout_user.html", layout_context)
+
     layout_context['event'] = event  # Pass the event to the template
     layout_context['stripe_public_key'] = settings.STRIPE_KEY
     # Check if the user is authenticated
@@ -358,32 +363,30 @@ def request_participation(request, event_id):
 
     if request.method == "POST":
         if request.user.role == 'VENDEUR':
-            # Check if the user already has a participation request for this event
             participation = Participation.objects.filter(event=event, user=request.user).first()
 
             if participation:
                 if participation.status == 'cancelled':
-                    # Reactivate participation request
                     participation.status = 'pending'
                     participation.save()
-                    messages.success(request, "Participation request sent successfully.")
+                    messages.success(request, "Participation request reactivated successfully.")
+                    # Redirect to the event details page without triggering the modal
+                    return redirect('event_detail', event_id=event.id)
                 else:
                     messages.info(request, "You have already requested participation.")
-                    return redirect('event_detail', event_id=event.id)  # Redirect after message
+                    return redirect('event_detail', event_id=event.id)
             else:
-                # Create a new participation request
+                # First-time request
                 participation = Participation(event=event, user=request.user, status='pending')
-                participation.save()  # Save the new participation
+                participation.save()
 
-            if event.price > 0:
-                # Return a response to open the payment modal
+            if event.price > 0 and not participation.status == 'cancelled':
                 return JsonResponse({
                     'status': 'modal',
                     'message': "Open payment modal",
-                    'participation_id': participation.id  # Send back the participation ID
+                    'participation_id': participation.id
                 })
             else:
-                # Accept participation directly if price is 0
                 participation.status = 'pending'
                 participation.save()
                 messages.success(request, "Participation request sent successfully and accepted.")

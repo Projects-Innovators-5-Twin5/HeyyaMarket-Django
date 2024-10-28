@@ -49,12 +49,24 @@
         </div>
         <img class="card-img-top" src="{{ event.image.url }}" alt="{{ event.title }}" style="height: 300px; object-fit: cover;">  <!-- Display event image -->
         <div class="card-body">
+    <div class="row">
+
+        <div class="col-md-6">
+
             <p class="card-text">{{ event.description }}</p>  <!-- Event description -->
             <p class="card-text"><strong>Start Date & Time:</strong> {{ event.start_datetime }}</p>
             <p class="card-text"><strong>End Date & Time:</strong> {{ event.end_datetime }}</p>
             <p class="card-text"><strong>Available Slots:</strong> {{ event.available_slots }}</p>
             <p class="card-text"><strong>Prix :</strong> {{ event.price }} Dt </p>
+                    </div>
 
+        <div class="col-md-6">
+<br>
+            <p class="card-text"><strong>Event Type:</strong> {{ event.event_type }}</p>
+            <p class="card-text"><strong>Event Theme:</strong> {{ event.event_theme }}</p>
+            <p class="card-text"><strong>Target Audience:</strong> {{ event.target_audience }}</p>
+            <p class="card-text"><strong>Level:</strong> {{ event.level }}</p>
+</div>
             <p class="card-text">
                 {% if event.status == 'scheduled' %}
                     <span class="badge rounded-pill bg-label-info me-1">Scheduled</span>
@@ -116,15 +128,17 @@
 
     </div>
 <!-- Feedback Section -->
+
 {% if user.is_authenticated and participation and participation.status == 'confirmed' and event.status == 'finished' %}
-    <h5 class="mt-4">How was the Event ? Give Your Feedback </h5>
+    <div class="card my-4 p-4">
+        <h5 class="mb-4">How was the Event? Give Your Feedback</h5>
     <form method="POST">
         {% csrf_token %}
-        <div class="mb-3">
-            <label for="feedback" class="form-label">Feedback</label>
+        <div class="mb-4">
+            <label for="feedback" class="form-label fw-bold ">Feedback</label>
             <textarea class="form-control" id="feedback" name="feedback" rows="3" required></textarea>
         </div>
-        <div class="mb-3">
+            <div class="mb-4">
             <label for="rating" class="form-label">Rating</label>
             <p> From 5 to 1 </p>
 <div class="star-rating">
@@ -148,6 +162,7 @@
     </form>
 {% endif %}
 </div>
+
 <div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
