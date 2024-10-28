@@ -1,0 +1,49 @@
+{% extends layout_path %} {% load static %} {% load i18n %} {% block title %}Account settings - Pages{% endblock %}
+{%block content %}
+<div class="d-flex gap-8">
+  <div class="card mb-6 col-md-8">
+    <div class="card-body">
+      <h5>Paiement sécurisé</h5>
+      <hr />
+      <div class="card-body mt-4">
+        <form id="payment-form">
+          <div id="payment-status" role="alert" class="alert"></div>
+          <div class="form-floating form-floating-outline mb-5">
+            <div id="card-element" class="form-control"></div>
+            <label for="card-element">Carte de crédit</label>
+          </div>
+          <div class="d-flex justify-content-end mt-2">
+            <button type="submit" id="submit" class="btn btn-primary">Payer</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="card card-total mb-6 col-md-4">
+    <div class="card-body">
+      <h6 class="mb-5">{{ order_items|length }} articles</h6>
+
+      <div class="d-flex mt-2">
+        <span class="d-none d-sm-block" style="font-size: 14px">Sous-Total</span>
+        <span class="d-none d-sm-block ms-auto" id="total" style="font-size: 14px">{{ total }} TND </span>
+      </div>
+
+      <a href="#" class="d-none mb-8 d-sm-block ms-auto mt-4" style="color: blue; font-size: 14px"
+        >Vous avez un code promo?</a
+      >
+      <hr />
+      <div class="d-flex">
+        <span class="d-none d-sm-block total">Total</span>
+        <span class="d-none d-sm-block ms-auto total" id="total">{{ total }} TND </span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const clientSecret = '{{ client_secret }}';
+  const orderId = '{{ order.id }}';
+</script>
+
+{%endblock%}

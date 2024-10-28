@@ -1,0 +1,9 @@
+<!-- apps/reviews/templates/reviews/avis_create.html -->
+
+<h1>Ajouter un Avis</h1>
+
+<form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Soumettre</button>
+</form>

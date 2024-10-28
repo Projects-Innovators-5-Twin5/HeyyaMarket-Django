@@ -1,0 +1,58 @@
+{% extends layout_path %}
+{% load static %}
+{% load i18n %}
+{% load form_tags %}
+
+{% block title %}Gestion des Catégories{% endblock %}
+
+{% block vendor_js %}
+{{ block.super }}
+<script src="{% static 'vendor/libs/masonry/masonry.js' %}"></script>
+{% endblock vendor_js %}
+
+{% block content %}
+<div id="alert-container"></div>
+<div id="alert-container"></div>
+<div class="accordion  p-4 rounded" id="categoryAccordion">
+    <!-- First accordion item: Ajouter Catégorie -->
+    <div class="accordion-item">
+        <div class="accordion-header d-flex justify-content-between py-4">
+            <h2 class="accordion-header" id="headingCategorieForm">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCategorieForm" aria-expanded="false" aria-controls="collapseCategorieForm">
+                    Ajouter Catégorie
+                </button>
+            </h2>
+        </div>
+        <div id="collapseCategorieForm" class="accordion-collapse collapse" aria-labelledby="headingCategorieForm" data-bs-parent="#categoryAccordion">
+            <div class="accordion-body">
+
+                    {% include 'categories/categorie_form.html' with form=form %}
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Second accordion item: Liste des Catégories -->
+    <div class="card my-4">
+        <div class="accordion-item">
+            <div class="accordion-header d-flex justify-content-between py-4">
+                <h2 class="accordion-header" id="headingCategorieList">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCategorieList" aria-expanded="true" aria-controls="collapseCategorieList">
+                        Liste des Catégories
+                    </button>
+                </h2>
+                <div class="form-floating form-floating-outline mx-4">
+                    <input class="form-control" type="search" placeholder="Search ..." id="html5-search-input" />
+                    <label for="html5-search-input">Search</label>
+                </div>
+            </div>
+            <div id="collapseCategorieList" class="accordion-collapse collapse show" aria-labelledby="headingCategorieList" data-bs-parent="#categoryAccordion">
+                <div class="accordion-body">
+                    {% include 'categories/categorie_list.html' with categories=categories %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

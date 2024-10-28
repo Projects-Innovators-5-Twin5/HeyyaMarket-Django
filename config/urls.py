@@ -18,10 +18,15 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 from web_project.views import SystemView
+from django.conf import settings
+from django.conf.urls.static import static
+from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    
+
+    path('reviews/', include('apps.reviews.urls')),  # Inclure les routes de l'application reviews
+
     path("", include("apps.landing.urls")),
 
     # Dashboard urls
@@ -59,7 +64,16 @@ urlpatterns = [
     ## user app pages
     path("", include("apps.landing.urls")),
 
-]
+    path("produits/", include("apps.gestion_produits.urls")),
+
+    path("", include("apps.paiement.urls")),
+    path("", include("apps.events.urls")),
+    path("reclamations/", include('apps.ModuleReclamationReponse.reclamations.urls')),
+    
+]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+
+
 
 handler404 = SystemView.as_view(template_name="pages_misc_error.html", status=404)
 handler400 = SystemView.as_view(template_name="pages_misc_error.html", status=400)

@@ -1,0 +1,81 @@
+.price{
+    font-size: 17px;
+    color:#eb907c;
+    font-weight: bold;
+}
+
+.total{
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.card-total{
+    max-height: 230px;
+}
+
+.card-total1{
+    max-height: 370px;
+}
+
+.title-step{
+    font-size: 13px;
+    margin-top: 8px;
+}
+
+.step.active{
+    color:#8C57FF;
+}
+
+.step{
+    cursor: pointer;
+}
+.step2 , .step3 {
+    cursor: pointer;
+}
+
+.step2.active{
+    color:#8C57FF;
+}
+
+.step3.active{
+    color:#8C57FF;
+}
+
+.form-check-paiement{
+    background-color: rgb(240, 239, 239);
+    padding: 3%;
+}
+
+.mode-paiement{
+    font-size: 13px;
+    font-weight: 600;
+}
+
+
+.status-paye{
+   background-color: #eb907c;
+   padding: 8px;
+   border-radius:5px ;
+   color:white
+}
+
+.status-nonpaye{
+    background-color: rgb(190, 189, 189);
+    padding: 6px;
+    border-radius:5px ;
+    color:white
+}
+
+.link_details_cmd{
+    color: gray;
+    text-decoration: none;
+}
+
+.link_details_cmd:hover{
+    color: #eb907c;
+}
+
+
+.table-hover tr:hover{
+    background-color: rgb(238, 237, 237);
+}

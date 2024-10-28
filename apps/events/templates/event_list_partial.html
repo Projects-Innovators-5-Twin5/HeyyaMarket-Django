@@ -1,0 +1,51 @@
+{% for event in events %}
+
+<tr>
+    <td>
+        {% if event.image %}
+            <img src="{{ event.image.url }}" alt="{{ event.title }}" style="width: 50px; height: auto;" />
+        {% else %}
+            <span>No Image</span>
+        {% endif %}
+    </td>
+    <td>{{ event.title }}</td>
+    <td>{{ event.description|truncatewords:20 }}</td>
+    <td>{{ event.start_datetime }}</td>
+    <td>{{ event.end_datetime }}</td>
+    <td>{{ event.location }}</td>
+    <td>{{ event.available_slots }}</td>
+    <td>
+        {% if event.status == 'scheduled' %}
+            <span class="badge rounded-pill bg-label-info me-1">Scheduled</span>
+        {% elif event.status == 'finished' %}
+            <span class="badge rounded-pill bg-label-success me-1">Finished</span>
+        {% elif event.status == 'cancelled' %}
+            <span class="badge rounded-pill bg-label-warning me-1">Cancelled</span>
+        {% else %}
+            <span class="badge rounded-pill bg-label-secondary me-1">Pending</span>
+        {% endif %}
+    </td>
+    <td>
+        <div class="dropdown">
+            <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                <i class="ri-more-2-line"></i>
+            </button>
+            <div class="dropdown-menu">
+                <a class="dropdown-item" href="{% url 'update_event' event.id %}">
+                    <i class="ri-pencil-line me-1"></i> Edit
+                </a>
+                <a class="dropdown-item text-danger" href="#" onclick="openDeleteModal({{ event.id }})">
+                    <i class="ri-delete-bin-6-line me-1"></i> Delete
+                </a>
+                <a class="dropdown-item" href="{% url 'event_manage_requests' event.id %}">
+                    <i class="ri-group-line me-1"></i> View Participants
+                </a>
+            </div>
+        </div>
+    </td>
+</tr>
+{% empty %}
+<tr>
+    <td colspan="9" class="text-center">No events found.</td>
+</tr>
+{% endfor %}

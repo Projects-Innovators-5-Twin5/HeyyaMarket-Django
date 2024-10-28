@@ -33,6 +33,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 # If using the .env file for SECRET_KEY then comment below random SECRET_KEY generation code.
 SECRET_KEY = os.environ.get("SECRET_KEY")
+SECRET_KEY_COHERE = os.environ.get("SECRET_KEY_COHERE")
+SECRET_KEY_IMAGE_DESCRIPTION = os.environ.get("SECRET_KEY_IMAGE_DESCRIPTION")
+
 if not SECRET_KEY:
     SECRET_KEY = "".join(random.choice(string.ascii_lowercase) for i in range(32))
 
@@ -69,9 +72,14 @@ INSTALLED_APPS = [
     "apps.form_layouts",
     "apps.tables",
     "apps.landing",
-
-
+    "apps.gestion_produits",
+    "apps.events",
+    "apps.paiement",
+    "apps.ModuleReclamationReponse.reclamations",
+    "apps.reviews",
 ]
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -174,6 +182,10 @@ STATICFILES_DIRS = [
 # Default URL on which Django application runs for specific environment
 BASE_URL = os.environ.get("BASE_URL", default="http://127.0.0.1:8000")
 
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # stocker les sessions en base de données
+SESSION_COOKIE_AGE = 1209600
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
@@ -188,5 +200,37 @@ THEME_VARIABLES = THEME_VARIABLES
 
 AUTH_USER_MODEL = 'authentication.User'
 
+#stripe
+STRIPE_PUBLIC_KEY = 'pk_test_51Q9AeFJ8wvBEc7MTo5uzCOgnu9fOZ7CBtsFfSYbZnX6E9cC17MmlTyZsqHxhAAQaaqgccHxIfdmDBlXctnVO2XtV00AQMqxFzM'
+STRIPE_SECRET_KEY = 'sk_test_51Q9AeFJ8wvBEc7MT1ORBG9uGTkKJykHOYDUaKOeK6LVIgB9PcHEJg8a1isBEDUBQgKcjOSHUldR6ira5JEdgd0Sj006TFg5Dq0'
+
+
+# Email settings for Gmail SMTP
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'tektaitektai7@gmail.com'  # Replace with your Gmail address
+EMAIL_HOST_PASSWORD = 'jiva rlyt bqba ozzb'  # Replace with your Gmail password
+
+
+
 # Your stuff...
 # ------------------------------------------------------------------------------
+
+# settings.py
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'  # Make sure this directory exists
+TIME_ZONE = 'UTC'  # or your desired timezone
+USE_TZ = True  # Make sure this is set to True
+
+
+
+# Email settings for Gmail SMTP
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'tektaitektai7@gmail.com'  # Replace with your Gmail address
+EMAIL_HOST_PASSWORD = 'jiva rlyt bqba ozzb'  # Replace with your Gmail password

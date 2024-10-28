@@ -1,0 +1,95 @@
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Réponse à votre réclamation</title>
+    <style>
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 20px;
+      }
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border: 1px solid #ddd;
+      }
+      .logo {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+      .logo img {
+        width: 120px;
+      }
+      .header {
+        font-size: 20px;
+        font-weight: bold;
+        color: #2c3e50;
+        text-align: center;
+        margin-bottom: 10px;
+      }
+      .content {
+        font-size: 16px;
+        color: #444444;
+        line-height: 1.6;
+      }
+      .content p {
+        margin: 10px 0;
+      }
+      .footer {
+        margin-top: 30px;
+        font-size: 14px;
+        text-align: center;
+        color: #888;
+        border-top: 1px solid #ddd;
+        padding-top: 20px;
+      }
+      .footer p {
+        margin: 0;
+      }
+      .btn {
+        display: inline-block;
+        background-color: #3498db;
+        color: white;
+        padding: 10px 20px;
+        text-decoration: none;
+        border-radius: 5px;
+        margin-top: 20px;
+        font-size: 16px;
+      }
+      .btn:hover {
+        background-color: #2980b9;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="logo">
+        <img
+          <img
+          src="/static/img/logos/logo_6.png"
+          alt="Logo"
+          class="logo-img"
+          style="max-width: 72px; height: auto"
+        />
+        alt="auth-tree" class="authentication-image-object-right d-none d-lg-block" />
+      </div>
+      <div class="header">Réponse à votre réclamation</div>
+      <div class="content">
+        <p>Bonjour <strong>{{ utilisateur.username }}</strong>,</p>
+
+        <p>Pour plus de détails, veuillez consulter votre espace utilisateur.</p>
+      </div>
+      <div class="footer">
+        <p>Cordialement,</p>
+        <p>L'équipe de support</p>
+        <p>HeyyaMarket - Tous droits réservés</p>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,5 @@
+<h2>Répondre à la réclamation : {{ reclamation.titre }}</h2>
+<form method="post">
+  {% csrf_token %} {{ form.as_p }}
+  <button type="submit">Répondre</button>
+</form>
