@@ -49,14 +49,10 @@
         <div class="nav-item">
           <a class="nav-link text-dark" href="/produits/front/produits/" id="nav-link">Produits</a>
         </div>
-        <div class="nav-item">
-          <a class="nav-link text-dark" href="#" id="nav-link">Categories</a>
-        </div>
-         {% if user.is_authenticated and user.role == 'ADMIN' %}
+   
       <div class="nav-item">
           <a class="nav-link text-dark" href="/reclamations/reclamations/" id="nav-link">Réclamations</a>
         </div>
-      {% endif %}
         
           {% if user.is_authenticated and user.role != 'CLIENT' %}
       <div class="nav-item">

@@ -35,6 +35,19 @@
         </li>
       </ul>
     </li>
+
+    {% if user.is_authenticated and user.role == 'ADMIN' %}
+
+    
+    <li class="menu-item {% if '/listUser/' in request.path %}active{% endif %}">
+      <a href="{% url 'user_list' %}" class="menu-link">
+          <i class="menu-icon tf-icons ri-user-line"></i>
+        <div class="text-truncate" data-i18n="Card">Utilisateurs</div>
+      </a>
+    </li>
+
+  {%endif%}
+
     <!-- produits & categories -->
     <li class="menu-item {% if '/produits/' in request.path %}active open{% endif %}">
       <a href="javascript:void(0);" class="menu-link menu-toggle">
@@ -82,7 +95,7 @@
 
     <li class="menu-item {% if '/vendor-requests/' in request.path %}active{% endif %}">
       <a href="{% url 'vendor-requests' %}" class="menu-link">
-        <i class="menu-icon tf-icons ri-bank-card-2-line"></i>
+        <i class="menu-icon tf-icons ri-layout-2-line"></i>
         <div class="text-truncate" data-i18n="Card">Vendor Requests</div>
       </a>
     </li>

@@ -201,8 +201,7 @@ THEME_VARIABLES = THEME_VARIABLES
 AUTH_USER_MODEL = 'authentication.User'
 
 #stripe
-STRIPE_PUBLIC_KEY = 'pk_test_51Q9AeFJ8wvBEc7MTo5uzCOgnu9fOZ7CBtsFfSYbZnX6E9cC17MmlTyZsqHxhAAQaaqgccHxIfdmDBlXctnVO2XtV00AQMqxFzM'
-STRIPE_SECRET_KEY = 'sk_test_51Q9AeFJ8wvBEc7MT1ORBG9uGTkKJykHOYDUaKOeK6LVIgB9PcHEJg8a1isBEDUBQgKcjOSHUldR6ira5JEdgd0Sj006TFg5Dq0'
+
 
 STRIPE_KEY='pk_test_51PCMzNHTb56tjMDuH9mlRWNgGo94uv9xBBcqLA67OjhwCn1U3GM6D0hF6xBZ1BixF9Trikzz2pwydkpGyugQFymD00UL9exp8n'
 STRIPE_SECRET='sk_test_51PCMzNHTb56tjMDuNrp9F3jH17WLauGU85sVYMNm3fsRKOG2qqf07MsE1wFffiwhQCCHhmLhsvHSPwIADcqcCGXM001mzvGFVK'
@@ -237,7 +236,3 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'tektaitektai7@gmail.com'  # Replace with your Gmail address
 EMAIL_HOST_PASSWORD = 'jiva rlyt bqba ozzb'  # Replace with your Gmail password
-
-
-
-

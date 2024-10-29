@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
-    const stripe = Stripe('pk_test_51Q9AeFJ8wvBEc7MTo5uzCOgnu9fOZ7CBtsFfSYbZnX6E9cC17MmlTyZsqHxhAAQaaqgccHxIfdmDBlXctnVO2XtV00AQMqxFzM');
+    const stripe = Stripe('pk_test_51PCMzNHTb56tjMDuH9mlRWNgGo94uv9xBBcqLA67OjhwCn1U3GM6D0hF6xBZ1BixF9Trikzz2pwydkpGyugQFymD00UL9exp8n');
     const elements = stripe.elements();
 
     // Example for setting up a card input
@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (error) {
             console.log(error.message);
-            document.getElementById('payment-status').classList.add('alert alert-danger')
+            document.getElementById('payment-status').classList.add('alert-danger');
             document.getElementById('payment-status').textContent = error.message;
 
         } else {
