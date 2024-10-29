@@ -20,7 +20,7 @@ class CartItem(models.Model):
     updated_at = models.DateTimeField(auto_now=True)  
 
     def __str__(self):
-        return f"{self.quantity} x {self.product.name} (dans {self.cart})"
+        return f"{self.quantity} x {self.product.nom} "
 
 
 class Order(models.Model):

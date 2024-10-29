@@ -22,7 +22,7 @@ def backoffice_reviews(request, product_id):
 
   # Ajouter le chemin de mise en page
     context.update({
-        "layout_path": TemplateHelper.set_layout("layout_user.html", context),
+        "layout_path": TemplateHelper.set_layout("layout_vertical.html", context),
     })
 
     return render(request, 'reviews.html', context)
@@ -173,7 +173,7 @@ def stats_avis(request, product_id):
     }
  # Ajouter le chemin de mise en page
     context.update({
-        "layout_path": TemplateHelper.set_layout("layout_user.html", context),
+        "layout_path": TemplateHelper.set_layout("layout_vertical.html", context),
     })
 
     return render(request, 'stats_avis.html', context)

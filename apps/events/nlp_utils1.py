@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Initialize the Cohere client
-co = cohere.Client('SECRET_KEY_COHERE')
+co = cohere.Client(os.getenv('SECRET_KEY_COHERE'))
 
 def generate_event_descriptioncohere(title, start_datetime, end_datetime, location, available_slots, event_type, target_audience, event_theme, level):
     prompt = (f"Create a captivating and detailed event description for an event titled '{title}'. "

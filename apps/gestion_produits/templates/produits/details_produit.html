@@ -276,11 +276,9 @@
             <button type="button" class="nav-link active" role="tab" data-bs-toggle="tab" data-bs-target="#navs-top-description" aria-controls="navs-top-description" aria-selected="true">Description</button> <!-- Changé en Description -->
           </li>
           <li class="nav-item">
-            <button type="button" class="nav-link" role="tab" data-bs-toggle="tab" data-bs-target="#navs-top-reviews" aria-controls="navs-top-reviews" aria-selected="false">Avis</button> <!-- Changé en Avis -->
+            <a type="button" href=" {% url 'backoffice_reviews' produit.id %}" class="nav-link"  aria-selected="false">Avis & commentaires</a> <!-- Changé en Avis -->
           </li>
-          <li class="nav-item">
-            <button type="button" class="nav-link" role="tab" data-bs-toggle="tab" data-bs-target="#navs-top-comments" aria-controls="navs-top-comments" aria-selected="false">Commentaires</button> <!-- Changé en Commentaires -->
-          </li>
+      
         </ul>
       </div>
     </div>
